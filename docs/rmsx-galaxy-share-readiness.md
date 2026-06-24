@@ -43,11 +43,7 @@ Build and push from the project root after selecting the RMSX source ref that
 should be the first supported Galaxy runtime:
 
 ```bash
-docker build \
-  --build-arg RMSX_REF=<tag-or-commit> \
-  -t ghcr.io/antuneslab/rmsx-galaxy:0.1.0 \
-  packaging/rmsx-galaxy
-
+scripts/build_container.sh
 docker push ghcr.io/antuneslab/rmsx-galaxy:0.1.0
 ```
 
@@ -59,8 +55,7 @@ If the image will live under a different owner or version, update
 Run these before publishing or sending the bundle to another Galaxy admin:
 
 ```bash
-.venv-planemo/bin/planemo lint --fail_level error tools/rmsx/rmsx.xml
-.venv-planemo/bin/planemo shed_lint tools/rmsx
+scripts/run_static_checks.sh
 ```
 
 Current local status:
@@ -74,19 +69,7 @@ Run the Docker-backed wrapper tests against the same container tag that appears
 in `tools/rmsx/macros.xml`:
 
 ```bash
-env HOME="$PWD/.planemo-home" \
-  .venv-planemo/bin/planemo test \
-    --install_galaxy \
-    --docker \
-    --docker_cmd /Applications/Docker.app/Contents/Resources/bin/docker \
-    --job_config_file config/planemo_docker_job_conf.yml \
-    --no_conda_auto_install \
-    --no_conda_auto_init \
-    --test_output tool_test_output.html \
-    --test_output_json tool_test_output.json \
-    --job_output_files planemo-test-output \
-    --test_timeout 300 \
-    tools/rmsx/rmsx.xml
+scripts/run_planemo_tests.sh
 ```
 
 Then verify the native viewer:
@@ -111,21 +94,7 @@ The complete install has three Galaxy-side pieces:
 For local Planemo demos, the project uses:
 
 ```bash
-python3 scripts/build_rmsx_datatypes_config.py
-
-GALAXY_CONFIG_OVERRIDE_DATATYPES_CONFIG_FILE="$PWD/config/datatypes/merged_datatypes_conf.xml" \
-GALAXY_CONFIG_OVERRIDE_VISUALIZATION_PLUGINS_DIRECTORY="$PWD/config/plugins/visualizations" \
-env HOME="$PWD/.planemo-home" .venv-planemo/bin/planemo serve \
-  --host 127.0.0.1 --port 9090 \
-  --install_prebuilt_client \
-  --docker \
-  --docker_cmd /Applications/Docker.app/Contents/Resources/bin/docker \
-  --job_config_file config/planemo_docker_job_conf.yml \
-  --no_conda_auto_install \
-  --no_conda_auto_init \
-  tools/rmsx/rmsx.xml
-
-python3 scripts/sync_visualization_static.py
+scripts/serve_galaxy_demo.sh
 ```
 
 For a managed Galaxy server, install the visualization directly into that

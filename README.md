@@ -2,19 +2,137 @@
 
 Galaxy and notebook integration workspace for [RMSX + FlipBook](https://github.com/AntunesLab/rmsx).
 
-This repository is a cofest collaboration companion to the upstream RMSX project. Upstream RMSX remains the scientific Python/R package for time-sliced residue fluctuation analysis and FlipBook workflows. This repo focuses on making RMSX usable inside Galaxy, with a native Molstar FlipBook visualization path and a notebook prototype for inline Molstar viewing.
+This repository is a cofest collaboration companion to upstream RMSX. Upstream RMSX remains the scientific Python/R package for time-sliced residue fluctuation analysis and FlipBook workflows. This repo focuses on making RMSX easy to run in Galaxy, with a native Molstar FlipBook visualization path and notebook prototypes for inline Molstar viewing.
 
 ## What Is Here
 
-- A Galaxy tool wrapper for RMSX trajectory analysis in `tools/rmsx/`.
-- A native Galaxy visualization plugin for RMSX Molstar FlipBook manifests in `config/plugins/visualizations/rmsx_molstar/`.
-- A JSON-backed RMSX Molstar manifest datatype scaffold in `config/datatypes/` and `tools/rmsx/datatypes_conf.xml`.
-- A container-first runtime scaffold in `packaging/rmsx-galaxy/`.
-- Planemo, viewer, and manifest smoke tests in `tests/rmsx/`.
-- Notebook prototypes in `notebooks/`.
-- Working project notes and readiness docs in `docs/`.
+- Galaxy RMSX tool wrapper: `tools/rmsx/`
+- Native Galaxy Molstar visualization plugin: `config/plugins/visualizations/rmsx_molstar/`
+- RMSX Molstar manifest datatype scaffold: `config/datatypes/`
+- Container runtime scaffold: `packaging/rmsx-galaxy/`
+- Planemo, manifest, and viewer smoke tests: `tests/rmsx/`
+- Notebook prototypes: `notebooks/`
+- Cofest docs and task list: `docs/`
 
-The native Galaxy visualization is the supported user-facing viewer path. The old standalone HTML report path is development-only and should not be presented as the primary Galaxy workflow.
+The native Galaxy visualization is the supported user-facing viewer path. The old standalone HTML report path is development-only.
+
+## Quick Start For Collaborators
+
+Prerequisites:
+
+- Python 3.10 or newer
+- Docker Desktop or another working Docker CLI
+- Node.js with `corepack` or `pnpm` for optional browser checks
+
+Clone the repo, then run:
+
+```bash
+scripts/bootstrap_dev.sh --with-container
+scripts/run_static_checks.sh
+scripts/serve_galaxy_demo.sh
+```
+
+Open the printed Galaxy URL, usually:
+
+```text
+http://127.0.0.1:9090
+```
+
+In Galaxy:
+
+1. Open **Tools**.
+2. Select **RMSX trajectory analysis**.
+3. Choose **Load example data: 1UBQ plus mon_sys**.
+4. Click **Run Tool**.
+5. Open the **Molstar FlipBook viewer manifest** output.
+6. Use **Visualize** -> **RMSX Molstar FlipBook**.
+
+That path uses the bundled 1UBQ example data and does not require collaborators to upload a trajectory before testing the tool.
+
+## Common Commands
+
+Create or refresh the local development environment:
+
+```bash
+scripts/bootstrap_dev.sh
+```
+
+Build the local runtime image used by Planemo/Galaxy:
+
+```bash
+scripts/build_container.sh
+```
+
+Run fast checks:
+
+```bash
+scripts/run_static_checks.sh
+```
+
+By default this skips the network-dependent Tool Shed check when the public Tool Shed cannot be reached. For publication or CI, make that step strict:
+
+```bash
+STRICT_SHED_LINT=1 scripts/run_static_checks.sh
+```
+
+Run Docker-backed Planemo tests:
+
+```bash
+scripts/run_planemo_tests.sh
+```
+
+Start the local Galaxy demo on another port:
+
+```bash
+GALAXY_PORT=9091 scripts/serve_galaxy_demo.sh
+```
+
+If Docker is installed somewhere unusual, set:
+
+```bash
+DOCKER_CMD=/path/to/docker scripts/serve_galaxy_demo.sh
+```
+
+## What A Successful Demo Shows
+
+A successful bundled-example Galaxy run should produce:
+
+- RMSX, RMSD, and RMSF tables
+- PDB slice collection
+- RMSX heatmap PNG
+- RMSX triple plot PNG
+- execution log
+- Molstar FlipBook viewer manifest
+
+The manifest should open through Galaxy's native **Visualize** path without a trusted-HTML warning. The viewer should open in tiled mode by default and expose palette switching, spacing, thickness, columns, residue controls, and local per-slice rotation.
+
+## Troubleshooting
+
+If `scripts/bootstrap_dev.sh` cannot install Planemo, confirm that Python can create virtual environments:
+
+```bash
+python3 -m venv /tmp/rmsx-venv-check
+```
+
+If Docker tests fail because the image cannot be found, build it locally:
+
+```bash
+scripts/build_container.sh
+```
+
+The wrapper references the registry-style tag `ghcr.io/antuneslab/rmsx-galaxy:0.1.0`. The local build script creates that tag on your machine, so Planemo can run before the image is published to GHCR.
+
+If Galaxy starts but the visualization is blank, run this in a second terminal after Galaxy is fully up:
+
+```bash
+python3 scripts/sync_visualization_static.py
+```
+
+If port `9090` is already in use:
+
+```bash
+GALAXY_PORT=9091 scripts/serve_galaxy_demo.sh
+```
 
 ## Cofest Goals
 
@@ -26,50 +144,6 @@ The native Galaxy visualization is the supported user-facing viewer path. The ol
 
 See [docs/cofest-task-list.md](docs/cofest-task-list.md) for the working task list.
 
-## Quick Local Checks
-
-```bash
-python3 -m py_compile tools/rmsx/*.py
-python3 tests/rmsx/test_manifest_and_visualization.py
-node --check config/plugins/visualizations/rmsx_molstar/static/script.js
-python3 -m json.tool notebooks/rmsx_molstar_widget_sizing_prototype.ipynb
-```
-
-If Planemo is installed in the project-local environment:
-
-```bash
-.venv-planemo/bin/planemo lint --fail_level error tools/rmsx/rmsx.xml
-.venv-planemo/bin/planemo shed_lint tools/rmsx
-```
-
-## Local Galaxy Demo
-
-Build the merged datatype config, serve Galaxy through Planemo, then mirror the visualization static assets into the temporary Galaxy checkout:
-
-```bash
-python3 scripts/build_rmsx_datatypes_config.py
-
-GALAXY_CONFIG_OVERRIDE_DATATYPES_CONFIG_FILE="$PWD/config/datatypes/merged_datatypes_conf.xml" \
-GALAXY_CONFIG_OVERRIDE_VISUALIZATION_PLUGINS_DIRECTORY="$PWD/config/plugins/visualizations" \
-env HOME="$PWD/.planemo-home" .venv-planemo/bin/planemo serve \
-  --host 127.0.0.1 --port 9090 \
-  --install_prebuilt_client \
-  --docker \
-  --docker_cmd /Applications/Docker.app/Contents/Resources/bin/docker \
-  --job_config_file config/planemo_docker_job_conf.yml \
-  --no_conda_auto_install \
-  --no_conda_auto_init \
-  tools/rmsx/rmsx.xml
-```
-
-In a second terminal:
-
-```bash
-python3 scripts/sync_visualization_static.py
-```
-
-Run the bundled 1UBQ example in Galaxy, open the `Molstar native viewer manifest` history item with `Visualize`, and select `RMSX Molstar FlipBook`.
-
 ## Packaging Status
 
 The current share path is container-first. The wrapper references:
@@ -78,9 +152,9 @@ The current share path is container-first. The wrapper references:
 ghcr.io/antuneslab/rmsx-galaxy:0.1.0
 ```
 
-Before external Galaxy administrators can use that tag, the image must be built and pushed by someone with GHCR permissions for `antuneslab`.
+For local cofest testing, run `scripts/build_container.sh` to build that tag locally. Before external Galaxy administrators can use the tag directly, the image should be pushed to GHCR by someone with `antuneslab` package permissions.
 
-Longer term, a Bioconda or Conda package for RMSX would make Galaxy dependency resolution cleaner. That is a follow-up, not a blocker for the cofest workspace.
+Longer term, a Bioconda or Conda package for RMSX would make Galaxy dependency resolution cleaner. That is a follow-up, not a blocker for this cofest workspace.
 
 ## Relationship To Upstream RMSX
 

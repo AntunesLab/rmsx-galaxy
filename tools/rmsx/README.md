@@ -15,7 +15,7 @@ This directory contains the RMSX-only Galaxy wrapper scaffold. It is focused on 
 
 The XML declares `rmsx` as the intended executable dependency, but RMSX still needs Galaxy-ready dependency packaging before this wrapper can run in a clean Planemo/Galaxy environment. The local source inspection found that RMSX depends on Python packages plus an R plotting stack, and the current R script can install missing R packages at runtime. For Galaxy, those R dependencies should be provided by Conda or a container instead.
 
-The first dependency scaffold lives in `packaging/rmsx-galaxy/`. It builds a container from the upstream RMSX source repository and preinstalls the Python/R runtime stack. The active wrapper references a registry-qualified container tag, `ghcr.io/antuneslab/rmsx-galaxy:0.1.0`; publish that image before sharing the wrapper outside this workstation.
+The first dependency scaffold lives in `packaging/rmsx-galaxy/`. It builds a container from the upstream RMSX source repository and preinstalls the Python/R runtime stack. The active wrapper references a registry-qualified container tag, `ghcr.io/antuneslab/rmsx-galaxy:0.1.0`. Collaborators can build that tag locally with `scripts/build_container.sh` before it is published to GHCR.
 
 For purely local development, you may temporarily retag or override the container as `rmsx-galaxy:0.1.0`, but the shareable wrapper should keep the registry-qualified tag in `tools/rmsx/macros.xml`.
 
@@ -27,10 +27,22 @@ RMSX_NO_CITATION=1 rmsx input.pdb input.dcd --output_dir rmsx_output --num_slice
 
 ## Local Verification
 
-The wrapper fixture compute path was smoke-tested with the existing local RMSX environment:
+The wrapper fixture compute path can be smoke-tested through the container:
 
 ```bash
-env RMSX_NO_CITATION=1 /Users/finn/Documents/rmsx_in_md_analysis/env/bin/python -m rmsx tools/rmsx/test-data/1UBQ.pdb tools/rmsx/test-data/mon_sys.dcd --output_dir /private/tmp/rmsx_galaxy_wrapper_smoke --num_slices 3 --chain 7 --quiet --no-plot --overwrite
+scripts/build_container.sh
+mkdir -p /tmp/rmsx_galaxy_wrapper_smoke
+docker run --rm \
+  -v "$PWD/tools/rmsx/test-data:/data:ro" \
+  -v /tmp/rmsx_galaxy_wrapper_smoke:/out \
+  ghcr.io/antuneslab/rmsx-galaxy:0.1.0 \
+  rmsx /data/1UBQ.pdb /data/mon_sys.dcd \
+    --output_dir /out \
+    --num_slices 3 \
+    --chain 7 \
+    --quiet \
+    --no-plot \
+    --overwrite
 ```
 
 That run produced the expected RMSX, RMSD, and RMSF CSV files plus three `slice_*_first_frame.pdb` files. The installed RMSX environment used for this smoke test does not emit `masked_residues.csv`; the Galaxy wrapper therefore derives an all-unmasked metadata table from the RMSX CSV when RMSX omits that file. During a full Galaxy run, `rmsx_static_plots.py` locates the installed RMSX `plot_rmsx.R` script and writes the standalone heatmap and original triple-composite PNG outputs.
@@ -76,24 +88,25 @@ antialiasing, and a fine outline without progressive speckling.
 
 ## Container Verification
 
-The runtime image in `packaging/rmsx-galaxy/` should be built and published as `ghcr.io/antuneslab/rmsx-galaxy:0.1.0` for sharing.
+The runtime image in `packaging/rmsx-galaxy/` is built locally with the same tag that the Galaxy wrapper declares:
 
 ```bash
-/Applications/Docker.app/Contents/Resources/bin/docker build -t ghcr.io/antuneslab/rmsx-galaxy:0.1.0 packaging/rmsx-galaxy
+scripts/build_container.sh
 ```
 
 The container exposes the RMSX CLI:
 
 ```bash
-/Applications/Docker.app/Contents/Resources/bin/docker run --rm ghcr.io/antuneslab/rmsx-galaxy:0.1.0 rmsx --help
+docker run --rm ghcr.io/antuneslab/rmsx-galaxy:0.1.0 rmsx --help
 ```
 
 The container also completed the RMSX compute smoke fixture and produced the expected RMSX, RMSD, RMSF, mask metadata, and three PDB slice files:
 
 ```bash
-/Applications/Docker.app/Contents/Resources/bin/docker run --rm \
-  -v "/Users/finn/Documents/Flipbook Integration/tools/rmsx/test-data:/data:ro" \
-  -v /private/tmp/rmsx_container_smoke:/out \
+mkdir -p /tmp/rmsx_container_smoke
+docker run --rm \
+  -v "$PWD/tools/rmsx/test-data:/data:ro" \
+  -v /tmp/rmsx_container_smoke:/out \
   ghcr.io/antuneslab/rmsx-galaxy:0.1.0 \
   rmsx /data/1UBQ.pdb /data/mon_sys.dcd \
     --output_dir /out \
@@ -108,79 +121,29 @@ For Docker-backed Planemo/Galaxy tests, use `config/planemo_docker_job_conf.yml`
 
 ## Planemo Validation
 
-Planemo is installed project-locally in `/Users/finn/Documents/Flipbook Integration/.venv-planemo`.
+Planemo is installed project-locally by `scripts/bootstrap_dev.sh` in `.venv-planemo`.
 
 The wrapper exposes an input-source selector, MDAnalysis-readable topology/trajectory inputs for uploaded-history runs, a chain/segment selector, slice count, frame window controls, analysis type, summary count, interpolation, and a shared Molstar/static-plot palette selector. The bundled example branch uses the wrapper fixture files directly and keeps only the relevant example controls visible. The wrapper should pass XML parsing, Planemo lint at error level, and Docker-backed Galaxy tool tests using the explicit `ghcr.io/antuneslab/rmsx-galaxy:0.1.0` container:
 
 ```bash
-source .venv-planemo/bin/activate
-planemo lint --fail_level error tools/rmsx/rmsx.xml
+scripts/run_static_checks.sh
 ```
-
-```bash
-env HOME="/Users/finn/Documents/Flipbook Integration/.planemo-home" \
-    PATH="/Users/finn/Documents/rmsx_in_md_analysis/env/bin:$PATH" \
-    .venv-planemo/bin/planemo test \
-    --install_galaxy \
-    --no_dependency_resolution \
-    --test_output tool_test_output.html \
-    --test_output_json tool_test_output.json \
-    --job_output_files planemo-test-output \
-    --test_timeout 180 \
-    tools/rmsx/rmsx.xml
-```
-
-The non-Docker Planemo test depends on the local RMSX environment rather than Galaxy dependency resolution. That path is useful for fast wrapper debugging only when the local RMSX environment is on `PATH`; the Docker-backed test is the reliable Galaxy route for this scaffold.
 
 The Docker-backed Planemo test uses the locally built RMSX runtime image instead of the local RMSX Python environment:
 
 ```bash
-env HOME="/Users/finn/Documents/Flipbook Integration/.planemo-home" \
-    .venv-planemo/bin/planemo test \
-    --install_galaxy \
-    --docker \
-    --docker_cmd /Applications/Docker.app/Contents/Resources/bin/docker \
-    --job_config_file config/planemo_docker_job_conf.yml \
-    --no_conda_auto_install \
-    --no_conda_auto_init \
-    --test_output tool_test_output.html \
-    --test_output_json tool_test_output.json \
-    --job_output_files planemo-test-output \
-    --test_timeout 300 \
-    tools/rmsx/rmsx.xml
+scripts/run_planemo_tests.sh
 ```
 
 That Docker-backed run should resolve the registry-qualified RMSX container, launch Docker, produce the static RMSX heatmap and triple-plot PNGs, produce the native Molstar viewer manifest, and pass the wrapper tests. The test suite covers the history-input path, bundled-example path, and an expected preflight failure for a missing chain/segment selector. Raw Planemo can execute the tests with the tool-local `rmsxmolstar` definition, but local Galaxy serves are cleaner if the full datatype registry is merged before startup.
 
-For manual native visualization testing in local Galaxy, first build a merged datatype registry that includes both Galaxy's stock datatypes and the RMSX Molstar manifest datatype:
+For manual native visualization testing in local Galaxy, use the serve helper:
 
 ```bash
-python3 scripts/build_rmsx_datatypes_config.py
+scripts/serve_galaxy_demo.sh
 ```
 
-Then serve with that merged datatype registry, the prototype visualization plugin directory, and the prebuilt Galaxy client:
-
-```bash
-GALAXY_CONFIG_OVERRIDE_DATATYPES_CONFIG_FILE="$PWD/config/datatypes/merged_datatypes_conf.xml" \
-GALAXY_CONFIG_OVERRIDE_VISUALIZATION_PLUGINS_DIRECTORY="$PWD/config/plugins/visualizations" \
-env HOME="$PWD/.planemo-home" .venv-planemo/bin/planemo serve \
-  --host 127.0.0.1 --port 9090 \
-  --install_prebuilt_client \
-  --docker \
-  --docker_cmd /Applications/Docker.app/Contents/Resources/bin/docker \
-  --job_config_file config/planemo_docker_job_conf.yml \
-  --no_conda_auto_install \
-  --no_conda_auto_init \
-    tools/rmsx/rmsx.xml
-```
-
-Then, in a second terminal, mirror the visualization assets into the temporary Galaxy checkout created by Planemo:
-
-```bash
-python3 scripts/sync_visualization_static.py
-```
-
-After running RMSX, open the `Molstar native viewer manifest - open with Visualize` history item, choose `Visualize`, and launch `RMSX Molstar FlipBook`. This route renders the manifest through Galaxy's visualization framework and avoids the trusted-HTML allowlist banner.
+It builds the merged datatype registry, starts Planemo/Galaxy with the prototype visualization plugin directory, and mirrors the visualization assets into the temporary Galaxy checkout created by Planemo. After running RMSX, open the `Molstar native viewer manifest - open with Visualize` history item, choose `Visualize`, and launch `RMSX Molstar FlipBook`. This route renders the manifest through Galaxy's visualization framework and avoids the trusted-HTML allowlist banner.
 
 To exercise the native viewer parity checklist against a running visualization, copy the open visualization URL and run:
 

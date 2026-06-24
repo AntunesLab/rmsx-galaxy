@@ -1,5 +1,9 @@
 {
 	"scripts": {
+		"check": "scripts/run_static_checks.sh",
+		"serve:galaxy": "scripts/serve_galaxy_demo.sh",
+		"test": "scripts/run_static_checks.sh",
+		"test:planemo": "scripts/run_planemo_tests.sh",
 		"test:native-vis": "node tests/rmsx/native_visualization_parity_check.mjs",
 		"test:native-visual": "node tests/rmsx/native_visualization_visual_check.mjs"
 	},

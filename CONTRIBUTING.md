@@ -5,14 +5,25 @@ Thanks for helping with the RMSX Galaxy cofest work. This repo is intentionally 
 ## Local Setup
 
 1. Clone this repo.
-2. Install or reuse the project-local Planemo environment if available.
-3. Install Node dependencies when working on browser checks:
+2. Bootstrap the project-local Planemo environment and optional Node dependencies:
 
 ```bash
-pnpm install
+scripts/bootstrap_dev.sh
+```
+
+3. Build the local runtime image before running Galaxy or Planemo Docker tests:
+
+```bash
+scripts/build_container.sh
 ```
 
 4. Keep generated environments and outputs out of commits. `.gitignore` excludes Planemo homes, Node modules, notebook outputs, test reports, and notebook checkpoints.
+
+For a one-command first setup, use:
+
+```bash
+scripts/bootstrap_dev.sh --with-container
+```
 
 ## Branches
 
@@ -30,20 +41,34 @@ Prefer one issue per branch or pull request when practical.
 Run the relevant subset for your change:
 
 ```bash
-python3 -m py_compile tools/rmsx/*.py
-python3 tests/rmsx/test_manifest_and_visualization.py
-node --check config/plugins/visualizations/rmsx_molstar/static/script.js
-python3 -m json.tool notebooks/rmsx_molstar_widget_sizing_prototype.ipynb
+scripts/run_static_checks.sh
+```
+
+This command skips the network-dependent Tool Shed check when the public Tool Shed is unreachable. For publication or CI checks, run:
+
+```bash
+STRICT_SHED_LINT=1 scripts/run_static_checks.sh
 ```
 
 For Galaxy wrapper changes:
 
 ```bash
-.venv-planemo/bin/planemo lint --fail_level error tools/rmsx/rmsx.xml
-.venv-planemo/bin/planemo shed_lint tools/rmsx
+scripts/run_planemo_tests.sh
 ```
 
-For runtime/container changes, run the Docker-backed Planemo test documented in `docs/rmsx-galaxy-share-readiness.md`.
+If you changed the container runtime, rebuild first:
+
+```bash
+scripts/run_planemo_tests.sh --build
+```
+
+For manual viewer testing, run:
+
+```bash
+scripts/serve_galaxy_demo.sh
+```
+
+Then run the bundled example and open the Molstar manifest through Galaxy's `Visualize` action.
 
 ## Issues
 
