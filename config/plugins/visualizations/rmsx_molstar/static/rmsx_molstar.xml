@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE visualization SYSTEM "../../visualization.dtd">
+<visualization name="RMSX Molstar FlipBook">
+    <description>Render RMSX Molstar FlipBook viewer manifests.</description>
+    <data_sources>
+        <data_source>
+            <model_class>HistoryDatasetAssociation</model_class>
+            <test test_attr="ext">rmsxmolstar</test>
+        </data_source>
+        <data_source>
+            <model_class>HistoryDatasetAssociation</model_class>
+            <test test_attr="ext">json</test>
+        </data_source>
+    </data_sources>
+    <params>
+        <param required="true">dataset_id</param>
+        <param required="false">history_id</param>
+    </params>
+    <entry_point entry_point_type="script" type="text/javascript" src="script.js" url="/static/plugins/visualizations/rmsx_molstar/static" />
+    <help format="markdown"><![CDATA[
+This visualization opens RMSX `rmsx-molstar-viewer/v1` manifests produced by
+the RMSX trajectory analysis tool and renders the embedded PDB slices with
+Molstar. The preferred input is the JSON-backed `rmsxmolstar` datatype emitted
+by the RMSX wrapper. Generic JSON remains accepted as a development fallback,
+and schema validation runs before rendering in both paths.
+    ]]></help>
+</visualization>

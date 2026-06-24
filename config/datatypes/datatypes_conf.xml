@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<datatypes>
+    <!-- Prototype registration snippet for local Galaxy experiments.
+         Do not use this file as the sole Galaxy datatypes_config_file unless it
+         has been merged into Galaxy's stock datatypes_conf.xml; using this tiny
+         file by itself hides built-in datatypes such as pdb, json, and html. -->
+    <registration>
+        <datatype extension="rmsxmolstar" type="galaxy.datatypes.text:Json" subclass="True" mimetype="application/json" display_in_upload="true"/>
+    </registration>
+</datatypes>

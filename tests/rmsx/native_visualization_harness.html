@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>RMSX Native Molstar Harness</title>
+</head>
+<body>
+  <div id="app"></div>
+  <script>
+    function atomLine(serial, name, residueId, x, y, z, element) {
+      const atomName = name.length === 1 ? ` ${name}  ` : ` ${name.padEnd(2)} `;
+      return `ATOM  ${String(serial).padStart(5)} ${atomName} ALA A${String(residueId).padStart(4)}    ${x.toFixed(3).padStart(8)}${y.toFixed(3).padStart(8)}${z.toFixed(3).padStart(8)}  1.00  0.00           ${element}`;
+    }
+
+    function makeBackboneSlice(phase, stretch) {
+      const lines = [];
+      let serial = 1;
+      for (let residueId = 1; residueId <= 24; residueId += 1) {
+        const t = residueId * 0.5 + phase;
+        const x = Math.sin(t) * 4.8;
+        const y = residueId * stretch;
+        const z = Math.cos(t * 0.78) * 4.2;
+        lines.push(atomLine(serial, "N", residueId, x - 0.9, y - 0.35, z + 0.2, "N"));
+        serial += 1;
+        lines.push(atomLine(serial, "CA", residueId, x, y, z, "C"));
+        serial += 1;
+        lines.push(atomLine(serial, "C", residueId, x + 0.9, y + 0.35, z - 0.2, "C"));
+        serial += 1;
+        lines.push(atomLine(serial, "O", residueId, x + 1.25, y + 0.78, z - 0.65, "O"));
+        serial += 1;
+      }
+      lines.push("END");
+      return lines.join("\n");
+    }
+
+    const pdb1 = makeBackboneSlice(0.0, 1.05);
+    const pdb2 = makeBackboneSlice(0.9, 1.55);
+    const pdb3 = makeBackboneSlice(1.8, 2.05);
+    const sliceColumns = ["slice_1.dcd", "slice_2.dcd", "slice_3.dcd"];
+    const residues = Array.from({ length: 24 }, (_, index) => {
+      const residueId = index + 1;
+      return {
+        id: String(residueId),
+        key: `A:${residueId}`,
+        chain: "A",
+        label: `${residueId} / chain A`,
+        values: {
+          "slice_1.dcd": Number((0.18 + residueId * 0.035 + Math.sin(residueId * 0.38) * 0.12).toFixed(3)),
+          "slice_2.dcd": Number((0.55 + residueId * 0.055 + Math.sin(residueId * 0.42 + 0.8) * 0.18).toFixed(3)),
+          "slice_3.dcd": Number((0.85 + residueId * 0.075 + Math.cos(residueId * 0.35) * 0.22).toFixed(3))
+        }
+      };
+    });
+    function summary(column) {
+      const values = residues.map((residue) => residue.values[column]);
+      const max = Math.max(...values);
+      const min = Math.min(...values);
+      const mean = values.reduce((total, value) => total + value, 0) / values.length;
+      const maxResidue = residues[values.indexOf(max)].id;
+      return { mean, min, max, maxResidue };
+    }
+    const domainValues = residues.flatMap((residue) => sliceColumns.map((column) => residue.values[column]));
+    const domain = { min: Math.min(...domainValues), max: Math.max(...domainValues) };
+    const manifest = {
+      schemaVersion: "rmsx-molstar-viewer/v1",
+      title: "RMSX native Molstar harness",
+      slices: [
+        { index: 1, id: "slice_1", label: "Slice 1", filename: "slice_1_first_frame.pdb", rmsxColumn: "slice_1.dcd", pdb: pdb1 },
+        { index: 2, id: "slice_2", label: "Slice 2", filename: "slice_2_first_frame.pdb", rmsxColumn: "slice_2.dcd", pdb: pdb2 },
+        { index: 3, id: "slice_3", label: "Slice 3", filename: "slice_3_first_frame.pdb", rmsxColumn: "slice_3.dcd", pdb: pdb3 }
+      ],
+      residues,
+      summaries: {
+        "slice_1.dcd": summary("slice_1.dcd"),
+        "slice_2.dcd": summary("slice_2.dcd"),
+        "slice_3.dcd": summary("slice_3.dcd")
+      },
+      domain,
+      maskSummary: { maskedKeys: ["A:8", "A:16"], maskedResidues: 2, totalResidues: 24 },
+      maskOpacity: 0.3,
+      palette: { name: "viridis", colors: ["#440154", "#31688E", "#35B779", "#FDE725"] },
+      availablePalettes: {
+        viridis: ["#440154", "#31688E", "#35B779", "#FDE725"],
+        turbo: ["#30123B", "#4777EF", "#1AE4B6", "#9FF945", "#FCA636", "#7A0403"],
+        mako: ["#0B0405", "#3B0F70", "#1F9E89", "#DEF5E5"]
+      },
+      presentation: { defaultLayout: "tiled" },
+      visualMapping: {
+        defaultColorMin: 0.25,
+        defaultColorMax: 2.50,
+        defaultRadiusMin: 0.63,
+        defaultRadiusMax: 3.18,
+        defaultThicknessScale: 1,
+        colorDomainStep: 0.1,
+        radiusStep: 0.05,
+        colorTheme: "uncertainty",
+        molstarUncertaintyReversesColorList: true,
+        paletteOrder: "low-to-high"
+      },
+      rotationModel: { defaultRotation: { x: 90, y: 0, z: 0 } },
+      molstarRenderStyle: { representation: "putty", outline: true },
+      selectedResidueMarker: { enabledDefault: false, type: "spacefill", color: "#111827", sizeFactor: 0.36, alpha: 0.86 },
+      playback: { minDelayMs: 150, maxDelayMs: 5000, defaultDelayMs: 900, delayStepMs: 50 },
+      flipbookReference: {
+        defaultColumns: 3,
+        minimumSpacingFactor: 0.1,
+        maximumSpacingFactor: 2.5,
+        defaultSpacingFactor: 1,
+        tilePaddingFactor: 1.55
+      }
+    };
+    document.getElementById("app").dataset.incoming = JSON.stringify({ manifest });
+  </script>
+  <script src="../../config/plugins/visualizations/rmsx_molstar/static/script.js"></script>
+</body>
+</html>

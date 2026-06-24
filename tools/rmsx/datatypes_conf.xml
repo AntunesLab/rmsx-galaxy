@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<datatypes>
+    <registration>
+        <datatype extension="rmsxmolstar" type="galaxy.datatypes.text:Json" subclass="True" mimetype="application/json" display_in_upload="true"/>
+    </registration>
+</datatypes>

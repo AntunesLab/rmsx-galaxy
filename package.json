@@ -1,0 +1,9 @@
+{
+	"scripts": {
+		"test:native-vis": "node tests/rmsx/native_visualization_parity_check.mjs",
+		"test:native-visual": "node tests/rmsx/native_visualization_visual_check.mjs"
+	},
+	"devDependencies": {
+		"playwright": "1.60.0"
+	}
+}
