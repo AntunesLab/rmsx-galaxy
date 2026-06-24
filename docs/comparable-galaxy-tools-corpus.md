@@ -1,6 +1,6 @@
-# Comparable Galaxy Tools Corpus for RMSX/FlipBook
+# Comparable Galaxy Tools Corpus for RMSX/Flipbook
 
-Purpose: collect existing Galaxy computational chemistry tools that solve adjacent problems to RMSX/FlipBook, and extract implementation patterns worth copying or avoiding.
+Purpose: collect existing Galaxy computational chemistry tools that solve adjacent problems to RMSX/Flipbook, and extract implementation patterns worth copying or avoiding.
 
 This is a source-guided corpus for design work. It is not a wrapper implementation.
 
@@ -25,7 +25,7 @@ Related public documentation:
 
 ## Why These Tools Are Comparable
 
-RMSX/FlipBook appears to sit near molecular dynamics analysis and visualization. The comparable Galaxy tools already handle the hard edges that RMSX/FlipBook will likely face:
+RMSX/Flipbook appears to sit near molecular dynamics analysis and visualization. The comparable Galaxy tools already handle the hard edges that RMSX/Flipbook will likely face:
 
 - Paired structure and trajectory inputs.
 - Multiple molecular file formats.
@@ -88,7 +88,7 @@ Patterns to copy:
 
 RMSX relevance:
 
-If FlipBook needs derived structural frames or motion paths, the PCA visualization split is a strong precedent: RMSX can produce primary metrics first, and a second tool can produce FlipBook-ready structures, trajectories, or reports.
+If Flipbook needs derived structural frames or motion paths, the PCA visualization split is a strong precedent: RMSX can produce primary metrics first, and a second tool can produce Flipbook-ready structures, trajectories, or reports.
 
 ### MDAnalysis Distance
 
@@ -170,7 +170,7 @@ Patterns to copy:
 
 RMSX relevance:
 
-This is the best immediate precedent for a static FlipBook report route.
+This is the best immediate precedent for a static Flipbook report route.
 
 ### MDTraj Converter and Slicer
 
@@ -246,7 +246,7 @@ Patterns to copy:
 
 RMSX relevance:
 
-If FlipBook or RMSX originated as a local GUI workflow, this is the precedent for extracting a headless execution path.
+If Flipbook or RMSX originated as a local GUI workflow, this is the precedent for extracting a headless execution path.
 
 ## Visualization and Interactivity Comparables
 
@@ -254,7 +254,7 @@ If FlipBook or RMSX originated as a local GUI workflow, this is the precedent fo
 
 Galaxy's visualization framework supports browser-based plugins over Galaxy datasets. The framework already includes standard charts and specialized viewers, including molecular and protein-oriented viewers.
 
-Use this route when FlipBook can be a client-side viewer over RMSX outputs.
+Use this route when Flipbook can be a client-side viewer over RMSX outputs.
 
 Design implications:
 
@@ -266,16 +266,16 @@ Design implications:
 
 InteractiveTools are declared with `tool_type="interactive"` and `entry_points` for exposed service URLs. They run container-backed applications as Galaxy jobs and can support R Shiny, VNC, and web-app workflows.
 
-Use this route only when FlipBook needs a live application process.
+Use this route only when Flipbook needs a live application process.
 
 Design implications:
 
 - Plan for container image maintenance.
 - Plan for instance-level admin configuration.
 - Plan for proxy/routing constraints.
-- Keep a standard RMSX wrapper available even if an InteractiveTool is later added.
+- Keep a standard Flipbook wrapper backed by RMSX available even if an InteractiveTool is later added.
 
-## Patterns Worth Copying for RMSX/FlipBook
+## Patterns Worth Copying for RMSX/Flipbook
 
 - Start with a normal tool wrapper and deterministic tests.
 - Use Galaxy-native datatypes and avoid custom datatypes unless necessary.
@@ -286,7 +286,7 @@ Design implications:
 - Validate atom selections and input pairings before long computation begins.
 - Keep conversion and slicing as separate workflow steps unless RMSX absolutely requires integrated preprocessing.
 - Include small public test data and assertions on content, not only file existence.
-- Provide citations for RMSX, FlipBook, and major runtime libraries.
+- Provide citations for RMSX, Flipbook, and major runtime libraries.
 
 ## Patterns to Avoid
 
@@ -296,10 +296,10 @@ Design implications:
 - Letting help text drift away from actual behavior.
 - Assuming paired collections are aligned without explicit validation.
 - Writing generated files beside input datasets.
-- Embedding every preprocessing operation inside the RMSX wrapper.
+- Embedding every preprocessing operation inside the Flipbook wrapper.
 - Treating large simulation wrappers as the v1 complexity target.
 
-## Candidate RMSX v1 Wrapper Sketch
+## Candidate Flipbook v1 Wrapper Sketch
 
 This is not implementation code. It is a target shape to test against repository reality.
 
@@ -314,11 +314,11 @@ Inputs:
 Outputs:
 
 - Primary RMSX table: tabular.
-- Structured result: JSON or HDF5 if FlipBook needs richer data.
+- Structured result: JSON or HDF5 if Flipbook needs richer data.
 - Static summary plot: PNG or SVG.
 - Optional generated structure or trajectory artifact.
 - Tool log: text.
-- Optional static FlipBook report: HTML, only after raw outputs are stable.
+- Optional static Flipbook report: HTML, only after raw outputs are stable.
 
 Tests:
 

@@ -1,6 +1,6 @@
 # Contributing
 
-Thanks for helping with the RMSX Galaxy cofest work. This repo is intentionally practical: small branches, clear screenshots, and reproducible local checks are more useful than perfect polish.
+Thanks for helping with the Flipbook Galaxy cofest work. This repo is intentionally practical: small branches, clear screenshots, and reproducible local checks are more useful than perfect polish.
 
 ## Local Setup
 

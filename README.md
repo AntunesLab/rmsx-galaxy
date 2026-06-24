@@ -1,16 +1,16 @@
-# RMSX / Flipbook Galaxy
+# Flipbook Galaxy
 
 Galaxy integration workspace for [RMSX + Flipbook](https://github.com/AntunesLab/rmsx).
 
-This repository is a cofest collaboration companion to upstream RMSX. Upstream RMSX remains the scientific Python/R package for time-sliced residue fluctuation analysis and Flipbook workflows. This repo focuses on making RMSX easy to run in Galaxy, with a native Molstar Flipbook visualization path.
+This repository is a cofest collaboration companion to upstream RMSX. Upstream RMSX remains the scientific Python/R package for time-sliced residue fluctuation analysis and Flipbook workflows. This repo focuses on making Flipbook easy to run in Galaxy, with RMSX as the underlying analysis engine and a native Molstar Flipbook visualization path.
 
 ## What Is Here
 
-- Galaxy RMSX tool wrapper: `tools/rmsx/`
-- Native Galaxy Molstar visualization plugin: `config/plugins/visualizations/rmsx_molstar/`
-- RMSX Molstar manifest datatype scaffold: `config/datatypes/`
-- Container runtime scaffold: `packaging/rmsx-galaxy/`
-- Planemo, manifest, and viewer smoke tests: `tests/rmsx/`
+- Galaxy Flipbook tool wrapper: `tools/flipbook/`
+- Native Galaxy Molstar visualization plugin: `config/plugins/visualizations/flipbook_molstar/`
+- Flipbook Molstar manifest datatype scaffold: `config/datatypes/`
+- Container runtime scaffold: `packaging/flipbook-galaxy/`
+- Planemo, manifest, and viewer smoke tests: `tests/flipbook/`
 - Cofest docs and task list: `docs/`
 
 The native Galaxy visualization is the supported user-facing viewer path. The old standalone HTML report path is development-only.
@@ -40,11 +40,11 @@ http://127.0.0.1:9090
 In Galaxy:
 
 1. Open **Tools**.
-2. Select **RMSX trajectory analysis**.
+2. Select **Flipbook trajectory analysis**.
 3. Choose **Load example data: 1UBQ plus mon_sys**.
 4. Click **Run Tool**.
 5. Open the **Molstar Flipbook viewer manifest** output.
-6. Use **Visualize** -> **RMSX Molstar FlipBook**.
+6. Use **Visualize** -> **Flipbook Molstar**.
 
 That path uses the bundled 1UBQ example data and does not require collaborators to upload a trajectory before testing the tool.
 
@@ -119,7 +119,7 @@ If Docker tests fail because the image cannot be found, build it locally:
 scripts/build_container.sh
 ```
 
-The wrapper references the registry-style tag `ghcr.io/antuneslab/rmsx-galaxy:0.2.3-galaxy0`. The local build script creates that tag on your machine, so Planemo can run before the image is published to GHCR.
+The wrapper references the registry-style tag `ghcr.io/antuneslab/flipbook-galaxy:0.2.3-galaxy0`. The local build script creates that tag on your machine, so Planemo can run before the image is published to GHCR.
 
 If Galaxy starts but the visualization is blank, run this in a second terminal after Galaxy is fully up:
 
@@ -136,7 +136,7 @@ GALAXY_PORT=9091 scripts/serve_galaxy_demo.sh
 ## Cofest Goals
 
 1. Make the local Galaxy demo reproducible for collaborators.
-2. Harden the RMSX wrapper and Molstar manifest output.
+2. Harden the Flipbook wrapper and Molstar manifest output.
 3. Package a shareable runtime container.
 4. Improve the native Molstar visualization enough for a compelling cofest demo.
 5. Decide what belongs upstream in RMSX versus what remains Galaxy-specific.
@@ -144,7 +144,7 @@ GALAXY_PORT=9091 scripts/serve_galaxy_demo.sh
 See [docs/cofest-task-list.md](docs/cofest-task-list.md) for the working task list.
 
 For a collaborator-friendly implementation overview, see
-[docs/rmsx-galaxy-implementation-explainer.md](docs/rmsx-galaxy-implementation-explainer.md).
+[docs/flipbook-galaxy-implementation-explainer.md](docs/flipbook-galaxy-implementation-explainer.md).
 
 For the IUC preparation checklist, see [docs/iuc-readiness-audit.md](docs/iuc-readiness-audit.md).
 
@@ -153,12 +153,12 @@ For the IUC preparation checklist, see [docs/iuc-readiness-audit.md](docs/iuc-re
 The current share path is container-first. The wrapper references:
 
 ```text
-ghcr.io/antuneslab/rmsx-galaxy:0.2.3-galaxy0
+ghcr.io/antuneslab/flipbook-galaxy:0.2.3-galaxy0
 ```
 
 For local cofest testing, run `scripts/build_container.sh` to build that tag locally. Before external Galaxy administrators can use the tag directly, the image should be pushed to GHCR by someone with `antuneslab` package permissions.
 
-Longer term, a Bioconda or Conda package for RMSX would make Galaxy dependency resolution cleaner and is expected before a polished IUC submission.
+Longer term, a Bioconda or Conda package for the RMSX engine would make Galaxy dependency resolution cleaner and is expected before a polished IUC submission.
 
 ## Relationship To Upstream RMSX
 

@@ -1,6 +1,6 @@
-# RMSX Galaxy Implementation Explainer
+# Flipbook Galaxy Implementation Explainer
 
-This document is a quick collaborator-facing explanation of how the RMSX Galaxy
+This document is a quick collaborator-facing explanation of how the Flipbook Galaxy
 integration works under the hood. It is meant to help us discuss the design,
 debug runs, and explain the project clearly during cofest or IUC-oriented
 review.
@@ -23,24 +23,24 @@ Galaxy visualization plugin.
 
 ## Main Pieces
 
-- `tools/rmsx/rmsx.xml`: the Galaxy tool wrapper.
-- `tools/rmsx/macros.xml`: pinned versions, requirements, container tag, and
+- `tools/flipbook/flipbook.xml`: the Galaxy tool wrapper.
+- `tools/flipbook/macros.xml`: pinned versions, requirements, container tag, and
   citations.
-- `tools/rmsx/rmsx_preflight.py`: validates topology, trajectory, selector, and
+- `tools/flipbook/rmsx_preflight.py`: validates topology, trajectory, selector, and
   frame settings before RMSX runs.
-- `tools/rmsx/rmsx_static_plots.py`: calls the upstream RMSX R plotting script
+- `tools/flipbook/rmsx_static_plots.py`: calls the upstream RMSX R plotting script
   to generate PNG plots.
-- `tools/rmsx/rmsx_molstar_report.py`: builds the Molstar viewer manifest.
-- `tools/rmsx/rmsx_report_common.py`: shared parsing helpers for RMSX tables and
+- `tools/flipbook/flipbook_molstar_report.py`: builds the Molstar viewer manifest.
+- `tools/flipbook/flipbook_report_common.py`: shared parsing helpers for RMSX tables and
   PDB slice outputs.
-- `config/plugins/visualizations/rmsx_molstar/`: native Galaxy visualization
+- `config/plugins/visualizations/flipbook_molstar/`: native Galaxy visualization
   plugin that renders the manifest with Molstar.
-- `packaging/rmsx-galaxy/`: container scaffold for reproducible local Galaxy
+- `packaging/flipbook-galaxy/`: container scaffold for reproducible local Galaxy
   and Planemo runs.
 
 ## Tool Execution Flow
 
-When the RMSX Galaxy tool runs, the wrapper does the following:
+When the Flipbook Galaxy tool runs, the wrapper does the following:
 
 1. Creates a working directory with `rmsx_output/` and `pdb_slices/`.
 2. Either links user-provided Galaxy inputs or the bundled 1UBQ example data.
@@ -51,7 +51,7 @@ When the RMSX Galaxy tool runs, the wrapper does the following:
 7. Runs `rmsx_static_plots.py` to produce:
    - standalone RMSX heatmap PNG,
    - original RMSD/RMSX/RMSF triple plot PNG.
-8. Runs `rmsx_molstar_report.py` to build a self-contained JSON viewer
+8. Runs `flipbook_molstar_report.py` to build a self-contained JSON viewer
    manifest.
 9. Writes a text execution log with preflight and plotting status.
 
@@ -93,7 +93,7 @@ signature.
 The manifest schema is:
 
 ```text
-rmsx-molstar-viewer/v1
+flipbook-molstar-viewer/v1
 ```
 
 The manifest is standard JSON for the conservative Galaxy wrapper path. It
@@ -120,11 +120,11 @@ become a problem.
 The viewer plugin is registered in:
 
 ```text
-config/plugins/visualizations/rmsx_molstar/
+config/plugins/visualizations/flipbook_molstar/
 ```
 
 It accepts datasets with extension `json` and also accepts the project-local
-`rmsxmolstar` datatype when that datatype is installed in a local Galaxy demo.
+`flipbookmolstar` datatype when that datatype is installed in a local Galaxy demo.
 The plugin validates the manifest schema before rendering. Generic JSON files
 should get a clear unsupported-manifest message instead of a broken viewer.
 
@@ -159,14 +159,14 @@ Flipbook view.
 The current shareable path is container-first:
 
 ```text
-ghcr.io/antuneslab/rmsx-galaxy:0.2.3-galaxy0
+ghcr.io/antuneslab/flipbook-galaxy:0.2.3-galaxy0
 ```
 
 For local testing, `scripts/build_container.sh` builds that tag locally. The
 container pins upstream RMSX source ref `v0.2.3` and installs the Python, R, and
 plotting dependencies needed by the wrapper.
 
-The wrapper still declares Galaxy-style requirements in `tools/rmsx/macros.xml`.
+The wrapper still declares Galaxy-style requirements in `tools/flipbook/macros.xml`.
 The longer-term IUC-friendly route is a proper Conda/Bioconda RMSX package, or
 a Galaxy-visible mulled container generated from Conda dependencies.
 
@@ -183,11 +183,11 @@ scripts/serve_galaxy_demo.sh
 Then in Galaxy:
 
 1. Open **Tools**.
-2. Select **RMSX trajectory analysis**.
+2. Select **Flipbook trajectory analysis**.
 3. Choose **Load example data: 1UBQ plus mon_sys**.
 4. Click **Run Tool**.
 5. Open **Molstar native viewer manifest - open with Visualize**.
-6. Use **Visualize** -> **RMSX Molstar FlipBook**.
+6. Use **Visualize** -> **Flipbook Molstar**.
 
 The bundled example exists so collaborators can test the tool without bringing
 their own trajectory.
@@ -230,7 +230,7 @@ careful discussion with Galaxy collaborators.
 
 Galaxy tools are easiest to review when they produce ordinary datasets. The
 interactive Molstar experience is valuable, but it should not be the only useful
-output. The current design handles this by making the RMSX wrapper produce CSV,
+output. The current design handles this by making the Flipbook wrapper produce CSV,
 PNG, PDB, log, and JSON outputs first, then letting the visualization plugin
 render the JSON manifest separately.
 
@@ -251,7 +251,7 @@ careful API/security handling.
 
 ### Datatype Strategy
 
-For local demos, a custom `rmsxmolstar` datatype is useful because it makes the
+For local demos, a custom `flipbookmolstar` datatype is useful because it makes the
 manifest feel like a first-class viewer input. For a conservative IUC tool PR,
 standard `json` is safer because IUC generally does not want tool repositories
 to introduce datatypes that belong in Galaxy core.
@@ -324,7 +324,7 @@ and layouts.
 
 There are really two review tracks:
 
-- The conservative RMSX Galaxy tool wrapper.
+- The conservative Flipbook Galaxy tool wrapper.
 - The native Molstar visualization plugin.
 
 Bundling both into one first IUC submission could make review harder. The safer
@@ -335,7 +335,7 @@ visualization plugin with Galaxy/IUC as a coordinated follow-up.
 
 The main pre-IUC blockers are practical and review-oriented:
 
-- The compressed `tools/rmsx/test-data/mon_sys.xtc` fixture is under the
+- The compressed `tools/flipbook/test-data/mon_sys.xtc` fixture is under the
   tools-iuc 1 MB file limit and preserves all 316 original frames, but its final
   provenance and regeneration command should be documented for review.
 - Upstream RMSX tag `v0.2.3` currently installs Python package metadata as

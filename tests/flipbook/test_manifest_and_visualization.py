@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Smoke checks for the RMSX Molstar manifest and native visualization."""
+"""Smoke checks for the Flipbook Molstar manifest and native visualization."""
 
 import json
 import subprocess
@@ -9,11 +9,11 @@ from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[2]
-TOOLS = ROOT / "tools" / "rmsx"
+TOOLS = ROOT / "tools" / "flipbook"
 sys.path.insert(0, str(TOOLS))
 
-from rmsx_molstar_report import build_viewer_payload, read_mask_summary  # noqa: E402
-from rmsx_report_common import build_residue_payload, read_rmsx_table, read_slices, summarize_slices  # noqa: E402
+from flipbook_molstar_report import build_viewer_payload, read_mask_summary  # noqa: E402
+from flipbook_report_common import build_residue_payload, read_rmsx_table, read_slices, summarize_slices  # noqa: E402
 
 
 PDB_TEMPLATE = """\
@@ -55,7 +55,7 @@ def build_payload(tmpdir):
     summaries, domain = summarize_slices(rows, slice_columns)
     residues = build_residue_payload(rows, slice_columns)
     return build_viewer_payload(
-        "RMSX Molstar FlipBook viewer",
+        "Flipbook Molstar viewer",
         slices,
         summaries,
         domain,
@@ -68,7 +68,7 @@ def build_payload(tmpdir):
 def test_manifest_payload():
     with tempfile.TemporaryDirectory() as tmp:
         payload = build_payload(Path(tmp))
-    assert payload["schemaVersion"] == "rmsx-molstar-viewer/v1"
+    assert payload["schemaVersion"] == "flipbook-molstar-viewer/v1"
     assert len(payload["slices"]) == 2
     assert payload["slices"][0]["pdb"].startswith("ATOM")
     assert payload["residues"][1]["values"]["slice_2.dcd"] == 2.5
@@ -90,19 +90,19 @@ def test_manifest_payload():
 
 
 def test_native_visualization_contract():
-    script = (ROOT / "config/plugins/visualizations/rmsx_molstar/static/script.js").read_text(encoding="utf-8")
-    xml = (ROOT / "config/plugins/visualizations/rmsx_molstar/static/rmsx_molstar.xml").read_text(encoding="utf-8")
+    script = (ROOT / "config/plugins/visualizations/flipbook_molstar/static/script.js").read_text(encoding="utf-8")
+    xml = (ROOT / "config/plugins/visualizations/flipbook_molstar/static/flipbook_molstar.xml").read_text(encoding="utf-8")
     datatypes = (ROOT / "config/datatypes/datatypes_conf.xml").read_text(encoding="utf-8")
-    wrapper = (ROOT / "tools/rmsx/rmsx.xml").read_text(encoding="utf-8")
-    macros = (ROOT / "tools/rmsx/macros.xml").read_text(encoding="utf-8")
+    wrapper = (ROOT / "tools/flipbook/flipbook.xml").read_text(encoding="utf-8")
+    macros = (ROOT / "tools/flipbook/macros.xml").read_text(encoding="utf-8")
     static_sync = (ROOT / "scripts/sync_visualization_static.py").read_text(encoding="utf-8")
-    parity_script = (ROOT / "tests/rmsx/native_visualization_parity_check.mjs").read_text(encoding="utf-8")
-    visual_script = (ROOT / "tests/rmsx/native_visualization_visual_check.mjs").read_text(encoding="utf-8")
-    harness = (ROOT / "tests/rmsx/native_visualization_harness.html").read_text(encoding="utf-8")
-    plugin_readme = (ROOT / "config/plugins/visualizations/rmsx_molstar/README.md").read_text(encoding="utf-8")
+    parity_script = (ROOT / "tests/flipbook/native_visualization_parity_check.mjs").read_text(encoding="utf-8")
+    visual_script = (ROOT / "tests/flipbook/native_visualization_visual_check.mjs").read_text(encoding="utf-8")
+    harness = (ROOT / "tests/flipbook/native_visualization_harness.html").read_text(encoding="utf-8")
+    plugin_readme = (ROOT / "config/plugins/visualizations/flipbook_molstar/README.md").read_text(encoding="utf-8")
     package_json = (ROOT / "package.json").read_text(encoding="utf-8")
     assert "vendor/molstar/5.4.2/molstar.js" in script
-    assert "This JSON dataset is not an RMSX Molstar manifest" in script
+    assert "This JSON dataset is not a Flipbook Molstar manifest" in script
     assert "inline-harness-manifest" in script
     assert "inline-harness-dataset" in script
     assert "manifestSource: state.manifestSource" in script
@@ -231,12 +231,12 @@ def test_native_visualization_contract():
     assert "setLayout(event.target.value)" not in script
     assert "x: Number(state.rotation.x.toFixed(3))" in script
     assert '<entry_point entry_point_type="script" type="text/javascript" src="script_compact_0624.js"' in xml
-    assert 'url="/static/plugins/visualizations/rmsx_molstar/static"' not in xml
+    assert 'url="/static/plugins/visualizations/flipbook_molstar/static"' not in xml
     assert "patch_asgi_visualization_href" in (ROOT / "scripts" / "sync_visualization_static.py").read_text()
     assert "<param required=\"false\">history_id</param>" in xml
-    assert "<test test_attr=\"ext\">rmsxmolstar</test>" in xml
+    assert "<test test_attr=\"ext\">flipbookmolstar</test>" in xml
     assert "<test test_attr=\"ext\">json</test>" in xml
-    assert 'extension="rmsxmolstar"' in datatypes
+    assert 'extension="flipbookmolstar"' in datatypes
     assert '<data name="viewer_manifest" format="json"' in wrapper
     assert '<output name="viewer_manifest" ftype="json">' in wrapper
     assert '<data name="rmsx_heatmap_plot" format="png"' in wrapper
@@ -252,15 +252,15 @@ def test_native_visualization_contract():
     assert "RMSX static plots written" in wrapper
     assert '<data name="molstar_report"' not in wrapper
     assert "--output '$molstar_report'" not in wrapper
-    assert 'ghcr.io/antuneslab/rmsx-galaxy:0.2.3-galaxy0' in macros
+    assert 'ghcr.io/antuneslab/flipbook-galaxy:0.2.3-galaxy0' in macros
     assert "@VERSION_SUFFIX@" in macros
     assert "galaxy.datatypes.text:Json" in datatypes
     assert "static/plugins/visualizations" in static_sync
     assert '"vendor" / "molstar" / "5.4.2" / "molstar.js"' in static_sync
     assert "native_visualization_parity_check.mjs" in plugin_readme
     assert "native_visualization_visual_check.mjs" in plugin_readme
-    assert '"test:native-visual": "node tests/rmsx/native_visualization_visual_check.mjs"' in package_json
-    assert "RMSX_MOLSTAR_VIS_URL" in parity_script
+    assert '"test:native-visual": "node tests/flipbook/native_visualization_visual_check.mjs"' in package_json
+    assert "FLIPBOOK_MOLSTAR_VIS_URL" in parity_script
     assert "page.frames().filter((frame) => frame !== page.mainFrame())" in parity_script
     assert "molstar-control-panels" in parity_script
     assert "molstar-control-tabs" not in parity_script
@@ -280,19 +280,19 @@ def test_native_visualization_contract():
     assert "legend?.elements?.colorBar" in parity_script
     assert "urlState?.synced" in parity_script
     assert "canvasVisualStats" in visual_script
-    assert "RMSX_MOLSTAR_MANIFEST" in visual_script
+    assert "FLIPBOOK_MOLSTAR_MANIFEST" in visual_script
     assert "function parseManifestText(text)" in visual_script
     assert "item_data || parsed?.data || parsed?.contents || parsed?.content" in visual_script
     assert "async function writeManifestHarness(manifest, sourcePath)" in visual_script
-    assert "tiled FlipBook view shows at least" in visual_script
-    assert "tiled FlipBook clusters are framed inside the canvas margins" in visual_script
+    assert "tiled Flipbook view shows at least" in visual_script
+    assert "tiled Flipbook clusters are framed inside the canvas margins" in visual_script
     assert "Molstar canvas is nonblank" in visual_script
     assert "presentation?.tiledPlacement?.slot" in visual_script
     assert "presentation?.tiledPlacement?.cameraExtraRadius" in visual_script
     assert "native_visualization_harness.html" in plugin_readme
-    assert "schemaVersion: \"rmsx-molstar-viewer/v1\"" in harness
+    assert "schemaVersion: \"flipbook-molstar-viewer/v1\"" in harness
     assert "tilePaddingFactor: 1.55" in harness
-    assert "../../config/plugins/visualizations/rmsx_molstar/static/script_compact_0624.js" in harness
+    assert "../../config/plugins/visualizations/flipbook_molstar/static/script_compact_0624.js" in harness
 
 
 def write_static_plot_fixture(tmpdir):

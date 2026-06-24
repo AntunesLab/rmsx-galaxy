@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE visualization SYSTEM "../../visualization.dtd">
-<visualization name="RMSX Molstar FlipBook">
-    <description>Render RMSX Molstar FlipBook viewer manifests.</description>
+<visualization name="Flipbook Molstar">
+    <description>Render Flipbook Molstar viewer manifests.</description>
     <data_sources>
         <data_source>
             <model_class>HistoryDatasetAssociation</model_class>
-            <test test_attr="ext">rmsxmolstar</test>
+            <test test_attr="ext">flipbookmolstar</test>
         </data_source>
         <data_source>
             <model_class>HistoryDatasetAssociation</model_class>
@@ -18,10 +18,10 @@
     </params>
     <entry_point entry_point_type="script" type="text/javascript" src="script_compact_0624.js" />
     <help format="markdown"><![CDATA[
-This visualization opens RMSX `rmsx-molstar-viewer/v1` manifests produced by
-the RMSX trajectory analysis tool and renders the embedded PDB slices with
-Molstar. The conservative wrapper emits standard JSON, and schema validation
-runs before rendering. The project-local `rmsxmolstar` datatype remains accepted
-for prototype Galaxy instances that register it explicitly.
+This visualization opens Flipbook `flipbook-molstar-viewer/v1` manifests produced
+by the Flipbook trajectory analysis tool and renders the embedded PDB slices
+with Molstar. The conservative wrapper emits standard JSON, and schema
+validation runs before rendering. The project-local `flipbookmolstar` datatype
+remains accepted for prototype Galaxy instances that register it explicitly.
     ]]></help>
 </visualization>

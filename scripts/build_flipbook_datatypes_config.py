@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Build a full Galaxy datatypes config that includes RMSX Molstar manifests."""
+"""Build a full Galaxy datatypes config that includes Flipbook Molstar manifests."""
 
 from __future__ import annotations
 
@@ -12,9 +12,9 @@ from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_OUTPUT = PROJECT_ROOT / "config" / "datatypes" / "merged_datatypes_conf.xml"
-RMSX_EXTENSION = "rmsxmolstar"
-RMSX_DATATYPE = {
-    "extension": RMSX_EXTENSION,
+FLIPBOOK_EXTENSION = "flipbookmolstar"
+FLIPBOOK_DATATYPE = {
+    "extension": FLIPBOOK_EXTENSION,
     "type": "galaxy.datatypes.text:Json",
     "subclass": "True",
     "mimetype": "application/json",
@@ -84,14 +84,14 @@ def ensure_registration(root: ET.Element) -> ET.Element:
     return registration
 
 
-def add_rmsx_datatype(root: ET.Element) -> bool:
+def add_flipbook_datatype(root: ET.Element) -> bool:
     registration = ensure_registration(root)
     for datatype in registration.findall("datatype"):
-        if datatype.get("extension") == RMSX_EXTENSION:
-            for key, value in RMSX_DATATYPE.items():
+        if datatype.get("extension") == FLIPBOOK_EXTENSION:
+            for key, value in FLIPBOOK_DATATYPE.items():
                 datatype.set(key, value)
             return False
-    ET.SubElement(registration, "datatype", RMSX_DATATYPE)
+    ET.SubElement(registration, "datatype", FLIPBOOK_DATATYPE)
     return True
 
 
@@ -117,7 +117,7 @@ def main() -> None:
 
     tree = ET.parse(base)
     root = tree.getroot()
-    added = add_rmsx_datatype(root)
+    added = add_flipbook_datatype(root)
     if hasattr(ET, "indent"):
         ET.indent(tree, space="    ")
     else:
@@ -127,7 +127,7 @@ def main() -> None:
 
     action = "Added" if added else "Updated"
     print(f"Base datatypes: {base}")
-    print(f"{action} {RMSX_EXTENSION} datatype.")
+    print(f"{action} {FLIPBOOK_EXTENSION} datatype.")
     print(f"Merged datatypes: {output}")
     print("Use with: GALAXY_CONFIG_OVERRIDE_DATATYPES_CONFIG_FILE=" + str(output))
 

@@ -1,10 +1,10 @@
 #!/usr/bin/env node
 /*
- * Browser parity smoke check for the native RMSX Molstar Galaxy visualization.
+ * Browser parity smoke check for the native Flipbook Molstar Galaxy visualization.
  *
  * Usage:
- *   node tests/rmsx/native_visualization_parity_check.mjs \
- *     --url "http://localhost:9090/visualizations/display?visualization=rmsx_molstar&dataset_id=..."
+ *   node tests/flipbook/native_visualization_parity_check.mjs \
+ *     --url "http://localhost:9090/visualizations/display?visualization=flipbook_molstar&dataset_id=..."
  *
  * Requires Playwright to be available in the Node environment. This script is
  * intentionally separate from the ordinary unit smoke tests because it needs a
@@ -144,10 +144,10 @@ function parseNetscapeCookies(text) {
 }
 
 async function main() {
-  const url = argValue("--url") || process.env.RMSX_MOLSTAR_VIS_URL;
+  const url = argValue("--url") || process.env.FLIPBOOK_MOLSTAR_VIS_URL;
   const cookieFile = argValue("--cookie-file") || process.env.RMSX_GALAXY_COOKIE_FILE;
   if (!url) {
-    throw new Error("Provide --url or RMSX_MOLSTAR_VIS_URL for a running Galaxy RMSX Molstar visualization.");
+    throw new Error("Provide --url or FLIPBOOK_MOLSTAR_VIS_URL for a running Galaxy Flipbook Molstar visualization.");
   }
 
   const { chromium } = await loadPlaywright();
@@ -198,7 +198,7 @@ async function main() {
     assert(sliceChipCount > 0, "slice visibility chips are present");
 
     let diag = await diagnostics(frameLocator);
-    assert(diag.schemaVersion === "rmsx-molstar-viewer/v1", "manifest schema is accepted");
+    assert(diag.schemaVersion === "flipbook-molstar-viewer/v1", "manifest schema is accepted");
     assert(diag.controls?.accordionControls === true, "sidebar accordion controls are active");
     assert(diag.controls?.compactTabs === false, "native viewer does not expose a tab strip");
     assert(diag.controls?.sidebarLayout === true, "desktop sidebar control layout is active");

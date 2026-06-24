@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /*
- * Visual smoke check for the native RMSX Molstar FlipBook view.
+ * Visual smoke check for the native Flipbook Molstar view.
  *
  * This complements native_visualization_parity_check.mjs by inspecting the
  * rendered canvas/screenshot rather than only control diagnostics.
@@ -43,17 +43,17 @@ async function loadPlaywright() {
 
 function parseManifestText(text) {
   const parsed = JSON.parse(text);
-  if (parsed?.schemaVersion === "rmsx-molstar-viewer/v1") {
+  if (parsed?.schemaVersion === "flipbook-molstar-viewer/v1") {
     return parsed;
   }
   const payload = parsed?.item_data || parsed?.data || parsed?.contents || parsed?.content;
   if (typeof payload === "string") {
     const nested = JSON.parse(payload);
-    if (nested?.schemaVersion === "rmsx-molstar-viewer/v1") {
+    if (nested?.schemaVersion === "flipbook-molstar-viewer/v1") {
       return nested;
     }
   }
-  throw new Error("Manifest file does not contain an rmsx-molstar-viewer/v1 payload.");
+  throw new Error("Manifest file does not contain a flipbook-molstar-viewer/v1 payload.");
 }
 
 async function loadManifestFile(path) {
@@ -75,8 +75,8 @@ function withManifestDefaults(manifest) {
 }
 
 async function writeManifestHarness(manifest, sourcePath) {
-  const dir = await mkdtemp(`${tmpdir()}/rmsx-molstar-visual-check-`);
-  const staticScript = resolve("config/plugins/visualizations/rmsx_molstar/static/script.js");
+  const dir = await mkdtemp(`${tmpdir()}/flipbook-molstar-visual-check-`);
+  const staticScript = resolve("config/plugins/visualizations/flipbook_molstar/static/script.js");
   const htmlPath = resolve(dir, "manifest_harness.html");
   const incoming = JSON.stringify({ manifest: withManifestDefaults(manifest) }).replace(/</g, "\\u003c");
   const html = `<!doctype html>
@@ -84,13 +84,13 @@ async function writeManifestHarness(manifest, sourcePath) {
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>RMSX Molstar manifest visual check</title>
+  <title>Flipbook Molstar manifest visual check</title>
 </head>
 <body>
   <div id="app"></div>
   <script>
     document.getElementById("app").dataset.incoming = ${JSON.stringify(incoming)};
-    document.title = ${JSON.stringify(`RMSX Molstar visual check: ${basename(sourcePath)}`)};
+    document.title = ${JSON.stringify(`Flipbook Molstar visual check: ${basename(sourcePath)}`)};
   </script>
   <script src="${pathToFileURL(staticScript).href}"></script>
 </body>
@@ -163,7 +163,7 @@ async function waitForReady(page, frame) {
   while (Date.now() - start < timeoutMs) {
     last = await diagnostics(frame);
     if (
-      last.schemaVersion === "rmsx-molstar-viewer/v1"
+      last.schemaVersion === "flipbook-molstar-viewer/v1"
       && last.loadedAllSlices === true
       && last.liveTransforms === true
       && last.presentation?.layout === "tiled"
@@ -271,16 +271,16 @@ async function waitForCanvasVisualStats(page, frame, expectedClusters) {
 }
 
 async function main() {
-  const manifestPath = argValue("--manifest") || process.env.RMSX_MOLSTAR_MANIFEST;
+  const manifestPath = argValue("--manifest") || process.env.FLIPBOOK_MOLSTAR_MANIFEST;
   const cookieFile = argValue("--cookie-file") || process.env.RMSX_GALAXY_COOKIE_FILE;
-  let url = argValue("--url") || process.env.RMSX_MOLSTAR_VIS_URL;
+  let url = argValue("--url") || process.env.FLIPBOOK_MOLSTAR_VIS_URL;
   if (manifestPath) {
     url = await writeManifestHarness(await loadManifestFile(manifestPath), manifestPath);
   }
   if (!url) {
-    throw new Error("Provide --url, --manifest, RMSX_MOLSTAR_VIS_URL, or RMSX_MOLSTAR_MANIFEST for an RMSX Molstar visualization.");
+    throw new Error("Provide --url, --manifest, FLIPBOOK_MOLSTAR_VIS_URL, or FLIPBOOK_MOLSTAR_MANIFEST for a Flipbook Molstar visualization.");
   }
-  const screenshotPath = resolve(argValue("--screenshot") || "/private/tmp/rmsx_molstar_visual_check.png");
+  const screenshotPath = resolve(argValue("--screenshot") || "/private/tmp/flipbook_molstar_visual_check.png");
   const minClustersArg = Number(argValue("--min-clusters") || 0);
 
   const { chromium } = await loadPlaywright();
@@ -308,13 +308,13 @@ async function main() {
 
     assert(stats.nonWhitePixels > 600, "Molstar canvas is nonblank");
     assert(stats.moleculePixels > 400, "Molstar canvas contains molecule-colored pixels outside the orientation axes");
-    assert(stats.clusterCount >= expectedClusters, `tiled FlipBook view shows at least ${expectedClusters} separated visual clusters`);
+    assert(stats.clusterCount >= expectedClusters, `tiled Flipbook view shows at least ${expectedClusters} separated visual clusters`);
     const edgeMargin = stats.width * 0.02;
     const clustersInsideMargins = stats.clusters.every((cluster) => cluster.startX > edgeMargin && cluster.endX < stats.width - edgeMargin);
     if (!clustersInsideMargins) {
-      throw new Error(`tiled FlipBook clusters are framed inside the canvas margins; clusters: ${JSON.stringify(stats.clusters)}`);
+      throw new Error(`tiled Flipbook clusters are framed inside the canvas margins; clusters: ${JSON.stringify(stats.clusters)}`);
     }
-    pass("tiled FlipBook clusters are framed inside the canvas margins");
+    pass("tiled Flipbook clusters are framed inside the canvas margins");
     assert(diag.presentation?.marker === false, "selected-residue marker is disabled in the default visual state");
     assert(diag.presentation?.tiledPlacement?.slot > 0, "tiled placement diagnostics expose a positive slot size");
     assert(diag.presentation?.tiledPlacement?.cameraExtraRadius > 0, "camera framing diagnostics expose extra visual margin");

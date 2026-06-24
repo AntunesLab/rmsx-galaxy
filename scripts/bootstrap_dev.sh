@@ -15,8 +15,8 @@ for arg in "$@"; do
 Usage: scripts/bootstrap_dev.sh [--with-container]
 
 Create the project-local Planemo environment and install browser-test
-dependencies. Add --with-container to also build the local RMSX Galaxy runtime
-image tagged as ghcr.io/antuneslab/rmsx-galaxy:0.2.3-galaxy0.
+dependencies. Add --with-container to also build the local Flipbook Galaxy runtime
+image tagged as ghcr.io/antuneslab/flipbook-galaxy:0.2.3-galaxy0.
 USAGE
       exit 0
       ;;

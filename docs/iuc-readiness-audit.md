@@ -1,16 +1,16 @@
-# RMSX Galaxy IUC Readiness Audit
+# Flipbook Galaxy IUC Readiness Audit
 
-This document is the working checklist for preparing RMSX/FlipBook for scrutiny
+This document is the working checklist for preparing RMSX/Flipbook for scrutiny
 by Galaxy and IUC reviewers.
 
 ## Current Review Posture
 
-The first IUC-facing target should be the conservative RMSX Galaxy wrapper in
-`tools/rmsx`, not the whole cofest repository. The wrapper should be useful on
+The first IUC-facing target should be the conservative Flipbook Galaxy wrapper in
+`tools/flipbook`, not the whole cofest repository. The wrapper should be useful on
 its own through standard Galaxy outputs: CSV tables, PNG plots, PDB slice
 collections, logs, and a JSON Molstar manifest.
 
-The native Molstar visualization, custom `rmsxmolstar` datatype, and standalone
+The native Molstar visualization, custom `flipbookmolstar` datatype, and standalone
 HTML experiments remain companion/prototype assets until Galaxy/IUC agree on the
 appropriate visualization and datatype packaging route.
 
@@ -33,7 +33,7 @@ appropriate visualization and datatype packaging route.
   audit. The closest patterns are conventional plotting wrappers and the limited
   `visualizations/` area, such as `biojs-msa`.
 - The original DCD fixture was too large for a direct IUC PR; the current
-  `tools/rmsx/test-data/mon_sys.xtc` fixture preserves all 316 frames as
+  `tools/flipbook/test-data/mon_sys.xtc` fixture preserves all 316 frames as
   precision-2 XTC while staying below 1 MB.
   The fixture README now records the paper-backed 1UBQ simulation context,
   source archive URL, archive checksum, extracted source-file checksums, and
@@ -46,7 +46,7 @@ appropriate visualization and datatype packaging route.
   and belongs to the companion visualization discussion.
 - The wrapper now emits the Molstar manifest as standard JSON for the
   conservative Tool Shed path.
-- The project-local `rmsxmolstar` datatype remains useful for local demos but
+- The project-local `flipbookmolstar` datatype remains useful for local demos but
   should not be assumed in an IUC tool PR without prior guidance.
 - The container scaffold now pins upstream RMSX `v0.2.3` instead of building
   from `main`.
@@ -70,7 +70,7 @@ appropriate visualization and datatype packaging route.
 - MDAnalysis: LGPL-compatible licensing.
 - R plotting stack: viridis/tidyverse/gridExtra packages are open-source, but
   the transitive dependency inventory still needs a generated SBOM.
-- ChimeraX and VMD are optional upstream RMSX/FlipBook workflows and are not
+- ChimeraX and VMD are optional upstream RMSX/Flipbook workflows and are not
   Galaxy runtime dependencies for this wrapper.
 
 ## Before Opening An IUC PR

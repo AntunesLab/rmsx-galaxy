@@ -17,8 +17,8 @@ for arg in "$@"; do
       cat <<'USAGE'
 Usage: scripts/run_planemo_tests.sh [--build]
 
-Run the Docker-backed Planemo test suite for tools/rmsx/rmsx.xml.
-Use --build to build the local RMSX Galaxy runtime image first.
+Run the Docker-backed Planemo test suite for tools/flipbook/flipbook.xml.
+Use --build to build the local Flipbook Galaxy runtime image first.
 USAGE
       exit 0
       ;;
@@ -43,7 +43,7 @@ if [[ "$BUILD_IMAGE" -eq 1 ]]; then
   scripts/build_container.sh
 fi
 
-python3 scripts/build_rmsx_datatypes_config.py
+python3 scripts/build_flipbook_datatypes_config.py
 
 env HOME="$ROOT/.planemo-home" \
   .venv-planemo/bin/planemo test \
@@ -57,4 +57,4 @@ env HOME="$ROOT/.planemo-home" \
     --test_output_json tool_test_output.json \
     --job_output_files planemo-test-output \
     --test_timeout "${PLANEMO_TEST_TIMEOUT:-300}" \
-    tools/rmsx/rmsx.xml
+    tools/flipbook/flipbook.xml

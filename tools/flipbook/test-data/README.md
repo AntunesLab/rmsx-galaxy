@@ -1,4 +1,4 @@
-# RMSX Galaxy Test Data
+# Flipbook Galaxy Test Data
 
 This directory contains the PDB/XTC fixture used by the Galaxy wrapper tests.
 
@@ -8,7 +8,7 @@ This directory contains the PDB/XTC fixture used by the Galaxy wrapper tests.
 
 ## Source And Provenance
 
-The fixture represents the ubiquitin case study described in the RMSX/FlipBook
+The fixture represents the ubiquitin case study described in the RMSX/Flipbook
 Scientific Reports manuscript. The paper identifies the system as an SMD
 trajectory of ubiquitin using PDB `1UBQ`, sourced from the NAMD case-study
 materials for ubiquitin. It reports that the simulation used NAMD 2.14 with PME
@@ -65,11 +65,11 @@ precision 2. The command shape is:
 /Applications/Docker.app/Contents/Resources/bin/docker run --rm \
   -v /Users/finn/Documents/Flipbook\ Integration:/work \
   -w /work \
-  ghcr.io/antuneslab/rmsx-galaxy:0.2.3-galaxy0 \
+  ghcr.io/antuneslab/flipbook-galaxy:0.2.3-galaxy0 \
   python scripts/create_reduced_rmsx_fixture.py \
-    --topology tools/rmsx/test-data/1UBQ.pdb \
+    --topology tools/flipbook/test-data/1UBQ.pdb \
     --trajectory /path/to/original/mon_sys.dcd \
-    --output tools/rmsx/test-data/mon_sys.xtc \
+    --output tools/flipbook/test-data/mon_sys.xtc \
     --frames 316 \
     --xtc-precision 2
 ```

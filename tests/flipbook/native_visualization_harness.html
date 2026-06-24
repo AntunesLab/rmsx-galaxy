@@ -63,7 +63,7 @@
     const domainValues = residues.flatMap((residue) => sliceColumns.map((column) => residue.values[column]));
     const domain = { min: Math.min(...domainValues), max: Math.max(...domainValues) };
     const manifest = {
-      schemaVersion: "rmsx-molstar-viewer/v1",
+      schemaVersion: "flipbook-molstar-viewer/v1",
       title: "RMSX native Molstar harness",
       slices: [
         { index: 1, id: "slice_1", label: "Slice 1", filename: "slice_1_first_frame.pdb", rmsxColumn: "slice_1.dcd", pdb: pdb1 },
@@ -112,6 +112,6 @@
     };
     document.getElementById("app").dataset.incoming = JSON.stringify({ manifest });
   </script>
-  <script src="../../config/plugins/visualizations/rmsx_molstar/static/script_compact_0624.js"></script>
+  <script src="../../config/plugins/visualizations/flipbook_molstar/static/script_compact_0624.js"></script>
 </body>
 </html>

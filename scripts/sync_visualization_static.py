@@ -17,7 +17,7 @@ from pathlib import Path
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
-DEFAULT_PLUGIN = "rmsx_molstar"
+DEFAULT_PLUGIN = "flipbook_molstar"
 DEFAULT_ENTRY_POINT = "script_compact_0624.js"
 
 

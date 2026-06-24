@@ -1,8 +1,8 @@
-# Galaxy Orientation Report for RMSX/FlipBook
+# Galaxy Orientation Report for RMSX/Flipbook
 
-Purpose: orient the next RMSX/FlipBook integration phase around Galaxy's tool model, existing computational chemistry patterns, and the least-surprising route from a local analysis workflow to a reusable Galaxy tool.
+Purpose: orient the next RMSX/Flipbook integration phase around Galaxy's tool model, existing computational chemistry patterns, and the least-surprising route from a local analysis workflow to a reusable Galaxy tool.
 
-This report is a working orientation, not a final implementation specification. It should be updated after direct inspection of the RMSX and FlipBook repositories.
+This report is a working orientation, not a final implementation specification. It should be updated after direct inspection of the RMSX and Flipbook repositories.
 
 ## Source Snapshot
 
@@ -34,17 +34,17 @@ Comparable GTN workflow and tool pages:
 
 ## Executive Summary
 
-Galaxy already has a strong computational chemistry ecosystem for molecular dynamics setup, conversion, slicing, analysis, plotting, and trajectory-derived summaries. The closest conceptual neighbors to RMSX/FlipBook are the Bio3D and MDAnalysis wrappers that accept a topology/structure file plus a trajectory, expose atom-selection controls, emit tabular analysis data, and often emit plots or report artifacts.
+Galaxy already has a strong computational chemistry ecosystem for molecular dynamics setup, conversion, slicing, analysis, plotting, and trajectory-derived summaries. The closest conceptual neighbors to RMSX/Flipbook are the Bio3D and MDAnalysis wrappers that accept a topology/structure file plus a trajectory, expose atom-selection controls, emit tabular analysis data, and often emit plots or report artifacts.
 
-The most conservative first integration route is a standard Galaxy tool wrapper around a noninteractive RMSX command-line workflow. That route should produce typed, inspectable datasets first: raw RMSX metrics, optional plots, logs, and any generated structural or trajectory artifacts. FlipBook-style visualization should then be layered on as a second route, either as a static/self-contained HTML report, a Galaxy visualization or Charts plugin, or a full InteractiveTool if live server behavior is required.
+The most conservative first integration route is a standard Galaxy tool wrapper around a noninteractive RMSX command-line workflow. That route should produce typed, inspectable datasets first: raw RMSX metrics, optional plots, logs, and any generated structural or trajectory artifacts. Flipbook-style visualization should then be layered on as a second route, either as a static/self-contained HTML report, a Galaxy visualization or Charts plugin, or a full InteractiveTool if live server behavior is required.
 
-Do not start with a full InteractiveTool unless the inspected FlipBook repository proves that interactivity is the core deliverable and cannot be represented as datasets plus a viewer. InteractiveTools are powerful, but they add deployment and administrator requirements such as container networking, entry points, proxy routing, and often wildcard-subdomain setup.
+Do not start with a full InteractiveTool unless the inspected Flipbook repository proves that interactivity is the core deliverable and cannot be represented as datasets plus a viewer. InteractiveTools are powerful, but they add deployment and administrator requirements such as container networking, entry points, proxy routing, and often wildcard-subdomain setup.
 
 ## Galaxy Mental Model
 
 Galaxy tools are declarative wrappers around computational programs. A tool XML file describes the user interface, input parameters, command invocation, dependencies, expected outputs, tests, help text, and citations. Galaxy handles job staging, provenance, histories, workflows, and dataset typing around that wrapper.
 
-The practical model for RMSX/FlipBook is:
+The practical model for RMSX/Flipbook is:
 
 - A user has datasets in a Galaxy history.
 - A tool consumes those datasets and parameters.
@@ -67,28 +67,28 @@ A conventional Galaxy tool wrapper has these pieces:
 - `<outputs>`: declared datasets, conditional outputs, output collections, discovered outputs, and format propagation.
 - `<tests>`: small deterministic examples with expected content, sizes, image checks, collection structure, and failure behavior where useful.
 - `<help>`: user-facing operational guidance, not a substitute for tests.
-- `<citations>`: papers, DOIs, or BibTeX records for RMSX, FlipBook, and underlying libraries.
+- `<citations>`: papers, DOIs, or BibTeX records for RMSX, Flipbook, and underlying libraries.
 
-The schema supports normal tools and interactive tools. A normal tool is the likely RMSX starting point. An interactive tool uses `tool_type="interactive"` and `entry_points` to expose a running service, which is a better fit only if FlipBook requires a live web application.
+The schema supports normal tools and interactive tools. A normal tool is the likely RMSX starting point. An interactive tool uses `tool_type="interactive"` and `entry_points` to expose a running service, which is a better fit only if Flipbook requires a live web application.
 
 ## Histories, Datasets, Datatypes, and Collections
 
 Galaxy histories are provenance-aware analysis ledgers. Datasets are typed files inside histories. Galaxy datatypes are usually keyed by extension and backed by datatype classes. Collections group related datasets so workflows can operate on many files without turning the history into an unmanageable list.
 
-Important implications for RMSX/FlipBook:
+Important implications for RMSX/Flipbook:
 
 - Prefer existing molecular formats whenever possible: PDB, GRO, DCD, XTC, TRR, tabular, JSON, PNG, HDF5, HTML.
 - Avoid custom datatypes for the first wrapper unless RMSX produces a file format that Galaxy cannot reasonably represent with existing types.
 - If publishing to the Tool Shed and a custom datatype is unavoidable, plan to upstream or separately maintain the datatype definition.
 - Use collections when processing multiple structures, multiple trajectories, replicate simulations, or frame sets.
-- If RMSX/FlipBook produces a multi-file report bundle, evaluate Galaxy composite datatypes or a declared HTML/report dataset with associated files.
+- If RMSX/Flipbook produces a multi-file report bundle, evaluate Galaxy composite datatypes or a declared HTML/report dataset with associated files.
 - Keep raw machine-readable outputs separate from human-readable visual reports so downstream workflows can reuse the data.
 
 ## Dependencies, Containers, Tool Shed, and Planemo
 
 Galaxy wrappers usually express runtime dependencies with Conda packages in `<requirements>`. Containers can also be used, and InteractiveTools rely heavily on containerized services. Planemo is the standard development companion for linting, testing, serving, and publishing Galaxy tools.
 
-Expected RMSX/FlipBook development loop:
+Expected RMSX/Flipbook development loop:
 
 1. Confirm a deterministic noninteractive CLI path for RMSX.
 2. Create a minimal wrapper with explicit requirements and tiny test data.
@@ -101,7 +101,7 @@ The Tool Shed is the distribution path for Galaxy tools, dependency definitions,
 
 ## Visualization Routes
 
-Galaxy offers several visualization patterns. RMSX/FlipBook should choose among them based on what the inspected code already does and what users need to preserve in workflow outputs.
+Galaxy offers several visualization patterns. RMSX/Flipbook should choose among them based on what the inspected code already does and what users need to preserve in workflow outputs.
 
 ### Static Output Route
 
@@ -111,17 +111,17 @@ This route matches existing Bio3D and MDAnalysis patterns.
 
 ### Self-Contained HTML Report Route
 
-The wrapper emits an HTML dataset, ideally self-contained or with a controlled set of associated files. This can work well for FlipBook summaries, but Galaxy instances may restrict inline HTML display unless administrators configure allowlists. The MDAnalysis Ramachandran wrapper is a useful precedent because it produces raw HDF5 data, PNG plots, and an HTML summary rather than making the HTML the only output.
+The wrapper emits an HTML dataset, ideally self-contained or with a controlled set of associated files. This can work well for Flipbook summaries, but Galaxy instances may restrict inline HTML display unless administrators configure allowlists. The MDAnalysis Ramachandran wrapper is a useful precedent because it produces raw HDF5 data, PNG plots, and an HTML summary rather than making the HTML the only output.
 
 ### Galaxy Charts or Visualization Plugin Route
 
 Galaxy Charts is the primary in-browser visualization framework. It supports standard charts and domain-specific viewers, including molecular, protein, network, and tree viewers. A custom plugin can render RMSX output datasets directly in the Galaxy UI without an external server.
 
-This is a strong candidate if FlipBook can be represented as client-side rendering over one or more Galaxy datasets.
+This is a strong candidate if Flipbook can be represented as client-side rendering over one or more Galaxy datasets.
 
 ### InteractiveTool Route
 
-InteractiveTools expose containerized web applications from Galaxy jobs. They can support R Shiny apps, VNC applications, and similar browser-based services. A FlipBook web app could fit here if it needs a live backend or complex browser-server interaction.
+InteractiveTools expose containerized web applications from Galaxy jobs. They can support R Shiny apps, VNC applications, and similar browser-based services. A Flipbook web app could fit here if it needs a live backend or complex browser-server interaction.
 
 Costs to account for:
 
@@ -134,7 +134,7 @@ Costs to account for:
 
 ## Comparable Ecosystem Concepts
 
-The Galaxy Europe ChemicalToolbox and the Galaxy Computational Chemistry repository already include roughly the same families of operations RMSX/FlipBook will need to coexist with:
+The Galaxy Europe ChemicalToolbox and the Galaxy Computational Chemistry repository already include roughly the same families of operations RMSX/Flipbook will need to coexist with:
 
 - Molecular dynamics conversion and slicing through MDTraj.
 - GROMACS simulation and analysis wrappers.
@@ -151,7 +151,7 @@ These tools establish user expectations for:
 - Small deterministic test fixtures.
 - Workflows that chain conversion, analysis, and visualization.
 
-## RMSX/FlipBook Repository Inspection Checklist
+## RMSX/Flipbook Repository Inspection Checklist
 
 Use this checklist before writing wrappers.
 
@@ -175,9 +175,9 @@ Use this checklist before writing wrappers.
 - Decide which outputs should be required, optional, conditional, or discovered dynamically.
 - Determine whether any output requires a custom datatype.
 
-### FlipBook Visualization Surface
+### Flipbook Visualization Surface
 
-- Identify whether FlipBook is a static renderer, browser-only viewer, local GUI, or web service.
+- Identify whether Flipbook is a static renderer, browser-only viewer, local GUI, or web service.
 - Determine whether it can consume Galaxy-friendly datasets directly.
 - Determine whether it can render from JSON/HDF5/tabular metrics plus structure/trajectory files.
 - Check whether it requires external assets, local absolute paths, server state, or browser storage.
@@ -221,7 +221,7 @@ Advantages:
 - Workflow-friendly.
 - Similar to existing Bio3D and MDAnalysis tools.
 
-### Route B: RMSX Analysis Plus Static FlipBook Report
+### Route B: RMSX Analysis Plus Static Flipbook Report
 
 This extends Route A by adding a self-contained HTML or report output. The report should not be the only output. Raw data should remain available for reuse.
 
@@ -239,7 +239,7 @@ Risks:
 
 ### Route C: Galaxy Visualization or Charts Plugin
 
-This makes FlipBook a viewer over RMSX outputs. It is a good second or third phase if the report data model is stable.
+This makes Flipbook a viewer over RMSX outputs. It is a good second or third phase if the report data model is stable.
 
 Advantages:
 
@@ -253,14 +253,14 @@ Risks:
 - Requires a stable data contract.
 - May need instance-level installation.
 
-### Route D: FlipBook InteractiveTool
+### Route D: Flipbook InteractiveTool
 
-This runs FlipBook as a containerized web app launched from Galaxy.
+This runs Flipbook as a containerized web app launched from Galaxy.
 
 Advantages:
 
 - Best fit for a rich live application.
-- Can preserve existing web-app behavior if FlipBook already runs as a service.
+- Can preserve existing web-app behavior if Flipbook already runs as a service.
 
 Risks:
 
@@ -272,7 +272,7 @@ Risks:
 
 ### Stage 1: Repository Inspection
 
-- Inspect RMSX and FlipBook source trees.
+- Inspect RMSX and Flipbook source trees.
 - Record command entry points, dependencies, formats, outputs, and licenses.
 - Run existing tests or minimal sample commands if available.
 - Identify the smallest scientifically meaningful example dataset.
@@ -299,7 +299,7 @@ Risks:
 - Compare behavior against Bio3D RMSD/PCA and MDAnalysis distance/Ramachandran expectations.
 - Add tests for common format combinations.
 
-### Stage 5: FlipBook Output Route
+### Stage 5: Flipbook Output Route
 
 - Prototype a static HTML/report output if feasible.
 - Preserve raw datasets as primary outputs.
@@ -320,8 +320,8 @@ Risks:
 - Does RMSX already have a stable CLI, or does it need a thin command-line adapter before Galaxy wrapping?
 - Which molecular file formats are required for real users: PDB/DCD, GRO/XTC, TRR, NetCDF, mmCIF, or others?
 - Are structure and trajectory inputs one-to-one, one-to-many, or collection-oriented?
-- Does FlipBook render from static files, or does it require a live server?
-- Can FlipBook produce a self-contained HTML artifact?
+- Does Flipbook render from static files, or does it require a live server?
+- Can Flipbook produce a self-contained HTML artifact?
 - Does either repository require dependencies that are not available through Conda or containers?
 - Are there licensing constraints around redistribution in the Tool Shed or containers?
 - What small public sample dataset can be included in tests?

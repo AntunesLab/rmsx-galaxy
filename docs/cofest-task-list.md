@@ -1,10 +1,10 @@
-# RMSX Galaxy Cofest Task List
+# Flipbook Galaxy Cofest Task List
 
-This is the shared working list for the `rmsx-galaxy` cofest repository.
+This is the shared working list for the `flipbook-galaxy` cofest repository.
 
 ## Milestone 1: Shareable Public Repo
 
-- [x] Create the public `AntunesLab/rmsx-galaxy` repository.
+- [x] Create the public `AntunesLab/flipbook-galaxy` repository.
 - [x] Push the clean initial scaffold.
 - [ ] Add collaborator access once GitHub usernames are known.
 - [ ] Confirm Issues, labels, and project board are available.
@@ -37,7 +37,7 @@ This is the shared working list for the `rmsx-galaxy` cofest repository.
 ## Milestone 5: Container And Packaging
 
 - [ ] Choose the first supported upstream RMSX tag or commit.
-- [ ] Build `ghcr.io/antuneslab/rmsx-galaxy:0.2.3-galaxy0`.
+- [ ] Build `ghcr.io/antuneslab/flipbook-galaxy:0.2.3-galaxy0`.
 - [ ] Push the image to GHCR.
 - [ ] Re-run Docker-backed Planemo tests using the pushed image.
 - [ ] Open a follow-up issue for the Bioconda/Conda packaging route.

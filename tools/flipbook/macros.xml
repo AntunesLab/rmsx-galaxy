@@ -2,14 +2,14 @@
     <token name="@TOOL_VERSION@">0.1.0</token>
     <token name="@RMSX_SOURCE_REF@">v0.2.3</token>
     <token name="@VERSION_SUFFIX@">0</token>
-    <token name="@CONTAINER_IMAGE@">ghcr.io/antuneslab/rmsx-galaxy:0.2.3-galaxy0</token>
+    <token name="@CONTAINER_IMAGE@">ghcr.io/antuneslab/flipbook-galaxy:0.2.3-galaxy0</token>
 
     <xml name="requirements">
         <requirements>
             <!--
             RMSX is not yet packaged as a Galaxy-ready Conda dependency.
             This requirement documents the intended executable dependency for the
-            first wrapper scaffold. See README.rst and packaging/rmsx-galaxy/ for
+            first wrapper scaffold. See README.rst and packaging/flipbook-galaxy/ for
             local development and container packaging notes.
             The temporary container pins upstream source ref @RMSX_SOURCE_REF@,
             whose Python package metadata currently reports @TOOL_VERSION@.

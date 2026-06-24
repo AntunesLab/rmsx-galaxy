@@ -1,4 +1,4 @@
-<tool id="rmsx" name="RMSX trajectory analysis" version="@TOOL_VERSION@+galaxy@VERSION_SUFFIX@" profile="26.0">
+<tool id="flipbook" name="Flipbook trajectory analysis" version="@TOOL_VERSION@+galaxy@VERSION_SUFFIX@" profile="26.0">
     <description>time-sliced residue fluctuation analysis</description>
     <macros>
         <import>macros.xml</import>
@@ -7,8 +7,8 @@
     <required_files>
         <include path="rmsx_preflight.py"/>
         <include path="rmsx_static_plots.py"/>
-        <include path="rmsx_molstar_report.py"/>
-        <include path="rmsx_report_common.py"/>
+        <include path="flipbook_molstar_report.py"/>
+        <include path="flipbook_report_common.py"/>
         <include path="test-data/1UBQ.pdb"/>
         <include path="test-data/mon_sys.xtc"/>
     </required_files>
@@ -78,13 +78,13 @@
                 --interpolate
             #end if
             >> '$log' 2>&1 &&
-        python3 '$__tool_directory__/rmsx_molstar_report.py'
+        python3 '$__tool_directory__/flipbook_molstar_report.py'
             --pdb-dir pdb_slices
             --rmsx-table '$rmsx_table'
             --mask-table '$mask_table'
             --palette '$palette'
             --manifest-output '$viewer_manifest'
-            --title 'RMSX Molstar FlipBook viewer'
+            --title 'Flipbook Molstar viewer'
     ]]></command>
     <inputs>
         <conditional name="input_source">
@@ -110,7 +110,7 @@
         <section name="analysis" title="RMSX analysis options" expanded="false">
             <param argument="--start_frame" type="integer" value="0" min="0" label="Start frame" help="Zero-based first trajectory frame to include."/>
             <param argument="--end_frame" type="integer" optional="true" min="0" label="End frame" help="Optional zero-based last trajectory frame to include. Leave blank to analyze through the final frame."/>
-            <param argument="--analysis_type" type="select" label="Analysis type" help="Passed to RMSX with --analysis_type. The default protein mode matches the current RMSX/FlipBook path.">
+            <param argument="--analysis_type" type="select" label="Analysis type" help="Passed to RMSX with --analysis_type. The default protein mode matches the current RMSX/Flipbook path.">
                 <option value="protein" selected="true">Protein</option>
                 <option value="dna">DNA</option>
                 <option value="rna">RNA</option>
@@ -119,7 +119,7 @@
             <param argument="--summary_n" type="integer" value="3" min="1" label="Summary residue count" help="Number of top-changing residues RMSX should include in its summary outputs."/>
             <param argument="--interpolate" type="boolean" checked="false" truevalue="--interpolate" falsevalue="--no-interpolate" label="Interpolate RMSX slice values" help="Disabled by default to preserve the current validated wrapper behavior."/>
         </section>
-        <param argument="--palette" type="select" label="Molstar and plot color palette" help="Initial color ramp used by the native Galaxy Molstar FlipBook visualization and the static RMSX heatmap/triple plots.">
+        <param argument="--palette" type="select" label="Molstar and plot color palette" help="Initial color ramp used by the native Galaxy Molstar Flipbook visualization and the static RMSX heatmap/triple plots.">
             <option value="viridis" selected="true">Viridis</option>
             <option value="magma">Magma</option>
             <option value="inferno">Inferno</option>
@@ -182,7 +182,7 @@
             </output_collection>
             <output name="log">
                 <assert_contents>
-                    <has_text text="RMSX Galaxy preflight"/>
+                    <has_text text="Flipbook Galaxy preflight"/>
                     <has_text text="analysis type: protein"/>
                     <has_text text="preflight status: ok"/>
                     <has_text text="RMSX static plots written"/>
@@ -200,8 +200,8 @@
             </output>
             <output name="viewer_manifest" ftype="json">
                 <assert_contents>
-                    <has_text text="&quot;schemaVersion&quot;: &quot;rmsx-molstar-viewer/v1&quot;"/>
-                    <has_text text="&quot;title&quot;: &quot;RMSX Molstar FlipBook viewer&quot;"/>
+                    <has_text text="&quot;schemaVersion&quot;: &quot;flipbook-molstar-viewer/v1&quot;"/>
+                    <has_text text="&quot;title&quot;: &quot;Flipbook Molstar viewer&quot;"/>
                     <has_text text="&quot;slices&quot;"/>
                     <has_text text="&quot;residues&quot;"/>
                     <has_text text="&quot;summaries&quot;"/>
@@ -240,7 +240,7 @@
             </output_collection>
             <output name="log">
                 <assert_contents>
-                    <has_text text="RMSX Galaxy preflight"/>
+                    <has_text text="Flipbook Galaxy preflight"/>
                     <has_text text="matched segment IDs: 7"/>
                     <has_text text="preflight status: ok"/>
                     <has_text text="RMSX static plots written"/>
@@ -258,7 +258,7 @@
             </output>
             <output name="viewer_manifest" ftype="json">
                 <assert_contents>
-                    <has_text text="&quot;schemaVersion&quot;: &quot;rmsx-molstar-viewer/v1&quot;"/>
+                    <has_text text="&quot;schemaVersion&quot;: &quot;flipbook-molstar-viewer/v1&quot;"/>
                     <has_text text="&quot;filename&quot;: &quot;slice_1_first_frame.pdb&quot;"/>
                     <has_text text="&quot;name&quot;: &quot;turbo&quot;"/>
                     <has_text text="#30123B"/>
@@ -282,9 +282,10 @@ RMSX partitions a molecular dynamics trajectory into equal time slices and compu
 per-residue RMSF within each slice. The resulting table shows where and when
 residue-level motion changes over the trajectory.
 
-This Galaxy wrapper is intentionally RMSX-only. It does not launch FlipBook,
-ChimeraX, or VMD. It exposes the RMSX compute outputs and adds a native Galaxy
-Molstar FlipBook viewer manifest for inspecting the generated PDB slices through
+This Galaxy wrapper is intentionally conservative: it runs the RMSX compute path
+behind the Flipbook tool name and does not launch ChimeraX, VMD, or a trusted
+HTML report. It exposes the RMSX compute outputs and adds a native Galaxy
+Molstar Flipbook viewer manifest for inspecting the generated PDB slices through
 Galaxy's Visualize action.
 
 _____
@@ -314,7 +315,7 @@ diagnose.
 The RMSX options section exposes start frame, optional end frame, analysis type,
 summary residue count, and interpolation. Interpolation is used for the static
 RMSX heatmap raster. The selected palette is shared by the static R plots and
-the native Molstar FlipBook viewer so the heatmap and 3D view can be compared
+the native Molstar Flipbook viewer so the heatmap and 3D view can be compared
 directly.
 
 _____
@@ -337,11 +338,11 @@ The tool produces:
 * Execution log.
 
 The native viewer manifest embeds the current PDB slices and RMSX display
-metadata using schema version ``rmsx-molstar-viewer/v1`` and is emitted as
+metadata using schema version ``flipbook-molstar-viewer/v1`` and is emitted as
 standard Galaxy JSON for the conservative Tool Shed path. Install the
-accompanying prototype ``rmsx_molstar`` Galaxy visualization plugin to open the
-manifest as the interactive Molstar FlipBook viewer without using trusted HTML
-outputs. The project-local ``rmsxmolstar`` datatype remains a cofest prototype
+accompanying prototype ``flipbook_molstar`` Galaxy visualization plugin to open the
+manifest as the interactive Molstar Flipbook viewer without using trusted HTML
+outputs. The project-local ``flipbookmolstar`` datatype remains a cofest prototype
 until Galaxy/IUC agrees on the right upstream datatype strategy.
     ]]></help>
     <expand macro="citations"/>

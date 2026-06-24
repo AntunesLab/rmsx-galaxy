@@ -1,8 +1,8 @@
-# RMSX Galaxy Share Readiness
+# Flipbook Galaxy Share Readiness
 
 This project has two sharing paths:
 
-1. A conservative Tool Shed/IUC candidate that installs the RMSX wrapper and
+1. A conservative Tool Shed/IUC candidate that installs the Flipbook wrapper and
    emits standard Galaxy datasets, including a JSON Molstar manifest.
 2. A richer Galaxy admin/cofest bundle that also registers the prototype
    Molstar visualization plugin and optional project-local datatype.
@@ -11,7 +11,7 @@ This project has two sharing paths:
 
 With the conservative wrapper, users can:
 
-1. Run `RMSX trajectory analysis`.
+1. Run `Flipbook trajectory analysis`.
 2. Receive CSV outputs, static RMSX heatmap/triple-plot PNGs, PDB slice
    collection, execution log, and a JSON `Molstar native viewer manifest`.
 
@@ -19,7 +19,7 @@ When a Galaxy admin installs the full prototype visualization bundle, users can
 also:
 
 3. Open the manifest with Galaxy's `Visualize` action.
-4. Choose `RMSX Molstar FlipBook`.
+4. Choose `Flipbook Molstar`.
 5. Use the native Molstar viewer without any trusted-HTML allowlist warning.
 
 The public wrapper intentionally does not emit the old standalone HTML report.
@@ -28,33 +28,33 @@ path.
 
 ## Bundle Contents
 
-- `tools/rmsx/rmsx.xml`
-- `tools/rmsx/macros.xml`
-- `tools/rmsx/rmsx_preflight.py`
-- `tools/rmsx/rmsx_report_common.py`
-- `tools/rmsx/rmsx_molstar_report.py`
-- `tools/rmsx/test-data/`
-- `config/plugins/visualizations/rmsx_molstar/`
+- `tools/flipbook/flipbook.xml`
+- `tools/flipbook/macros.xml`
+- `tools/flipbook/rmsx_preflight.py`
+- `tools/flipbook/flipbook_report_common.py`
+- `tools/flipbook/flipbook_molstar_report.py`
+- `tools/flipbook/test-data/`
+- `config/plugins/visualizations/flipbook_molstar/`
 - `config/datatypes/datatypes_conf.xml`
-- `packaging/rmsx-galaxy/`
+- `packaging/flipbook-galaxy/`
 
 ## Container Publication
 
 The wrapper is configured for this registry-qualified image:
 
 ```text
-ghcr.io/antuneslab/rmsx-galaxy:0.2.3-galaxy0
+ghcr.io/antuneslab/flipbook-galaxy:0.2.3-galaxy0
 ```
 
 Build and push from the project root:
 
 ```bash
 scripts/build_container.sh
-docker push ghcr.io/antuneslab/rmsx-galaxy:0.2.3-galaxy0
+docker push ghcr.io/antuneslab/flipbook-galaxy:0.2.3-galaxy0
 ```
 
 If the image will live under a different owner or version, update
-`tools/rmsx/macros.xml` before running final Planemo tests.
+`tools/flipbook/macros.xml` before running final Planemo tests.
 
 ## Tool Shed Packaging Check
 
@@ -66,13 +66,13 @@ scripts/run_static_checks.sh
 
 Current local status:
 
-- `planemo lint --fail_level error tools/rmsx/rmsx.xml` passes.
-- `planemo shed_lint tools/rmsx` passes.
+- `planemo lint --fail_level error tools/flipbook/flipbook.xml` passes.
+- `planemo shed_lint tools/flipbook` passes.
 - Docker-backed `planemo test` should pass all three wrapper tests using
-  `ghcr.io/antuneslab/rmsx-galaxy:0.2.3-galaxy0` as a locally tagged image.
+  `ghcr.io/antuneslab/flipbook-galaxy:0.2.3-galaxy0` as a locally tagged image.
 
 Run the Docker-backed wrapper tests against the same container tag that appears
-in `tools/rmsx/macros.xml`:
+in `tools/flipbook/macros.xml`:
 
 ```bash
 scripts/run_planemo_tests.sh
@@ -81,24 +81,24 @@ scripts/run_planemo_tests.sh
 Then verify the native viewer:
 
 ```bash
-node tests/rmsx/native_visualization_parity_check.mjs \
-  --url "http://localhost:9090/visualizations/display?visualization=rmsx_molstar&dataset_id=..."
+node tests/flipbook/native_visualization_parity_check.mjs \
+  --url "http://localhost:9090/visualizations/display?visualization=flipbook_molstar&dataset_id=..."
 
-node tests/rmsx/native_visualization_visual_check.mjs \
-  --url "http://localhost:9090/visualizations/display?visualization=rmsx_molstar&dataset_id=..." \
-  --screenshot /private/tmp/rmsx_molstar_visual_check.png
+node tests/flipbook/native_visualization_visual_check.mjs \
+  --url "http://localhost:9090/visualizations/display?visualization=flipbook_molstar&dataset_id=..." \
+  --screenshot /private/tmp/flipbook_molstar_visual_check.png
 ```
 
 ## Galaxy Admin Install Shape
 
 The conservative Tool Shed candidate has one Galaxy-side piece:
 
-1. Install the RMSX tool wrapper.
+1. Install the Flipbook tool wrapper.
 
 The full prototype viewer install has optional additional Galaxy-side pieces:
 
-1. Register the `rmsxmolstar` datatype if using the dedicated local datatype.
-2. Install/register the `rmsx_molstar` visualization plugin.
+1. Register the `flipbookmolstar` datatype if using the dedicated local datatype.
+2. Install/register the `flipbook_molstar` visualization plugin.
 
 For local Planemo demos, the project uses:
 
@@ -113,7 +113,7 @@ helper.
 Important limitation for sharing: a plain Tool Shed tool install can make the
 RMSX computation and JSON manifest output available, but it is not by itself the
 whole native viewer experience. Users get the Molstar visualization only on a
-Galaxy instance where the `rmsx_molstar` visualization plugin has also been
+Galaxy instance where the `flipbook_molstar` visualization plugin has also been
 registered by an admin.
 
 ## Remaining Publication Decisions
@@ -131,7 +131,7 @@ registered by an admin.
 The last external step is publishing the container image:
 
 ```bash
-docker push ghcr.io/antuneslab/rmsx-galaxy:0.2.3-galaxy0
+docker push ghcr.io/antuneslab/flipbook-galaxy:0.2.3-galaxy0
 ```
 
 That requires GHCR permissions for the `antuneslab` namespace. Until the image

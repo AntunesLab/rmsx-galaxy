@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Shared helpers for RMSX Galaxy viewer manifest builders."""
+"""Shared helpers for Flipbook Galaxy viewer manifest builders."""
 
 import csv
 import re

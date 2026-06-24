@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Build a Mol* FlipBook report for RMSX PDB slice outputs."""
+"""Build a Mol* Flipbook report for RMSX PDB slice outputs."""
 
 import argparse
 import csv
@@ -7,7 +7,7 @@ import html
 import json
 from pathlib import Path
 
-from rmsx_report_common import (
+from flipbook_report_common import (
     build_residue_payload,
     read_rmsx_table,
     read_slices,
@@ -20,7 +20,7 @@ MOLSTAR_JS_URL = f"https://cdn.jsdelivr.net/npm/molstar@{MOLSTAR_VERSION}/build/
 MOLSTAR_CSS_URL = f"https://cdn.jsdelivr.net/npm/molstar@{MOLSTAR_VERSION}/build/viewer/molstar.css"
 MOLSTAR_STATE_TRANSFORMS_URL = f"https://cdn.jsdelivr.net/npm/molstar@{MOLSTAR_VERSION}/lib/mol-plugin-state/transforms.js"
 MOLSTAR_STATE_TRANSFORMS_BUNDLE_URL = f"https://esm.sh/molstar@{MOLSTAR_VERSION}/lib/mol-plugin-state/transforms.js?bundle"
-MANIFEST_SCHEMA_VERSION = "rmsx-molstar-viewer/v1"
+MANIFEST_SCHEMA_VERSION = "flipbook-molstar-viewer/v1"
 MASK_OPACITY = 0.30
 MIN_TILE_SPACING_FACTOR = 0.1
 MAX_TILE_SPACING_FACTOR = 2.5
@@ -77,8 +77,8 @@ def parse_args():
     parser.add_argument("--mask-table", required=True, help="Mask metadata CSV table.")
     parser.add_argument("--output", help="Optional standalone HTML report output path for development/debugging.")
     parser.add_argument("--manifest-output", help="Optional native Galaxy visualization manifest JSON output path.")
-    parser.add_argument("--palette", default="viridis", choices=sorted(FLIPBOOK_PALETTES), help="FlipBook color palette.")
-    parser.add_argument("--title", default="RMSX Molstar FlipBook viewer", help="Report title.")
+    parser.add_argument("--palette", default="viridis", choices=sorted(FLIPBOOK_PALETTES), help="Flipbook color palette.")
+    parser.add_argument("--title", default="Flipbook Molstar viewer", help="Report title.")
     return parser.parse_args()
 
 
@@ -189,11 +189,11 @@ def build_viewer_payload(title, slices, summaries, domain, mask_summary, residue
         "rotationModel": {
             "mode": "per-slice local coordinate transform",
             "pivot": "geometric center of each full slice before mask splitting",
-            "layoutOrder": "rotate around local center, then place that center on a shared FlipBook slot anchor plus tile offset",
+            "layoutOrder": "rotate around local center, then place that center on a shared Flipbook slot anchor plus tile offset",
             "dragSemantics": "convert Molstar screen-axis drag deltas into coordinate-space rotation matrices, then apply the same delta independently to every visible slice",
             "verticalDragSign": "screen dy is applied directly around the current screen-right axis",
             "defaultRotation": {"x": 90, "y": 0, "z": 0},
-            "defaultRotationSource": "ChimeraX FlipBook command: turn x 90",
+            "defaultRotationSource": "ChimeraX Flipbook command: turn x 90",
         },
         "molstarRenderStyle": {
             "preset": "clean-interactive",
@@ -218,7 +218,7 @@ def build_viewer_payload(title, slices, summaries, domain, mask_summary, residue
             "colorDomainStep": color_domain_step,
             "colorTheme": "uncertainty",
             "molstarUncertaintyReversesColorList": True,
-            "paletteOrder": "FlipBook low-to-high palette is reversed before passing to Molstar because Molstar uncertainty coloring reverses its color list internally",
+            "paletteOrder": "Flipbook low-to-high palette is reversed before passing to Molstar because Molstar uncertainty coloring reverses its color list internally",
             "radiusUrlParams": ["radiusMin", "radiusMax"],
             "thicknessUrlParam": "thickness",
             "colorDomainUrlParams": ["colorMin", "colorMax"],
@@ -235,7 +235,7 @@ def build_viewer_payload(title, slices, summaries, domain, mask_summary, residue
         },
         "keyboardShortcuts": {
             "enabled": True,
-            "source": "VMD FlipBook hotkey parity subset",
+            "source": "VMD Flipbook hotkey parity subset",
             "rotationStepDegrees": 5,
             "spacingStep": 0.05,
             "thicknessStep": 0.05,
@@ -246,7 +246,7 @@ def build_viewer_payload(title, slices, summaries, domain, mask_summary, residue
                 {"keys": ["=", "+", "-"], "action": "adjust tiled spacing factor"},
                 {"keys": ["[", "]"], "action": "adjust RMSX worm thickness scale"},
                 {"keys": [",", "."], "action": "adjust RMSX color/radius domain"},
-                {"keys": ["ArrowLeft", "ArrowRight"], "action": "step the active FlipBook slice"},
+                {"keys": ["ArrowLeft", "ArrowRight"], "action": "step the active Flipbook slice"},
                 {"keys": ["t", "o", "f"], "action": "switch tiled, overlay, and Flip layouts"},
             ],
         },
@@ -714,7 +714,7 @@ def html_report(payload):
     <main>
       <aside>
         <div class="control-block">
-          <p class="section-title">FlipBook</p>
+          <p class="section-title">Flipbook</p>
           <div class="field">
             <label for="sliceSelect">Slice</label>
             <select id="sliceSelect" data-testid="molstar-slice-select"></select>
@@ -846,7 +846,7 @@ def html_report(payload):
           </div>
         </div>
       </aside>
-      <section class="viewer-shell" aria-label="RMSX Molstar FlipBook viewer" data-testid="molstar-report">
+      <section class="viewer-shell" aria-label="Flipbook Molstar viewer" data-testid="molstar-report">
         <div class="viewer-toolbar">
           <div id="sceneLabels" class="scene-labels" aria-label="Loaded slices"></div>
           <div id="status" class="status">Loading Molstar...</div>
@@ -1103,7 +1103,7 @@ def html_report(payload):
       const current = `${window.location.pathname}${window.location.search}${window.location.hash}`;
       const next = `${url.pathname}${url.search}${url.hash}`;
       if (next !== current) {
-        window.history.replaceState({ rmsxMolstarState: true }, "", next);
+        window.history.replaceState({ flipbookMolstarState: true }, "", next);
       }
     }
 
@@ -1733,7 +1733,7 @@ def html_report(payload):
         plugin.canvas3d.setProps(flipbookCanvasProps(options));
         return true;
       } catch (error) {
-        console.warn("Molstar FlipBook render style could not be applied.", error);
+        console.warn("Molstar Flipbook render style could not be applied.", error);
         return false;
       }
     }
@@ -2253,7 +2253,7 @@ def html_report(payload):
       const anchor = layoutAnchorCenter();
       const entries = visibleSliceEntries();
       return {
-        mode: "rotate around each slice center, then place center on shared FlipBook slot",
+        mode: "rotate around each slice center, then place center on shared Flipbook slot",
         anchor: roundedPoint(anchor),
         entries: entries.map((entry) => {
           const stats = structureStats(entry.slice.pdb);
@@ -2499,7 +2499,7 @@ def html_report(payload):
               baseSize: wormRadiusMin()
             }
           },
-          { tag: `rmsx-putty-${index}-${tagSuffix}` }
+          { tag: `flipbook-putty-${index}-${tagSuffix}` }
         );
         stageState.representationMode = "putty";
         return representation;
@@ -2520,7 +2520,7 @@ def html_report(payload):
               baseSize: wormRadiusMin()
             }
           },
-          { tag: `rmsx-cartoon-${index}-${tagSuffix}` }
+          { tag: `flipbook-cartoon-${index}-${tagSuffix}` }
         );
       }
     }
@@ -2537,7 +2537,7 @@ def html_report(payload):
         return await plugin.builders.structure.representation.addRepresentation(
           structure,
           markerParams,
-          { tag: `rmsx-selected-residue-marker-${entry.sourceIndex}` }
+          { tag: `flipbook-selected-residue-marker-${entry.sourceIndex}` }
         );
       } catch (error) {
         console.warn("Molstar selected-residue marker failed; falling back to ball-and-stick.", error);
@@ -2547,7 +2547,7 @@ def html_report(payload):
             ...markerParams,
             type: "ball-and-stick"
           },
-          { tag: `rmsx-selected-residue-marker-fallback-${entry.sourceIndex}` }
+          { tag: `flipbook-selected-residue-marker-fallback-${entry.sourceIndex}` }
         );
       }
     }
@@ -2663,7 +2663,7 @@ def html_report(payload):
 
     function structureTransformCandidate(plugin) {
       const candidates = [
-        transformCandidate("window.RMSX_MOLSTAR_STATE_TRANSFORMS.Model.TransformStructureConformation", () => window.RMSX_MOLSTAR_STATE_TRANSFORMS?.Model?.TransformStructureConformation),
+        transformCandidate("window.FLIPBOOK_MOLSTAR_STATE_TRANSFORMS.Model.TransformStructureConformation", () => window.FLIPBOOK_MOLSTAR_STATE_TRANSFORMS?.Model?.TransformStructureConformation),
         transformCandidate("window.molstar.lib.StateTransforms.Model.TransformStructureConformation", () => window.molstar?.lib?.StateTransforms?.Model?.TransformStructureConformation),
         transformCandidate("window.molstar.StateTransforms.Model.TransformStructureConformation", () => window.molstar?.StateTransforms?.Model?.TransformStructureConformation),
         transformCandidate("plugin.state.data.transforms", () => transformerFromRegistry(plugin?.state?.data?.transforms)),
@@ -2682,7 +2682,7 @@ def html_report(payload):
     }
 
     async function loadMolstarStateTransforms() {
-      if (window.RMSX_MOLSTAR_STATE_TRANSFORMS?.Model?.TransformStructureConformation) {
+      if (window.FLIPBOOK_MOLSTAR_STATE_TRANSFORMS?.Model?.TransformStructureConformation) {
         stageState.stateTransformsModuleStatus = "loaded";
         updateDiagnostics();
         return true;
@@ -2701,10 +2701,10 @@ def html_report(payload):
         updateDiagnostics();
         try {
           const module = await import(moduleUrl);
-          window.RMSX_MOLSTAR_STATE_TRANSFORMS = module.StateTransforms;
+          window.FLIPBOOK_MOLSTAR_STATE_TRANSFORMS = module.StateTransforms;
           stageState.stateTransformsModuleStatus = "loaded";
           updateDiagnostics();
-          return Boolean(window.RMSX_MOLSTAR_STATE_TRANSFORMS?.Model?.TransformStructureConformation);
+          return Boolean(window.FLIPBOOK_MOLSTAR_STATE_TRANSFORMS?.Model?.TransformStructureConformation);
         } catch (error) {
           failures.push(`${moduleUrl}: ${error.message}`);
           console.warn(`Molstar StateTransforms module could not be imported from ${moduleUrl}.`, error);
@@ -2734,11 +2734,11 @@ def html_report(payload):
         return await plugin.build()
           .to(structure)
           .insert(transform, matrixTransformParamsForSlice(entry.slice, entry.sceneIndex), {
-            tags: [`rmsx-scene-transform-${entry.sourceIndex}-${tagSuffix}`]
+            tags: [`flipbook-scene-transform-${entry.sourceIndex}-${tagSuffix}`]
           })
           .commit();
       } catch (error) {
-        const wrapped = new Error(`RMSX_MOLSTAR_STRUCTURE_TRANSFORM_FAILED: ${error.message}`);
+        const wrapped = new Error(`FLIPBOOK_MOLSTAR_STRUCTURE_TRANSFORM_FAILED: ${error.message}`);
         wrapped.cause = error;
         throw wrapped;
       }
@@ -3242,7 +3242,7 @@ def html_report(payload):
         stateTransformsModuleStatus: stageState.stateTransformsModuleStatus,
         stateTransformsModuleUrl: stageState.stateTransformsModuleUrl,
         hasViewer: Boolean(window.molstar?.Viewer),
-        stateTransformsGlobalAvailable: Boolean(window.RMSX_MOLSTAR_STATE_TRANSFORMS?.Model?.TransformStructureConformation),
+        stateTransformsGlobalAvailable: Boolean(window.FLIPBOOK_MOLSTAR_STATE_TRANSFORMS?.Model?.TransformStructureConformation),
         reportPayload: REPORT.reportPayload,
         molstarRootKeys: objectKeys(window.molstar),
         pluginKeys: objectKeys(plugin).slice(0, 30),
@@ -3328,7 +3328,7 @@ def html_report(payload):
 
     function publishReportApi() {
       const root = typeof globalThis !== "undefined" ? globalThis : window;
-      root.RMSX_MOLSTAR_REPORT = {
+      root.FLIPBOOK_MOLSTAR_REPORT = {
         REPORT,
         stageState,
         loadAllSlices,
@@ -3483,7 +3483,7 @@ def html_report(payload):
       const entries = visibleSliceEntries();
       updateMetrics();
       if (stageState.layout === "flip") {
-        setStatus(`Loading ${entries.length} RMSX slices in one Molstar scene for FlipBook playback...`);
+        setStatus(`Loading ${entries.length} RMSX slices in one Molstar scene for Flipbook playback...`);
       } else {
         setStatus(`Loading ${entries.length} RMSX slice${entries.length === 1 ? "" : "s"} in one Molstar scene...`);
       }
@@ -3495,7 +3495,7 @@ def html_report(payload):
           records.push(...await loadSliceIntoScene(plugin, entry));
         }
       } catch (error) {
-        if (!stageState.forcePdbCoordinateTransforms && String(error.message || "").includes("RMSX_MOLSTAR_STRUCTURE_TRANSFORM_FAILED")) {
+        if (!stageState.forcePdbCoordinateTransforms && String(error.message || "").includes("FLIPBOOK_MOLSTAR_STRUCTURE_TRANSFORM_FAILED")) {
           console.warn("Molstar state transforms failed; retrying with browser-side PDB coordinate transforms.", error);
           stageState.forcePdbCoordinateTransforms = true;
           stageState.geometryMode = "pdb-coordinate-rewrite";
@@ -3577,7 +3577,7 @@ def html_report(payload):
 
     function setLoadedSceneStatus() {
       if (stageState.layout === "flip") {
-        setStatus(`${REPORT.slices.length} slices loaded in one Molstar scene; ${REPORT.slices[stageState.currentIndex].label} is displayed as the current FlipBook frame using RMSX-normalized B-factors with ${stageState.representationMode} uncertainty styling and the ${stageState.paletteName} palette${maskStatusText()}${rotationStatusText()}${geometryModeText()}.`);
+        setStatus(`${REPORT.slices.length} slices loaded in one Molstar scene; ${REPORT.slices[stageState.currentIndex].label} is displayed as the current Flipbook frame using RMSX-normalized B-factors with ${stageState.representationMode} uncertainty styling and the ${stageState.paletteName} palette${maskStatusText()}${rotationStatusText()}${geometryModeText()}.`);
       } else {
         setStatus(`${REPORT.slices.length} slice${REPORT.slices.length === 1 ? "" : "s"} loaded together in Molstar using RMSX-normalized B-factors with ${stageState.representationMode} uncertainty styling and the ${stageState.paletteName} palette${maskStatusText()}${rotationStatusText()}${visibilityStatusText()}${geometryModeText()}.`);
       }

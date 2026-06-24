@@ -1,0 +1,11 @@
+name: flipbook
+owner: antuneslab
+description: Flipbook visualization and time-sliced residue fluctuation analysis for molecular dynamics trajectories.
+long_description: README.rst
+homepage_url: https://github.com/AntunesLab/rmsx
+remote_repository_url: https://github.com/AntunesLab/rmsx-galaxy/tree/main/tools/flipbook
+categories:
+  - Proteomics
+  - Visualization
+  - Computational chemistry
+type: unrestricted

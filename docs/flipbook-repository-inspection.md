@@ -1,6 +1,6 @@
-# RMSX/FlipBook Repository Inspection
+# RMSX/Flipbook Repository Inspection
 
-Purpose: capture a code-level inspection of the RMSX/FlipBook repository and translate it into Galaxy integration decisions. This document is the next-phase companion to the Galaxy orientation report and comparable-tool corpus.
+Purpose: capture a code-level inspection of the RMSX/Flipbook repository and translate it into Galaxy integration decisions. This document is the next-phase companion to the Galaxy orientation report and comparable-tool corpus.
 
 No implementation code was written for this phase.
 
@@ -29,7 +29,7 @@ Repository files inspected most closely:
 - Package exports: <https://github.com/AntunesLab/rmsx/blob/dbd394198a6eeba257339fd630a4038eba424afe/rmsx/__init__.py>
 - Console entry point: <https://github.com/AntunesLab/rmsx/blob/dbd394198a6eeba257339fd630a4038eba424afe/rmsx/cli.py>
 - Core RMSX implementation: <https://github.com/AntunesLab/rmsx/blob/dbd394198a6eeba257339fd630a4038eba424afe/rmsx/core.py>
-- FlipBook viewer launcher: <https://github.com/AntunesLab/rmsx/blob/dbd394198a6eeba257339fd630a4038eba424afe/rmsx/flipbook.py>
+- Flipbook viewer launcher: <https://github.com/AntunesLab/rmsx/blob/dbd394198a6eeba257339fd630a4038eba424afe/rmsx/flipbook.py>
 - R plotting script: <https://github.com/AntunesLab/rmsx/blob/dbd394198a6eeba257339fd630a4038eba424afe/rmsx/r_scripts/plot_rmsx.R>
 - Output safety helpers: <https://github.com/AntunesLab/rmsx/blob/dbd394198a6eeba257339fd630a4038eba424afe/rmsx/output_safety.py>
 - lDDT addon: <https://github.com/AntunesLab/rmsx/blob/dbd394198a6eeba257339fd630a4038eba424afe/rmsx/addons/lddt.py>
@@ -41,13 +41,13 @@ RMSX is closer to Galaxy-ready than expected because it already has a Python pac
 
 The immediate Galaxy target should be a standard RMSX analysis wrapper around the CLI or a very thin Python adapter. The first wrapper should produce CSVs, PNG plots, per-slice PDB files, mask metadata, and a log. It should not launch ChimeraX or VMD.
 
-FlipBook is currently a local viewer-launch path, not a Galaxy-native visualization artifact. The useful Galaxy output from FlipBook today is the directory of PDB slice files with RMSX values written into B-factors. A Galaxy-friendly FlipBook route should treat those PDB slices as datasets first, then add a viewer later through a static report, Galaxy visualization plugin, or InteractiveTool.
+Flipbook is currently a local viewer-launch path, not a Galaxy-native visualization artifact. The useful Galaxy output from Flipbook today is the directory of PDB slice files with RMSX values written into B-factors. A Galaxy-friendly Flipbook route should treat those PDB slices as datasets first, then add a viewer later through a static report, Galaxy visualization plugin, or InteractiveTool.
 
 The biggest hardening items before a publishable wrapper are dependency packaging and output predictability:
 
 - R packages are installed at runtime by `plot_rmsx.R`, which is not appropriate for Galaxy job execution.
 - The package version in `pyproject.toml` is `0.1.0`, while public release/documentation context points to later repository releases.
-- The CLI exposes only single-chain `run_rmsx`, not all-chain RMSX or FlipBook.
+- The CLI exposes only single-chain `run_rmsx`, not all-chain RMSX or Flipbook.
 - The core function prompts for chain selection if no chain is passed, so Galaxy must always pass a chain or use an all-chain adapter.
 - `analysis_type` options are broader in the CLI than in the core selection logic.
 - Test/demo data is useful but large for a Tool Shed wrapper test corpus.
@@ -61,12 +61,12 @@ Key package files:
 - `pyproject.toml` declares package `rmsx`, Python `>=3.8`, dependencies `MDAnalysis>=2.0.0` and `pandas>=1.1.0`, and a console script `rmsx = "rmsx.cli:main"`.
 - `rmsx/__init__.py` lazily exports `run_rmsx`, `all_chain_rmsx`, `run_rmsx_flipbook`, `run_flipbook`, shift-map functions, and related helpers.
 - `rmsx/cli.py` is the only declared console script entry point.
-- `rmsx/core.py` contains RMSX computation, output naming, mask handling, RMSD/RMSF helpers, R plotting invocation, per-chain and all-chain orchestration, shift-map variants, and FlipBook orchestration.
-- `rmsx/flipbook.py` launches ChimeraX or VMD over generated PDB slices and can save or render a FlipBook image through viewer commands.
+- `rmsx/core.py` contains RMSX computation, output naming, mask handling, RMSD/RMSF helpers, R plotting invocation, per-chain and all-chain orchestration, shift-map variants, and Flipbook orchestration.
+- `rmsx/flipbook.py` launches ChimeraX or VMD over generated PDB slices and can save or render a Flipbook image through viewer commands.
 - `rmsx/r_scripts/plot_rmsx.R` generates heatmaps and optional triple plots.
-- `rmsx/vmd_scripts/` contains VMD Tcl scripts used by the VMD FlipBook backend.
-- `rmsx/addons/lddt.py` adds an lDDT-style map using the same output and FlipBook patterns.
-- `tests/` covers output-directory safety, masking, FlipBook mask command generation, VMD script packaging, and local-demo safety assumptions.
+- `rmsx/vmd_scripts/` contains VMD Tcl scripts used by the VMD Flipbook backend.
+- `rmsx/addons/lddt.py` adds an lDDT-style map using the same output and Flipbook patterns.
+- `tests/` covers output-directory safety, masking, Flipbook mask command generation, VMD script packaging, and local-demo safety assumptions.
 
 The package includes demo molecular files under both `test_files/` and `rmsx/test_files/`. The top-level `test_files` directory is about 69 MB. The packaged `rmsx/test_files` directory is about 50 MB.
 
@@ -117,7 +117,7 @@ Galaxy implication:
 
 ### Viewer Dependencies
 
-FlipBook currently depends on local desktop molecular viewers:
+Flipbook currently depends on local desktop molecular viewers:
 
 - ChimeraX for the default viewer path.
 - VMD for an alternate viewer path with Tcl scripts and optional photorealistic rendering.
@@ -166,7 +166,7 @@ Important CLI options:
 
 Galaxy fit:
 
-- This is enough for a minimal single-chain RMSX wrapper.
+- This is enough for a minimal single-chain Flipbook wrapper.
 - The wrapper must always provide either `--num_slices` or `--slice_size`.
 - The wrapper should pass `--chain` unless a separate all-chain adapter is used.
 - The wrapper should pass `--output_dir` inside Galaxy's job working directory.
@@ -190,7 +190,7 @@ The package exports the richer API lazily from `rmsx/__init__.py`:
 Galaxy fit:
 
 - A wrapper can use the console script for v1.
-- Later all-chain or FlipBook-export modes will probably need either a new upstream CLI command or a very small Galaxy adapter script that calls the Python API and writes a predictable manifest.
+- Later all-chain or Flipbook-export modes will probably need either a new upstream CLI command or a very small Galaxy adapter script that calls the Python API and writes a predictable manifest.
 
 ## Core RMSX Behavior
 
@@ -271,7 +271,7 @@ Behavior:
 - Combines chain PDB slices into `output_dir/combined` when multiple chains are found.
 - Writes combined mask metadata when masks are active.
 - Can regenerate plots with synchronized color scaling.
-- Returns the directory that should be used for FlipBook display.
+- Returns the directory that should be used for Flipbook display.
 
 Galaxy fit:
 
@@ -293,7 +293,7 @@ Galaxy fit:
 - Do not use this full path in a standard Galaxy tool v1 because it launches a desktop viewer.
 - The compute half is useful; the viewer-launch half should be separated.
 
-## FlipBook Behavior
+## Flipbook Behavior
 
 `rmsx/flipbook.py` is a viewer launcher over already-generated PDB slice files.
 
@@ -319,7 +319,7 @@ Behavior:
 
 Galaxy interpretation:
 
-- FlipBook's current reusable data product is a set of PDB slice files with B-factors encoding RMSX or related values.
+- Flipbook's current reusable data product is a set of PDB slice files with B-factors encoding RMSX or related values.
 - `rmsx_<palette>.png` is generated by a viewer command, not by a headless library call in the Python code itself.
 - A Galaxy v1 wrapper should expose the PDB slices and plot PNGs, but not try to pop up ChimeraX or VMD.
 - A future Galaxy visualization could render these PDB slices with a browser molecular viewer if the data contract is stable.
@@ -350,7 +350,7 @@ The repository has useful pytest coverage:
 
 - Output directory safety refuses unsafe overwrite targets and unmanaged folders.
 - Masking clips masked residues, writes metadata, and excludes masked residues from summaries.
-- FlipBook masking builds ChimeraX transparency commands and passes VMD mask settings through environment variables.
+- Flipbook masking builds ChimeraX transparency commands and passes VMD mask settings through environment variables.
 - Local-demo safety tests check that demo files are packaged and that generated demo outputs go to `rmsx_demo_outputs`.
 
 Test/data observations:
@@ -407,7 +407,7 @@ These should be addressed before a public Tool Shed or IUC-style wrapper:
 
 Tool name:
 
-- `RMSX trajectory analysis`
+- `Flipbook trajectory analysis`
 
 Recommended v1 mode:
 
@@ -445,7 +445,7 @@ Implementation notes for a future wrapper:
 - Always pass either `--num_slices` or `--slice_size`.
 - Pass `--quiet` for normal operation, but capture stdout/stderr.
 - Prefer output discovery for `rmsx_*.csv`, `*_rmsx_plot_chain_*.png`, and `slice_*_first_frame.pdb`.
-- Keep FlipBook viewer launching out of the v1 wrapper.
+- Keep Flipbook viewer launching out of the v1 wrapper.
 
 ## Proposed Later Routes
 
@@ -457,13 +457,13 @@ Why it matters:
 
 - Users may not know segids.
 - Multi-chain MD systems are common.
-- It naturally creates a combined PDB-slice directory for FlipBook-style display.
+- It naturally creates a combined PDB-slice directory for Flipbook-style display.
 
 Likely requirement:
 
 - Add an upstream CLI subcommand or a wrapper-side Python adapter that calls `all_chain_rmsx` and writes a manifest.
 
-### Route 3: FlipBook Export Tool
+### Route 3: Flipbook Export Tool
 
 Goal: transform an RMSX output directory or PDB-slice collection into Galaxy-friendly visual artifacts.
 
@@ -480,7 +480,7 @@ Avoid:
 
 ### Route 4: Galaxy Visualization Plugin
 
-Goal: display RMSX/FlipBook outputs in the Galaxy UI using browser-side molecular visualization.
+Goal: display RMSX/Flipbook outputs in the Galaxy UI using browser-side molecular visualization.
 
 Prerequisite:
 
@@ -488,7 +488,7 @@ Prerequisite:
 
 ### Route 5: InteractiveTool
 
-Goal: expose a richer FlipBook web app if the visualization truly needs a live service.
+Goal: expose a richer Flipbook web app if the visualization truly needs a live service.
 
 Use only if:
 
@@ -504,7 +504,7 @@ Use only if:
 - Is a smaller test trajectory available or easy to generate?
 - Should the Galaxy wrapper package RMSX from PyPI, GitHub, a local source checkout, or a container?
 - Which public release/version should the Galaxy wrapper pin?
-- Should FlipBook's first Galaxy artifact be a PDB collection, a combined multi-model PDB, an HTML report, or a visualization plugin?
+- Should Flipbook's first Galaxy artifact be a PDB collection, a combined multi-model PDB, an HTML report, or a visualization plugin?
 
 ## Recommended Next Phase
 

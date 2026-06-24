@@ -1,19 +1,20 @@
-RMSX trajectory analysis
-========================
+Flipbook trajectory analysis
+============================
 
 RMSX partitions a molecular dynamics trajectory into time slices and computes
 per-residue RMSF within each slice. This Galaxy wrapper exposes the RMSX compute
 path and returns workflow-friendly Galaxy datasets: RMSX, RMSD, and RMSF CSV
 tables; mask metadata; a list collection of PDB slice snapshots; a standalone
 RMSX heatmap PNG; the original RMSD/RMSX/RMSF triple plot PNG; an execution log;
-and a schema-validated JSON manifest for the Molstar FlipBook prototype viewer.
+and a schema-validated JSON manifest for the Molstar Flipbook prototype viewer.
 
 Scope
 -----
 
-The conservative Tool Shed candidate is RMSX-only. It does not launch FlipBook,
-ChimeraX, VMD, an external viewer server, or a trusted HTML report. Those richer
-viewer paths remain in the companion repository for cofest development.
+The conservative Tool Shed candidate is a Flipbook Galaxy wrapper backed by
+RMSX. It does not launch Flipbook, ChimeraX, VMD, an external viewer server, or
+a trusted HTML report. Those richer viewer paths remain in the companion
+repository for cofest development.
 
 The first reviewable wrapper path accepts PDB topology/structure input and DCD
 or XTC trajectory input. RMSX and MDAnalysis can support additional molecular
@@ -23,12 +24,12 @@ deliberately with tests for each supported pair.
 Viewer manifest
 ---------------
 
-The Molstar FlipBook manifest is emitted as standard Galaxy JSON using schema
-version ``rmsx-molstar-viewer/v1``. The companion repository also contains a
-native Galaxy visualization plugin and a project-local ``rmsxmolstar`` datatype,
-but those are not assumed for the conservative IUC wrapper path. The manifest is
-still useful as structured data and can be rendered by the prototype viewer when
-that plugin is installed.
+The Molstar Flipbook manifest is emitted as standard Galaxy JSON using schema
+version ``flipbook-molstar-viewer/v1``. The companion repository also contains a
+native Galaxy visualization plugin and a project-local ``flipbookmolstar``
+datatype, but those are not assumed for the conservative IUC wrapper path. The
+manifest is still useful as structured data and can be rendered by the prototype
+viewer when that plugin is installed.
 
 Dependency status
 -----------------
@@ -37,7 +38,7 @@ The wrapper currently declares RMSX, MDAnalysis, Python table dependencies,
 Plotly, the rich-display package imported by upstream RMSX at startup,
 ``r-base``, and the R plotting packages required by the original RMSX plot
 script. A temporary container scaffold is provided at
-``ghcr.io/antuneslab/rmsx-galaxy:0.2.3-galaxy0`` and pins upstream RMSX
+``ghcr.io/antuneslab/flipbook-galaxy:0.2.3-galaxy0`` and pins upstream RMSX
 ``v0.2.3``. That tag currently installs Python package metadata as
 ``rmsx==0.1.0``, so the wrapper requirement and version command remain honest
 about the executable package version while this upstream metadata mismatch is

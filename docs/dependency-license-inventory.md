@@ -1,4 +1,4 @@
-# RMSX Galaxy Dependency And License Inventory
+# Flipbook Galaxy Dependency And License Inventory
 
 This is the human-readable dependency inventory for the current Galaxy runtime
 plan. It should be regenerated from the final Conda/container environment before

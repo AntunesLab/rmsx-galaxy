@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validate RMSX Galaxy wrapper inputs before launching RMSX."""
+"""Validate Flipbook Galaxy wrapper inputs before launching RMSX."""
 
 import argparse
 import sys
@@ -46,7 +46,7 @@ def requested_selectors(selector):
 
 def main():
     args = parse_args()
-    print("RMSX Galaxy preflight")
+    print("Flipbook Galaxy preflight")
     print(f"topology: {args.topology}")
     print(f"trajectory: {args.trajectory}")
     print(f"selector: {args.selector}")

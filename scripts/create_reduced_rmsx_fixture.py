@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Create a smaller RMSX trajectory test fixture.
 
-Run this inside the RMSX Galaxy runtime container, where MDAnalysis is
+Run this inside the Flipbook Galaxy runtime container, where MDAnalysis is
 available. The script keeps all atoms from the input topology and writes a
 uniformly sampled subset of trajectory frames to a new trajectory file.
 """

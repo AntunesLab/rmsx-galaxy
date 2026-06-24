@@ -1,8 +1,8 @@
 (function () {
   "use strict";
 
-  const SCHEMA_VERSION = "rmsx-molstar-viewer/v1";
-  const STATIC_BASE = "/static/plugins/visualizations/rmsx_molstar/static/";
+  const SCHEMA_VERSION = "flipbook-molstar-viewer/v1";
+  const STATIC_BASE = "/static/plugins/visualizations/flipbook_molstar/static/";
   const scriptUrl = document.currentScript?.src || "";
   function resolveStaticAsset(path) {
     const candidates = [
@@ -84,7 +84,7 @@
     <main class="rmsx-app">
       <aside class="rmsx-controls" data-testid="molstar-controls-sidebar">
         <div class="controls-heading">
-          <h1>RMSX Molstar FlipBook</h1>
+          <h1>Flipbook Molstar</h1>
           <div class="control-row primary-row">
             <button id="resetViewButton" type="button" data-testid="molstar-reset">Reset View</button>
           </div>
@@ -359,7 +359,7 @@
     const datasetCandidates = datasetIdCandidates();
     const historyCandidates = historyIdCandidates();
     if (!datasetCandidates.length) {
-      throw new Error("No Galaxy dataset id was provided to the RMSX Molstar visualization.");
+      throw new Error("No Galaxy dataset id was provided to the Flipbook Molstar visualization.");
     }
     const urls = [];
     for (const historyId of historyCandidates) {
@@ -406,7 +406,7 @@
 
   function validateManifest(manifest) {
     if (!manifest || manifest.schemaVersion !== SCHEMA_VERSION) {
-      throw new Error(`This JSON dataset is not an RMSX Molstar manifest. Expected schemaVersion ${SCHEMA_VERSION}.`);
+      throw new Error(`This JSON dataset is not a Flipbook Molstar manifest. Expected schemaVersion ${SCHEMA_VERSION}.`);
     }
     const required = ["title", "slices", "residues", "summaries", "domain", "maskSummary", "palette", "availablePalettes", "presentation", "visualMapping", "rotationModel", "molstarRenderStyle"];
     const missing = required.filter((key) => manifest[key] === undefined);
@@ -577,14 +577,14 @@
 
   function visualizationConfigStateSources() {
     return [
-      ["visualization_config.rmsxMolstarState", visualizationConfig.rmsxMolstarState],
-      ["visualization_config.rmsx_molstar_state", visualizationConfig.rmsx_molstar_state],
+      ["visualization_config.flipbookMolstarState", visualizationConfig.flipbookMolstarState],
+      ["visualization_config.flipbook_molstar_state", visualizationConfig.flipbook_molstar_state],
       ["visualization_config.viewerState", visualizationConfig.viewerState],
       ["visualization_config.state", visualizationConfig.state],
       ["visualization_config.settings", visualizationConfig.settings],
       ["visualization_config.config", visualizationConfig.config],
-      ["incoming.rmsxMolstarState", incoming.rmsxMolstarState],
-      ["incoming.rmsx_molstar_state", incoming.rmsx_molstar_state]
+      ["incoming.flipbookMolstarState", incoming.flipbookMolstarState],
+      ["incoming.flipbook_molstar_state", incoming.flipbook_molstar_state]
     ].filter(([, value]) => value && typeof value === "object" && !Array.isArray(value))
       .map(([name, value]) => ({ name, value }));
   }
@@ -1440,7 +1440,7 @@
       plugin.canvas3d.requestDraw?.();
       return true;
     } catch (error) {
-      console.warn("RMSX Molstar render style could not be applied.", error);
+      console.warn("Flipbook Molstar render style could not be applied.", error);
       return false;
     }
   }
@@ -2043,9 +2043,9 @@
     const next = `${url.pathname}${url.search}${url.hash}`;
     if (next !== current) {
       try {
-        context.targetWindow.history.replaceState({ rmsxMolstarState: true, scope: context.scope }, "", next);
+        context.targetWindow.history.replaceState({ flipbookMolstarState: true, scope: context.scope }, "", next);
       } catch (error) {
-        console.debug("RMSX Molstar URL state could not be written; controls will continue without shareable URL sync.", error);
+        console.debug("Flipbook Molstar URL state could not be written; controls will continue without shareable URL sync.", error);
       }
     }
   }
@@ -2630,7 +2630,7 @@
     try {
       REPORT = await fetchManifest();
       validateManifest(REPORT);
-      document.title = REPORT.title || "RMSX Molstar FlipBook";
+      document.title = REPORT.title || "Flipbook Molstar";
       await loadMolstarAssets();
       populateControls();
       wireEvents();

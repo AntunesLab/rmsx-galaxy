@@ -1,14 +1,14 @@
-# RMSX Molstar Galaxy Visualization Plugin
+# Flipbook Molstar Galaxy Visualization Plugin
 
-This is a local prototype Galaxy visualization plugin for RMSX
-`rmsx-molstar-viewer/v1` manifests.
+This is a local prototype Galaxy visualization plugin for Flipbook
+`flipbook-molstar-viewer/v1` manifests generated from RMSX analysis outputs.
 
 The plugin is registered for generic `json` datasets and also for the
-project-local `rmsxmolstar` datatype during prototype development. In both cases it
+project-local `flipbookmolstar` datatype during prototype development. In both cases it
 validates `schemaVersion` at runtime and shows a clear unsupported-manifest
 message for unrelated JSON files.
 
-`config/datatypes/datatypes_conf.xml` registers the dedicated `rmsxmolstar`
+`config/datatypes/datatypes_conf.xml` registers the dedicated `flipbookmolstar`
 datatype as a standalone snippet for local Galaxy experiments. Do not point
 Galaxy at the standalone snippet as the entire `datatypes_config_file` unless it
 has been merged with Galaxy's stock datatype registry; using the snippet alone
@@ -19,10 +19,10 @@ The native plugin loads the bundled Molstar 5.4.2 viewer assets from
 development fallback only.
 
 For local Planemo serving, first build a full datatype registry that contains
-Galaxy's stock datatypes plus the RMSX Molstar manifest datatype:
+Galaxy's stock datatypes plus the Flipbook Molstar manifest datatype:
 
 ```bash
-python3 scripts/build_rmsx_datatypes_config.py
+python3 scripts/build_flipbook_datatypes_config.py
 ```
 
 Then point Galaxy at both the merged datatype registry and this visualization
@@ -39,7 +39,7 @@ env HOME="$PWD/.planemo-home" .venv-planemo/bin/planemo serve \
   --job_config_file config/planemo_docker_job_conf.yml \
   --no_conda_auto_install \
   --no_conda_auto_init \
-  tools/rmsx/rmsx.xml
+  tools/flipbook/flipbook.xml
 ```
 
 In a second terminal, mirror the plugin assets into the active temporary Galaxy
@@ -50,9 +50,9 @@ entry point and bundled Molstar files:
 python3 scripts/sync_visualization_static.py
 ```
 
-After running RMSX, open the `Molstar native viewer manifest - open with
-Visualize` history item and use Galaxy's `Visualize` action to launch `RMSX
-Molstar FlipBook`. This path
+After running the Flipbook Galaxy tool, open the `Molstar native viewer manifest
+- open with Visualize` history item and use Galaxy's `Visualize` action to
+launch `Flipbook Molstar`. This path
 renders through Galaxy's native visualization framework, so it does not need the
 trusted-HTML allowlist used by standalone HTML report datasets.
 
@@ -61,12 +61,12 @@ The plugin prefers Galaxy's history-content display endpoint when a
 dataset display APIs. A direct test URL can therefore include both ids:
 
 ```text
-http://localhost:9090/visualizations/display?visualization=rmsx_molstar&dataset_id=...&history_id=...
+http://localhost:9090/visualizations/display?visualization=flipbook_molstar&dataset_id=...&history_id=...
 ```
 
 The native viewer opens with a compact desktop control sidebar on the left and
 the Molstar canvas filling the remaining space. The View accordion is open by
-default and focuses on the expected FlipBook presentation: tiled slices,
+default and focuses on the expected Flipbook presentation: tiled slices,
 spacing, columns, and numbered slice visibility chips. Overlay/Flip layout
 controls, playback controls, and the separate residue-marker panel are not part
 of the default user surface. The Style accordion carries the visual calibration
@@ -86,8 +86,8 @@ For an interactive parity smoke check, copy the native visualization URL from
 the browser and run:
 
 ```bash
-node tests/rmsx/native_visualization_parity_check.mjs \
-  --url "http://localhost:9090/visualizations/display?visualization=rmsx_molstar&dataset_id=..."
+node tests/flipbook/native_visualization_parity_check.mjs \
+  --url "http://localhost:9090/visualizations/display?visualization=flipbook_molstar&dataset_id=..."
 ```
 
 The parity script expects a running Galaxy page and a Node environment with
@@ -99,22 +99,22 @@ For a slower visual smoke check that also saves a screenshot and inspects the
 rendered canvas for separated tiled clusters, run:
 
 ```bash
-node tests/rmsx/native_visualization_visual_check.mjs \
-  --url "http://localhost:9090/visualizations/display?visualization=rmsx_molstar&dataset_id=..." \
-  --screenshot /private/tmp/rmsx_molstar_visual_check.png
+node tests/flipbook/native_visualization_visual_check.mjs \
+  --url "http://localhost:9090/visualizations/display?visualization=flipbook_molstar&dataset_id=..." \
+  --screenshot /private/tmp/flipbook_molstar_visual_check.png
 ```
 
 This check is useful after layout, camera, spacing, or representation changes
 because it catches blank canvases and tiled rows that visually collapse into a
 single cluster.
 
-The same checker can also render a saved `rmsx-molstar-viewer/v1` manifest
+The same checker can also render a saved `flipbook-molstar-viewer/v1` manifest
 directly, including Galaxy API responses that wrap the manifest in `item_data`:
 
 ```bash
-node tests/rmsx/native_visualization_visual_check.mjs \
+node tests/flipbook/native_visualization_visual_check.mjs \
   --manifest /private/tmp/rmsx_manifest_text_content.json \
-  --screenshot /private/tmp/rmsx_molstar_manifest_visual_check.png
+  --screenshot /private/tmp/flipbook_molstar_manifest_visual_check.png
 ```
 
 If Galaxy's visualization display route is not cooperating, run the same parity
@@ -127,18 +127,18 @@ python3 -m http.server 8787
 Then, in a second terminal:
 
 ```bash
-node tests/rmsx/native_visualization_parity_check.mjs \
-  --url "http://127.0.0.1:8787/tests/rmsx/native_visualization_harness.html"
+node tests/flipbook/native_visualization_parity_check.mjs \
+  --url "http://127.0.0.1:8787/tests/flipbook/native_visualization_harness.html"
 ```
 
-The harness uses an inline `rmsx-molstar-viewer/v1` manifest but loads the same
+The harness uses an inline `flipbook-molstar-viewer/v1` manifest but loads the same
 native visualization script and vendored Molstar assets as Galaxy.
 
 The visual check can target the same harness URL; it should report at least
 three separated visual clusters for the bundled three-slice manifest.
 
 For production-style Galaxy packaging, install the visualization as a standard
-plugin under Galaxy's `static/plugins/visualizations/rmsx_molstar` path, or use
+plugin under Galaxy's `static/plugins/visualizations/flipbook_molstar` path, or use
 Galaxy's current visualization packaging mechanism for that static location. The
 `sync_visualization_static.py` helper is only for Planemo's disposable local
 Galaxy checkout.
