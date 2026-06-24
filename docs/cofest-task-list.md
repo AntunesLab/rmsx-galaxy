@@ -2,13 +2,13 @@
 
 This is the shared working list for the `rmsx-galaxy` cofest repository.
 
-## Milestone 1: Shareable Private Repo
+## Milestone 1: Shareable Public Repo
 
-- [ ] Create the private `AntunesLab/rmsx-galaxy` repository.
-- [ ] Push the clean initial scaffold.
+- [x] Create the public `AntunesLab/rmsx-galaxy` repository.
+- [x] Push the clean initial scaffold.
 - [ ] Add collaborator access once GitHub usernames are known.
 - [ ] Confirm Issues, labels, and project board are available.
-- [ ] Keep generated local artifacts out of the first commit.
+- [x] Keep generated local artifacts out of the first commit.
 
 ## Milestone 2: Reproducible Local Demo
 
