@@ -8,6 +8,8 @@ dependencies:
   - mdanalysis=2.10.0
   - pandas=3.0.3
   - numpy=2.4.6
+  - plotly=6.8.0
+  - ipython=9.14.1
   - r-base=4.5.3
   - r-ggplot2=4.0.3
   - r-viridis=0.6.5

@@ -121,7 +121,7 @@ This is a strong candidate if FlipBook can be represented as client-side renderi
 
 ### InteractiveTool Route
 
-InteractiveTools expose containerized web applications from Galaxy jobs. They can support notebooks, R Shiny apps, VNC applications, and similar services. A FlipBook web app could fit here if it needs a live backend or complex browser-server interaction.
+InteractiveTools expose containerized web applications from Galaxy jobs. They can support R Shiny apps, VNC applications, and similar browser-based services. A FlipBook web app could fit here if it needs a live backend or complex browser-server interaction.
 
 Costs to account for:
 
@@ -326,4 +326,3 @@ Risks:
 - Are there licensing constraints around redistribution in the Tool Shed or containers?
 - What small public sample dataset can be included in tests?
 - Is the intended first Galaxy deployment local/private, a public Galaxy instance, or the main Tool Shed?
-

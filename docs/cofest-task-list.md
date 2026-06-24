@@ -30,14 +30,14 @@ This is the shared working list for the `rmsx-galaxy` cofest repository.
 
 - [ ] Keep tiled layout as the default presentation.
 - [ ] Verify palette switching, spacing, thickness, columns, local rotation, and residue marker behavior.
-- [ ] File viewer polish issues for camera fit, tile spacing, notebook direct mount, and Galaxy plugin packaging.
+- [ ] File viewer polish issues for camera fit, tile spacing, and Galaxy plugin packaging.
 - [ ] Keep the native visualization plugin on vendored `molstar@5.4.2` until the team decides to upgrade.
 - [ ] Decide which viewer improvements should move upstream versus remain Galaxy-specific.
 
 ## Milestone 5: Container And Packaging
 
 - [ ] Choose the first supported upstream RMSX tag or commit.
-- [ ] Build `ghcr.io/antuneslab/rmsx-galaxy:0.1.0`.
+- [ ] Build `ghcr.io/antuneslab/rmsx-galaxy:0.2.3-galaxy0`.
 - [ ] Push the image to GHCR.
 - [ ] Re-run Docker-backed Planemo tests using the pushed image.
 - [ ] Open a follow-up issue for the Bioconda/Conda packaging route.
@@ -46,7 +46,6 @@ This is the shared working list for the `rmsx-galaxy` cofest repository.
 
 - `galaxy-tool`
 - `molstar-viewer`
-- `notebook`
 - `container`
 - `docs`
 - `tests`
@@ -58,4 +57,4 @@ This is the shared working list for the `rmsx-galaxy` cofest repository.
 - Immediate Tool Shed publication.
 - Immediate Bioconda publication.
 - Replacing upstream RMSX documentation.
-- Making the notebook prototype the primary Galaxy viewer path.
+- Replacing the native Galaxy visualization with a separate viewer surface.

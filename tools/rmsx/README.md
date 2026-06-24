@@ -15,14 +15,14 @@ This directory contains the RMSX-only Galaxy wrapper scaffold. It is focused on 
 
 The XML declares `rmsx` as the intended executable dependency, but RMSX still needs Galaxy-ready dependency packaging before this wrapper can run in a clean Planemo/Galaxy environment. The local source inspection found that RMSX depends on Python packages plus an R plotting stack, and the current R script can install missing R packages at runtime. For Galaxy, those R dependencies should be provided by Conda or a container instead.
 
-The first dependency scaffold lives in `packaging/rmsx-galaxy/`. It builds a container from the upstream RMSX source repository and preinstalls the Python/R runtime stack. The active wrapper references a registry-qualified container tag, `ghcr.io/antuneslab/rmsx-galaxy:0.1.0`. Collaborators can build that tag locally with `scripts/build_container.sh` before it is published to GHCR.
+The first dependency scaffold lives in `packaging/rmsx-galaxy/`. It builds a container from the upstream RMSX source repository and preinstalls the Python/R runtime stack. The active wrapper references a registry-qualified container tag, `ghcr.io/antuneslab/rmsx-galaxy:0.2.3-galaxy0`. Collaborators can build that tag locally with `scripts/build_container.sh` before it is published to GHCR.
 
-For purely local development, you may temporarily retag or override the container as `rmsx-galaxy:0.1.0`, but the shareable wrapper should keep the registry-qualified tag in `tools/rmsx/macros.xml`.
+For purely local development, you may temporarily retag or override the container as `rmsx-galaxy:0.2.3-galaxy0`, but the shareable wrapper should keep the registry-qualified tag in `tools/rmsx/macros.xml`.
 
-The first CLI smoke path exercises the RMSX compute step only and only requires a topology, trajectory, chain/segment selector, and slice count. The Galaxy wrapper then calls the packaged R plotting script separately to create explicit heatmap and triple-plot PNG outputs. The fixture path uses PDB/DCD:
+The first CLI smoke path exercises the RMSX compute step only and only requires a topology, trajectory, chain/segment selector, and slice count. The Galaxy wrapper then calls the packaged R plotting script separately to create explicit heatmap and triple-plot PNG outputs. The fixture path uses PDB/XTC:
 
 ```bash
-RMSX_NO_CITATION=1 rmsx input.pdb input.dcd --output_dir rmsx_output --num_slices 3 --chain A --palette viridis --start_frame 0 --analysis_type protein --summary_n 3 --no-interpolate --quiet --no-plot --overwrite
+RMSX_NO_CITATION=1 rmsx input.pdb input.xtc --output_dir rmsx_output --num_slices 3 --chain A --palette viridis --start_frame 0 --analysis_type protein --summary_n 3 --no-interpolate --quiet --no-plot --overwrite
 ```
 
 ## Local Verification
@@ -35,8 +35,8 @@ mkdir -p /tmp/rmsx_galaxy_wrapper_smoke
 docker run --rm \
   -v "$PWD/tools/rmsx/test-data:/data:ro" \
   -v /tmp/rmsx_galaxy_wrapper_smoke:/out \
-  ghcr.io/antuneslab/rmsx-galaxy:0.1.0 \
-  rmsx /data/1UBQ.pdb /data/mon_sys.dcd \
+  ghcr.io/antuneslab/rmsx-galaxy:0.2.3-galaxy0 \
+  rmsx /data/1UBQ.pdb /data/mon_sys.xtc \
     --output_dir /out \
     --num_slices 3 \
     --chain 7 \
@@ -47,30 +47,13 @@ docker run --rm \
 
 That run produced the expected RMSX, RMSD, and RMSF CSV files plus three `slice_*_first_frame.pdb` files. The installed RMSX environment used for this smoke test does not emit `masked_residues.csv`; the Galaxy wrapper therefore derives an all-unmasked metadata table from the RMSX CSV when RMSX omits that file. During a full Galaxy run, `rmsx_static_plots.py` locates the installed RMSX `plot_rmsx.R` script and writes the standalone heatmap and original triple-composite PNG outputs.
 
-The Galaxy tool form includes an input-source selector. "Use datasets from history" accepts uploaded topology/structure and trajectory datasets, preserves their Galaxy extensions with job-local symlinks, and validates them with `rmsx_preflight.py` before RMSX runs. "Load example data: 1UBQ plus mon_sys" uses `tools/rmsx/test-data/1UBQ.pdb` and `tools/rmsx/test-data/mon_sys.dcd` directly from the wrapper directory. The example branch defaults to chain/segment ID `7` and three trajectory slices so a fresh Galaxy session can produce the interactive reports without a manual upload step.
+The Galaxy tool form includes an input-source selector. "Use datasets from history" accepts uploaded topology/structure and DCD/XTC trajectory datasets, preserves their Galaxy extensions with job-local symlinks, and validates them with `rmsx_preflight.py` before RMSX runs. "Load example data: 1UBQ plus mon_sys" uses `tools/rmsx/test-data/1UBQ.pdb` and `tools/rmsx/test-data/mon_sys.xtc` directly from the wrapper directory. The example branch defaults to chain/segment ID `7` and nine trajectory slices so a fresh Galaxy session can produce the interactive reports without a manual upload step.
 
 The Galaxy wrapper creates the native Molstar viewer manifest with `rmsx_molstar_report.py`. Shared report-parsing helpers live in `rmsx_report_common.py`. The script can still write a standalone HTML report for development if called manually with `--output`, but the public Galaxy wrapper does not emit that HTML dataset.
 
-The manifest uses schema version `rmsx-molstar-viewer/v1` and embeds the PDB slice text, RMSX residue values, slice summaries, mask metadata, palette defaults, layout defaults, and Molstar render settings. The wrapper emits this output as the project-local `rmsxmolstar` datatype, backed by Galaxy's JSON datatype. A tool-local `datatypes_conf.xml` sits beside the wrapper for linting and Tool Shed-style packaging, while `config/datatypes/datatypes_conf.xml` remains the standalone snippet for local Galaxy experiments. A local prototype Galaxy visualization plugin lives under `config/plugins/visualizations/rmsx_molstar`; run Planemo with the visualization plugin directory override to make the manifest offer the `RMSX Molstar FlipBook` Visualize action.
+The manifest uses schema version `rmsx-molstar-viewer/v1` and embeds the PDB slice text, RMSX residue values, slice summaries, mask metadata, palette defaults, layout defaults, and Molstar render settings. The conservative wrapper emits this output as standard Galaxy JSON. A project-local `rmsxmolstar` datatype remains available for local Galaxy experiments, but it is not required by the Tool Shed candidate unless Galaxy/IUC agrees on that datatype route. A local prototype Galaxy visualization plugin lives under `config/plugins/visualizations/rmsx_molstar`; run Planemo with the visualization plugin directory override to make the manifest offer the `RMSX Molstar FlipBook` Visualize action.
 
-## Notebook Molstar FlipBook
-
-`rmsx_molstar_notebook.py` exposes the same `rmsx-molstar-viewer/v1`
-manifest/viewer path for Jupyter notebooks. `view_flipbook_snapshots()` renders
-an existing directory of PDB snapshots by reading RMSX-style values from the PDB
-B-factor field. `run_rmsx_notebook()` runs the RMSX CLI on topology/trajectory
-inputs, builds the manifest from the generated `slice_*_first_frame.pdb` files,
-and returns a rich notebook result that displays as an inline Molstar iframe.
-
-The notebook helper embeds the vendored Molstar 5.4.2 assets and the native
-viewer script directly into the iframe HTML, so it does not require a Galaxy
-server, Galaxy visualization plugin registration, ChimeraX, or VMD. For larger
-or shareable runs, pass `write_html=True` or an explicit HTML path to save the
-same interactive viewer as a standalone file. See
-`notebooks/rmsx_molstar_flipbook_demo.ipynb` for a runnable snapshot-only demo
-and a bundled 1UBQ/mon_sys RMSX example cell.
-
-The native visualization is now the primary and public viewer target. Its Galaxy iframe UI opens with a desktop control sidebar on the left, the Layout tab selected by default, and the Molstar canvas taking the remaining space. The sidebar exposes Layout, Appearance, Scale, Residues, Rotation, and Metrics panels. The selected-residue marker remains available from the Residues panel, but it is disabled by default so the initial view stays faithful to FlipBook's RMSX worm presentation rather than opening with an analysis overlay. Narrow iframes collapse back to the stacked top-control layout.
+The native visualization is now the primary and public viewer target. Its Galaxy iframe UI opens with a compact desktop control sidebar on the left, the View panel selected by default, and the Molstar canvas taking the remaining space. The sidebar exposes View, Style, Rotation, and Metrics panels. View focuses on tiled FlipBook layout, spacing, columns, and numbered slice visibility chips; Style carries palette, RMSX color/radius ranges, thickness, outline, and reset controls; Metrics summarizes the whole RMSX sequence. Narrow iframes collapse back to the stacked layout.
 
 Native tiled placement now reserves stable slots from the default side-on projected row footprint plus configured putty-radius padding, which gives thick RMSX worms room to rotate without overlap while avoiding unnecessarily wide rows for long, skinny structures. Reset View and initial load apply extra putty-aware camera margin so the row opens as a readable whole-scene FlipBook rather than a close crop.
 
@@ -97,7 +80,7 @@ scripts/build_container.sh
 The container exposes the RMSX CLI:
 
 ```bash
-docker run --rm ghcr.io/antuneslab/rmsx-galaxy:0.1.0 rmsx --help
+docker run --rm ghcr.io/antuneslab/rmsx-galaxy:0.2.3-galaxy0 rmsx --help
 ```
 
 The container also completed the RMSX compute smoke fixture and produced the expected RMSX, RMSD, RMSF, mask metadata, and three PDB slice files:
@@ -107,8 +90,8 @@ mkdir -p /tmp/rmsx_container_smoke
 docker run --rm \
   -v "$PWD/tools/rmsx/test-data:/data:ro" \
   -v /tmp/rmsx_container_smoke:/out \
-  ghcr.io/antuneslab/rmsx-galaxy:0.1.0 \
-  rmsx /data/1UBQ.pdb /data/mon_sys.dcd \
+  ghcr.io/antuneslab/rmsx-galaxy:0.2.3-galaxy0 \
+  rmsx /data/1UBQ.pdb /data/mon_sys.xtc \
     --output_dir /out \
     --num_slices 3 \
     --chain 7 \
@@ -123,7 +106,7 @@ For Docker-backed Planemo/Galaxy tests, use `config/planemo_docker_job_conf.yml`
 
 Planemo is installed project-locally by `scripts/bootstrap_dev.sh` in `.venv-planemo`.
 
-The wrapper exposes an input-source selector, MDAnalysis-readable topology/trajectory inputs for uploaded-history runs, a chain/segment selector, slice count, frame window controls, analysis type, summary count, interpolation, and a shared Molstar/static-plot palette selector. The bundled example branch uses the wrapper fixture files directly and keeps only the relevant example controls visible. The wrapper should pass XML parsing, Planemo lint at error level, and Docker-backed Galaxy tool tests using the explicit `ghcr.io/antuneslab/rmsx-galaxy:0.1.0` container:
+The wrapper exposes an input-source selector, PDB topology input, DCD/XTC trajectory input, a chain/segment selector, slice count, frame window controls, analysis type, summary count, interpolation, and a shared Molstar/static-plot palette selector. The bundled example branch uses the wrapper fixture files directly and keeps only the relevant example controls visible. The wrapper should pass XML parsing, Planemo lint at error level, and Docker-backed Galaxy tool tests using the explicit `ghcr.io/antuneslab/rmsx-galaxy:0.2.3-galaxy0` container:
 
 ```bash
 scripts/run_static_checks.sh
@@ -135,7 +118,7 @@ The Docker-backed Planemo test uses the locally built RMSX runtime image instead
 scripts/run_planemo_tests.sh
 ```
 
-That Docker-backed run should resolve the registry-qualified RMSX container, launch Docker, produce the static RMSX heatmap and triple-plot PNGs, produce the native Molstar viewer manifest, and pass the wrapper tests. The test suite covers the history-input path, bundled-example path, and an expected preflight failure for a missing chain/segment selector. Raw Planemo can execute the tests with the tool-local `rmsxmolstar` definition, but local Galaxy serves are cleaner if the full datatype registry is merged before startup.
+That Docker-backed run should resolve the registry-qualified RMSX container, launch Docker, produce the static RMSX heatmap and triple-plot PNGs, produce the native Molstar viewer manifest, and pass the wrapper tests. The test suite covers the history-input path, bundled-example path, and an expected preflight failure for a missing chain/segment selector. The Tool Shed candidate manifest output is JSON; the local `rmsxmolstar` datatype is only needed for prototype visualization experiments.
 
 For manual native visualization testing in local Galaxy, use the serve helper:
 
@@ -190,7 +173,7 @@ Do not use `--no_install_prebuilt_client` for this local prototype unless you ar
 Galaxy-specific details now handled in the wrapper:
 
 - Galaxy stages uploaded datasets as extensionless `.dat` files, so the command symlinks them to `input_topology.<ext>` and `input_trajectory.<ext>` before invoking RMSX.
-- The bundled example mode symlinks the wrapper's `test-data/1UBQ.pdb` and `test-data/mon_sys.dcd` to job-local `input_topology.pdb` and `input_trajectory.dcd`.
+- The bundled example mode symlinks the wrapper's `test-data/1UBQ.pdb` and `test-data/mon_sys.xtc` to job-local `input_topology.pdb` and `input_trajectory.xtc`.
 - `rmsx_preflight.py` validates topology/trajectory loading, atom/frame counts, frame windows, requested slice counts, and chain/segment selectors before RMSX runs.
 - The fallback mask metadata writer uses LF line endings so Planemo line assertions are stable.
 

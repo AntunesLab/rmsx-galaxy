@@ -172,16 +172,12 @@ async function main() {
       "molstar-control-panels",
       "molstar-controls-sidebar",
       "molstar-panel-layout",
-      "molstar-panel-appearance",
       "molstar-panel-scale",
-      "molstar-panel-residue",
       "molstar-panel-rotation",
       "molstar-panel-diagnostics",
-      "molstar-render-select",
       "molstar-outline-checkbox",
       "molstar-rmsx-legend",
       "molstar-radius-legend",
-      "molstar-layout-select",
       "molstar-palette-select",
       "molstar-color-min-number",
       "molstar-color-max-number",
@@ -192,10 +188,6 @@ async function main() {
       "molstar-spacing-range",
       "molstar-columns-number",
       "molstar-rotate-sensitivity-range",
-      "molstar-local-rotate",
-      "molstar-local-rotate-checkbox",
-      "molstar-residue-marker-toggle",
-      "molstar-residue-marker-checkbox",
       "molstar-diagnostics"
     ];
     for (const testId of requiredTestIds) {
@@ -210,11 +202,12 @@ async function main() {
     assert(diag.controls?.accordionControls === true, "sidebar accordion controls are active");
     assert(diag.controls?.compactTabs === false, "native viewer does not expose a tab strip");
     assert(diag.controls?.sidebarLayout === true, "desktop sidebar control layout is active");
-    assert(diag.controls?.activeControlPanel === "layout", "layout control panel is active by default");
+    assert(diag.controls?.activeControlPanel === "view", "view control panel is active by default");
     assert(diag.controls?.playback === false, "native viewer does not expose playback controls");
-    assert(JSON.stringify(diag.controls?.layoutModes) === JSON.stringify(["tiled", "overlay"]), "native viewer exposes tiled and overlay layouts");
+    assert(JSON.stringify(diag.controls?.layoutModes) === JSON.stringify(["tiled"]), "native viewer exposes tiled layout as the user-facing mode");
     assert(diag.controls?.urlStatePersistence === true, "URL-state persistence is advertised");
-    assert(diag.controls?.renderStyle === true, "render style controls are advertised");
+    assert(diag.controls?.compactControlPanels === true, "compact sidebar panels are advertised");
+    assert(diag.controls?.renderStyle === false, "render style controls are intentionally hidden");
     assert(diag.controls?.rotateSensitivity === true, "rotate sensitivity control is advertised");
     assert(diag.stateInitialization?.urlParamsOverrideVisualizationConfig === true, "URL params override Galaxy visualization config state");
     assert(diag.presentation?.layout === "tiled", "tiled is the default native layout");
@@ -235,9 +228,7 @@ async function main() {
       thickness: diag.visualMapping?.thickness
     };
 
-    await openPanel(frameLocator, "molstar-panel-appearance");
-    await selectValue(frameLocator.getByTestId("molstar-render-select"), "soft");
-    await waitForDiagnostic(page, frameLocator, (current) => current.renderStyle?.preset === "soft", "render preset control updates diagnostics");
+    await openPanel(frameLocator, "molstar-panel-scale");
     await frameLocator.getByTestId("molstar-outline-checkbox").setChecked(false);
     await waitForDiagnostic(
       page,
@@ -248,7 +239,6 @@ async function main() {
     await frameLocator.getByTestId("molstar-outline-checkbox").setChecked(true);
     await waitForDiagnostic(page, frameLocator, (current) => current.renderStyle?.outline === "on", "outline toggle restores native outline");
 
-    await openPanel(frameLocator, "molstar-panel-scale");
     await selectValue(frameLocator.getByTestId("molstar-palette-select"), "turbo");
     await waitForDiagnostic(page, frameLocator, (current) => current.palette === "turbo" && current.visualMapping?.legend?.stops?.[2]?.color, "palette switch updates diagnostics and legend");
 
@@ -282,29 +272,9 @@ async function main() {
     await fillAndCommit(frameLocator.getByTestId("molstar-columns-number"), "2");
     await waitForDiagnostic(page, frameLocator, (current) => current.presentation?.columns === 2, "columns update presentation state");
 
-    await selectValue(frameLocator.getByTestId("molstar-layout-select"), "overlay");
-    await waitForDiagnostic(page, frameLocator, (current) => current.presentation?.layout === "overlay", "overlay layout updates diagnostics");
-    await selectValue(frameLocator.getByTestId("molstar-layout-select"), "tiled");
-    await waitForDiagnostic(page, frameLocator, (current) => current.presentation?.layout === "tiled", "tiled layout restores diagnostics");
-
-    await openPanel(frameLocator, "molstar-panel-residue");
-    await frameLocator.getByTestId("molstar-residue-marker-checkbox").setChecked(true);
-    await waitForDiagnostic(page, frameLocator, (current) => current.presentation?.marker === true, "marker toggle enables selected-residue overlay");
-    await frameLocator.getByTestId("molstar-residue-marker-checkbox").setChecked(false);
-    await waitForDiagnostic(page, frameLocator, (current) => current.presentation?.marker === false, "marker toggle disables selected-residue overlay");
-
     await openPanel(frameLocator, "molstar-panel-rotation");
     await fillAndCommit(frameLocator.getByTestId("molstar-rotate-sensitivity-number"), "0.7");
     await waitForDiagnostic(page, frameLocator, (current) => Math.abs(current.presentation?.rotationSensitivity - 0.7) < 0.001, "rotate sensitivity updates diagnostics");
-    await frameLocator.getByTestId("molstar-local-rotate-checkbox").setChecked(false);
-    await waitForDiagnostic(
-      page,
-      frameLocator,
-      (current) => current.presentation?.localDrag === false && current.urlState?.expectedManagedParams?.localDrag === "0",
-      "local drag checkbox disables local rotation diagnostics and URL state"
-    );
-    await frameLocator.getByTestId("molstar-local-rotate-checkbox").setChecked(true);
-    await waitForDiagnostic(page, frameLocator, (current) => current.presentation?.localDrag === true, "local drag checkbox restores local rotation diagnostics");
 
     const viewport = frameLocator.getByTestId("molstar-viewport");
     const box = await viewport.boundingBox();

@@ -246,7 +246,7 @@ Patterns to copy:
 
 RMSX relevance:
 
-If FlipBook or RMSX originated as a local GUI or notebook workflow, this is the precedent for extracting a headless execution path.
+If FlipBook or RMSX originated as a local GUI workflow, this is the precedent for extracting a headless execution path.
 
 ## Visualization and Interactivity Comparables
 
@@ -264,7 +264,7 @@ Design implications:
 
 ### Galaxy InteractiveTools
 
-InteractiveTools are declared with `tool_type="interactive"` and `entry_points` for exposed service URLs. They run container-backed applications as Galaxy jobs and can support notebook, R Shiny, VNC, and web-app workflows.
+InteractiveTools are declared with `tool_type="interactive"` and `entry_points` for exposed service URLs. They run container-backed applications as Galaxy jobs and can support R Shiny, VNC, and web-app workflows.
 
 Use this route only when FlipBook needs a live application process.
 
@@ -322,7 +322,7 @@ Outputs:
 
 Tests:
 
-- Minimal PDB/DCD fixture.
+- Minimal PDB plus compact XTC fixture.
 - One default-mode test with exact or near-exact tabular assertions.
 - One selection-mode test.
 - One failure or empty-selection test if practical.
@@ -333,4 +333,3 @@ Likely staged tools:
 1. `rmsx_analyze`: standard compute wrapper.
 2. `rmsx_flipbook_prepare`: optional derived artifact/report generator.
 3. `rmsx_flipbook_viewer`: optional Galaxy visualization plugin or InteractiveTool, only if justified.
-

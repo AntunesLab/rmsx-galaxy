@@ -16,12 +16,12 @@
         <param required="true">dataset_id</param>
         <param required="false">history_id</param>
     </params>
-    <entry_point entry_point_type="script" type="text/javascript" src="script.js" url="/static/plugins/visualizations/rmsx_molstar/static" />
+    <entry_point entry_point_type="script" type="text/javascript" src="script_compact_0624.js" />
     <help format="markdown"><![CDATA[
 This visualization opens RMSX `rmsx-molstar-viewer/v1` manifests produced by
 the RMSX trajectory analysis tool and renders the embedded PDB slices with
-Molstar. The preferred input is the JSON-backed `rmsxmolstar` datatype emitted
-by the RMSX wrapper. Generic JSON remains accepted as a development fallback,
-and schema validation runs before rendering in both paths.
+Molstar. The conservative wrapper emits standard JSON, and schema validation
+runs before rendering. The project-local `rmsxmolstar` datatype remains accepted
+for prototype Galaxy instances that register it explicitly.
     ]]></help>
 </visualization>

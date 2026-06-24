@@ -9,8 +9,5 @@ node_modules/
 .pnpm-store/
 tool_test_output.*
 planemo-test-output/
-notebook_outputs/
-**/.ipynb_checkpoints/
 **/.idea/
-**/.jupyter/
 config/datatypes/merged_datatypes_conf.xml

@@ -1,15 +1,23 @@
 # RMSX Galaxy Share Readiness
 
-This project is shareable as a Galaxy admin bundle, not as a single ordinary
-Tool Shed install that automatically enables every viewer everywhere.
+This project has two sharing paths:
+
+1. A conservative Tool Shed/IUC candidate that installs the RMSX wrapper and
+   emits standard Galaxy datasets, including a JSON Molstar manifest.
+2. A richer Galaxy admin/cofest bundle that also registers the prototype
+   Molstar visualization plugin and optional project-local datatype.
 
 ## What Users Get
 
-When a Galaxy admin installs the full bundle, users can:
+With the conservative wrapper, users can:
 
 1. Run `RMSX trajectory analysis`.
 2. Receive CSV outputs, static RMSX heatmap/triple-plot PNGs, PDB slice
-   collection, execution log, and a `Molstar native viewer manifest`.
+   collection, execution log, and a JSON `Molstar native viewer manifest`.
+
+When a Galaxy admin installs the full prototype visualization bundle, users can
+also:
+
 3. Open the manifest with Galaxy's `Visualize` action.
 4. Choose `RMSX Molstar FlipBook`.
 5. Use the native Molstar viewer without any trusted-HTML allowlist warning.
@@ -22,7 +30,6 @@ path.
 
 - `tools/rmsx/rmsx.xml`
 - `tools/rmsx/macros.xml`
-- `tools/rmsx/datatypes_conf.xml`
 - `tools/rmsx/rmsx_preflight.py`
 - `tools/rmsx/rmsx_report_common.py`
 - `tools/rmsx/rmsx_molstar_report.py`
@@ -36,15 +43,14 @@ path.
 The wrapper is configured for this registry-qualified image:
 
 ```text
-ghcr.io/antuneslab/rmsx-galaxy:0.1.0
+ghcr.io/antuneslab/rmsx-galaxy:0.2.3-galaxy0
 ```
 
-Build and push from the project root after selecting the RMSX source ref that
-should be the first supported Galaxy runtime:
+Build and push from the project root:
 
 ```bash
 scripts/build_container.sh
-docker push ghcr.io/antuneslab/rmsx-galaxy:0.1.0
+docker push ghcr.io/antuneslab/rmsx-galaxy:0.2.3-galaxy0
 ```
 
 If the image will live under a different owner or version, update
@@ -62,8 +68,8 @@ Current local status:
 
 - `planemo lint --fail_level error tools/rmsx/rmsx.xml` passes.
 - `planemo shed_lint tools/rmsx` passes.
-- Docker-backed `planemo test` passes all three wrapper tests using
-  `ghcr.io/antuneslab/rmsx-galaxy:0.1.0` as a locally tagged image.
+- Docker-backed `planemo test` should pass all three wrapper tests using
+  `ghcr.io/antuneslab/rmsx-galaxy:0.2.3-galaxy0` as a locally tagged image.
 
 Run the Docker-backed wrapper tests against the same container tag that appears
 in `tools/rmsx/macros.xml`:
@@ -85,11 +91,14 @@ node tests/rmsx/native_visualization_visual_check.mjs \
 
 ## Galaxy Admin Install Shape
 
-The complete install has three Galaxy-side pieces:
+The conservative Tool Shed candidate has one Galaxy-side piece:
 
 1. Install the RMSX tool wrapper.
-2. Register the `rmsxmolstar` datatype.
-3. Install/register the `rmsx_molstar` visualization plugin.
+
+The full prototype viewer install has optional additional Galaxy-side pieces:
+
+1. Register the `rmsxmolstar` datatype if using the dedicated local datatype.
+2. Install/register the `rmsx_molstar` visualization plugin.
 
 For local Planemo demos, the project uses:
 
@@ -102,15 +111,16 @@ server's visualization plugin path instead of relying on the Planemo sync
 helper.
 
 Important limitation for sharing: a plain Tool Shed tool install can make the
-RMSX computation and manifest output available, but it is not by itself the
+RMSX computation and JSON manifest output available, but it is not by itself the
 whole native viewer experience. Users get the Molstar visualization only on a
-Galaxy instance where the `rmsxmolstar` datatype and `rmsx_molstar`
-visualization plugin have also been registered by an admin.
+Galaxy instance where the `rmsx_molstar` visualization plugin has also been
+registered by an admin.
 
 ## Remaining Publication Decisions
 
-- Confirm the first public RMSX runtime tag or commit.
-- Confirm the final image namespace and version.
+- Confirm provenance and regeneration details for the compressed full-frame XTC
+  test fixture before opening an IUC PR.
+- Generate the final dependency/license inventory from the runtime image.
 - Decide whether the visualization plugin will be distributed as a local Galaxy
   admin bundle first, then proposed upstream later.
 - Add CI for container build, Planemo lint, Planemo test, and native viewer
@@ -121,7 +131,7 @@ visualization plugin have also been registered by an admin.
 The last external step is publishing the container image:
 
 ```bash
-docker push ghcr.io/antuneslab/rmsx-galaxy:0.1.0
+docker push ghcr.io/antuneslab/rmsx-galaxy:0.2.3-galaxy0
 ```
 
 That requires GHCR permissions for the `antuneslab` namespace. Until the image

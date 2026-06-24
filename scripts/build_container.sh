@@ -7,8 +7,8 @@ cd "$ROOT"
 # shellcheck source=scripts/detect_docker.sh
 source "$ROOT/scripts/detect_docker.sh"
 
-TAG="${RMSX_GALAXY_CONTAINER_TAG:-ghcr.io/antuneslab/rmsx-galaxy:0.1.0}"
-LOCAL_TAG="${RMSX_GALAXY_LOCAL_TAG:-rmsx-galaxy:0.1.0}"
+TAG="${RMSX_GALAXY_CONTAINER_TAG:-ghcr.io/antuneslab/rmsx-galaxy:0.2.3-galaxy0}"
+LOCAL_TAG="${RMSX_GALAXY_LOCAL_TAG:-rmsx-galaxy:0.2.3-galaxy0}"
 
 if ! DOCKER_BIN="$(detect_docker_cmd)"; then
   echo "Docker was not found. Install Docker Desktop or set DOCKER_CMD=/path/to/docker." >&2

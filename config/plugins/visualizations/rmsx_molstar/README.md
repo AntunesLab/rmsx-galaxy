@@ -3,18 +3,16 @@
 This is a local prototype Galaxy visualization plugin for RMSX
 `rmsx-molstar-viewer/v1` manifests.
 
-The plugin is registered for the project-local `rmsxmolstar` datatype and also
-for generic `json` datasets during prototype development. In both cases it
+The plugin is registered for generic `json` datasets and also for the
+project-local `rmsxmolstar` datatype during prototype development. In both cases it
 validates `schemaVersion` at runtime and shows a clear unsupported-manifest
 message for unrelated JSON files.
 
-`tools/rmsx/datatypes_conf.xml` registers the dedicated `rmsxmolstar` datatype
-beside the wrapper for linting and Tool Shed-style packaging. The same
-registration is also mirrored in `config/datatypes/datatypes_conf.xml` as a
-standalone snippet for local Galaxy experiments. Do not point Galaxy at the
-standalone snippet as the entire `datatypes_config_file` unless it has been
-merged with Galaxy's stock datatype registry; using the snippet alone hides
-built-in datatypes such as `pdb`, `json`, and `html`.
+`config/datatypes/datatypes_conf.xml` registers the dedicated `rmsxmolstar`
+datatype as a standalone snippet for local Galaxy experiments. Do not point
+Galaxy at the standalone snippet as the entire `datatypes_config_file` unless it
+has been merged with Galaxy's stock datatype registry; using the snippet alone
+hides built-in datatypes such as `pdb`, `json`, and `html`.
 
 The native plugin loads the bundled Molstar 5.4.2 viewer assets from
 `static/vendor/molstar/5.4.2` first. The manifest/CDN URL is retained as a
@@ -66,20 +64,17 @@ dataset display APIs. A direct test URL can therefore include both ids:
 http://localhost:9090/visualizations/display?visualization=rmsx_molstar&dataset_id=...&history_id=...
 ```
 
-The native viewer opens with a desktop control sidebar on the left and the
-Molstar canvas filling the remaining space. The Layout accordion is open by
-default and focuses on two all-slices modes: Tiled and Overlay, plus slice
-visibility chips and a compact loaded-state line. The remaining sidebar
-accordions expose Appearance, Scale, Residues, Rotation, and Metrics without a
-playback tab or Flip-only frame mode. Scale carries the HTML
-fallback's visual calibration controls: palette switching, low/high RMSX color
-domain, low/high putty radius, thickness, Reset Scale, and a live low/mid/high
-color-and-radius legend. Appearance exposes the clean/soft render preset and
-fine outline toggle, while Rotation exposes the local-drag sensitivity control
-in addition to the X/Y/Z rotation controls. The selected-residue marker is
-available from the Residues accordion but starts disabled so the default
-FlipBook view emphasizes the RMSX worm geometry and color field without an
-analysis overlay. Tiled placement reserves
+The native viewer opens with a compact desktop control sidebar on the left and
+the Molstar canvas filling the remaining space. The View accordion is open by
+default and focuses on the expected FlipBook presentation: tiled slices,
+spacing, columns, and numbered slice visibility chips. Overlay/Flip layout
+controls, playback controls, and the separate residue-marker panel are not part
+of the default user surface. The Style accordion carries the visual calibration
+controls: palette switching, low/high RMSX color domain, low/high putty radius,
+thickness, Reset Scale, a fine outline toggle, and a live low/mid/high
+color-and-radius legend. Rotation exposes X/Y/Z rotation controls plus drag
+sensitivity. Metrics summarizes the whole RMSX sequence rather than reporting
+debug-style current-slice and asset details. Tiled placement reserves
 slots from the default side-on projected row footprint plus the configured
 putty-radius padding, so thick worms have room without pushing long, skinny
 structures unnecessarily far apart. Reset View and initial load frame the scene

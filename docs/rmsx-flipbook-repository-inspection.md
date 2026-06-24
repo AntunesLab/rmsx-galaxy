@@ -15,7 +15,7 @@ Primary repository:
 - Branch: `main`
 - Commit inspected: `dbd394198a6eeba257339fd630a4038eba424afe`
 - Last local commit message: `added masked flipbook example`
-- Local working tree note: several notebook/output artifacts were modified locally. This report focuses on tracked source files and package metadata, not those local notebook/output changes.
+- Local working tree note: several generated local artifacts were modified locally. This report focuses on tracked source files and package metadata, not those local output changes.
 
 Publication and public documentation context:
 
@@ -54,7 +54,7 @@ The biggest hardening items before a publishable wrapper are dependency packagin
 
 ## Repository Shape
 
-The repository is a Python package with mixed Python, R, Tcl, notebook, and molecular-data assets.
+The repository is a Python package with mixed Python, R, Tcl, desktop-viewer, and molecular-data assets.
 
 Key package files:
 
@@ -66,7 +66,7 @@ Key package files:
 - `rmsx/r_scripts/plot_rmsx.R` generates heatmaps and optional triple plots.
 - `rmsx/vmd_scripts/` contains VMD Tcl scripts used by the VMD FlipBook backend.
 - `rmsx/addons/lddt.py` adds an lDDT-style map using the same output and FlipBook patterns.
-- `tests/` covers output-directory safety, masking, FlipBook mask command generation, VMD script packaging, and some notebook safety assumptions.
+- `tests/` covers output-directory safety, masking, FlipBook mask command generation, VMD script packaging, and local-demo safety assumptions.
 
 The package includes demo molecular files under both `test_files/` and `rmsx/test_files/`. The top-level `test_files` directory is about 69 MB. The packaged `rmsx/test_files` directory is about 50 MB.
 
@@ -84,13 +84,13 @@ Current declared Python dependencies:
 Observed implicit or optional Python dependencies:
 
 - `numpy`, imported in `rmsx/core.py`
-- `IPython.display`, optional, used only to display generated images inline when available
+- optional rich-display helpers, used only outside the Galaxy runtime
 - Standard-library modules including `subprocess`, `shutil`, `argparse`, `pathlib`, `csv`, `threading`, and `pty`
 
 Galaxy implication:
 
 - A Conda recipe or container should include `python`, `mdanalysis`, `pandas`, `numpy`, and the R stack.
-- `IPython` should not be required for Galaxy execution.
+- rich-display helper packages should not be required for Galaxy execution.
 - Package version metadata should be resolved before publication. A Galaxy wrapper version should not depend on a package claiming `0.1.0` if the intended source/release is later.
 
 ### R Plotting Dependencies
@@ -107,7 +107,7 @@ The plotting layer is an R script invoked by Python through `Rscript`. It uses:
 - `grid`
 - `ggpattern` when masked heatmaps are needed
 
-`plot_rmsx.R` attempts to install missing packages into the user R library at runtime. This is fine for a local notebook experience but should not be used in Galaxy jobs. Galaxy tools should declare dependencies up front through Conda or a container image.
+`plot_rmsx.R` attempts to install missing packages into the user R library at runtime. This is fine for local exploratory use but should not be used in Galaxy jobs. Galaxy tools should declare dependencies up front through Conda or a container image.
 
 Galaxy implication:
 
@@ -351,12 +351,14 @@ The repository has useful pytest coverage:
 - Output directory safety refuses unsafe overwrite targets and unmanaged folders.
 - Masking clips masked residues, writes metadata, and excludes masked residues from summaries.
 - FlipBook masking builds ChimeraX transparency commands and passes VMD mask settings through environment variables.
-- Notebook safety tests check that demo files are packaged and that notebook outputs go to `rmsx_demo_outputs`.
+- Local-demo safety tests check that demo files are packaged and that generated demo outputs go to `rmsx_demo_outputs`.
 
 Test/data observations:
 
 - `test_files/1UBQ.pdb` is about 96 KB.
-- `test_files/mon_sys.dcd` is about 4.5 MB.
+- The original `test_files/mon_sys.dcd` was about 4.5 MB. The Galaxy wrapper
+  now uses a precision-2 XTC fixture that preserves all 316 frames while staying
+  under 1 MB for local demo and Planemo tests.
 - `test_files/protease_backbone.pdb` is about 64 KB.
 - `test_files/short_protease_backbone.dcd` is about 46 MB.
 - The top-level `test_files/` directory is about 69 MB.
@@ -364,10 +366,12 @@ Test/data observations:
 
 Galaxy implications:
 
-- `1UBQ.pdb` plus `mon_sys.dcd` is the best available starting fixture for wrapper tests.
-- A smaller trajectory fixture would be better for Tool Shed tests if one can be generated.
+- `1UBQ.pdb` plus compressed `mon_sys.xtc` is the current best available
+  starting fixture for wrapper tests.
+- The fixture-size issue is addressed; provenance and redistribution notes
+  still need to be finalized before Tool Shed/IUC submission.
 - Tests currently exercise Python APIs more than the console script. A Galaxy wrapper should add at least one CLI-level smoke test before Planemo work.
-- Some notebook tests reference an absolute local path, which is not portable outside this workstation.
+- Some local-demo tests reference an absolute local path, which is not portable outside this workstation.
 
 ## Galaxy Readiness Assessment
 
@@ -379,7 +383,7 @@ The following are already in good shape for a first Galaxy wrapper:
 - Console script entry point.
 - Headless core computation using MDAnalysis.
 - Explicit output directory parameter.
-- PDB/DCD demo data.
+- PDB plus DCD/XTC demo data.
 - Deterministic CSV and PNG output patterns.
 - Per-slice PDB files with B-factor encoded values.
 - MIT license.
@@ -397,7 +401,7 @@ These should be addressed before a public Tool Shed or IUC-style wrapper:
 - Capture stdout summaries into a declared log/summary dataset.
 - Avoid viewer launches in Galaxy jobs.
 - Trim or generate smaller test data.
-- Add CLI smoke tests independent of notebooks.
+- Add CLI smoke tests independent of local demo harnesses.
 
 ## Proposed Galaxy v1 Wrapper Contract
 
@@ -512,4 +516,3 @@ The next phase should be a wrapper design spike, still before full implementatio
 4. Build a dependency matrix mapping Python/R packages to Conda packages.
 5. Select the smallest viable test fixture and expected output assertions.
 6. Only after that, scaffold a minimal Planemo-tested wrapper.
-

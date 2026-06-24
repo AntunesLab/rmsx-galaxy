@@ -17,7 +17,7 @@ scripts/bootstrap_dev.sh
 scripts/build_container.sh
 ```
 
-4. Keep generated environments and outputs out of commits. `.gitignore` excludes Planemo homes, Node modules, notebook outputs, test reports, and notebook checkpoints.
+4. Keep generated environments and outputs out of commits. `.gitignore` excludes Planemo homes, Node modules, local test reports, and editor caches.
 
 For a one-command first setup, use:
 
@@ -85,7 +85,6 @@ Use labels to route work:
 
 - `galaxy-tool`
 - `molstar-viewer`
-- `notebook`
 - `container`
 - `docs`
 - `tests`
@@ -94,4 +93,4 @@ Use labels to route work:
 
 ## Viewer Work
 
-The native Galaxy Molstar visualization is the primary viewer target. Standalone HTML and notebook direct-mount prototypes are useful for development, but do not replace the Galaxy `Visualize` path unless the team explicitly decides to change direction.
+The native Galaxy Molstar visualization is the primary viewer target. Development-only standalone HTML output can be useful while debugging the viewer, but the supported path is the Galaxy `Visualize` action on the RMSX manifest dataset.

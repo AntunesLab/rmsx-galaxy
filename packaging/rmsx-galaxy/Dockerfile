@@ -1,7 +1,7 @@
 FROM mambaorg/micromamba:1.5.10
 
 ARG RMSX_REPO=https://github.com/AntunesLab/rmsx.git
-ARG RMSX_REF=main
+ARG RMSX_REF=v0.2.3
 
 COPY --chown=$MAMBA_USER:$MAMBA_USER environment.yml /tmp/environment.yml
 

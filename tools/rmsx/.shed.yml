@@ -1,7 +1,7 @@
 name: rmsx
 owner: antuneslab
 description: Time-sliced residue fluctuation analysis for molecular dynamics trajectories.
-long_description: README.md
+long_description: README.rst
 homepage_url: https://github.com/AntunesLab/rmsx
 remote_repository_url: https://github.com/AntunesLab/rmsx-galaxy/tree/main/tools/rmsx
 categories:

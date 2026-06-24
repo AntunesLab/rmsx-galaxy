@@ -34,8 +34,8 @@
     "localDrag", "rotateSensitivity", "render", "outline"
   ];
   const URL_PARAMS = initialUrlParams();
-  const LAYOUTS = new Set(["tiled", "overlay"]);
-  const CONTROL_PANEL_KEYS = ["layout", "appearance", "scale", "residues", "rotation", "diagnostics"];
+  const LAYOUTS = new Set(["tiled"]);
+  const CONTROL_PANEL_KEYS = ["view", "style", "rotation", "metrics"];
   const RENDER_PRESETS = new Set(["clean-interactive", "soft"]);
 
   let REPORT = null;
@@ -66,7 +66,7 @@
     rotationSensitivity: 0.35,
     renderMode: "clean-interactive",
     outline: true,
-    activePanel: "layout",
+    activePanel: "view",
     selectedResidueKey: "",
     representationMode: "-",
     records: [],
@@ -91,37 +91,19 @@
         </div>
         <div id="status" class="status sidebar-status">Loading RMSX manifest...</div>
         <div class="control-panels" data-testid="molstar-control-panels">
-          <details class="control-panel active" open data-panel="layout" data-testid="molstar-panel-layout">
-            <summary>Layout</summary>
+          <details class="control-panel active" open data-panel="view" data-testid="molstar-panel-layout">
+            <summary>View</summary>
             <div class="panel-grid">
-              <label>Layout <select id="layoutSelect" data-testid="molstar-layout-select">
-                <option value="tiled">Tiled</option>
-                <option value="overlay">Overlay</option>
-              </select></label>
-              <div class="button-group">
-                <button id="tiledButton" type="button" data-layout="tiled" data-testid="molstar-layout-tiled">Tiled</button>
-                <button id="overlayButton" type="button" data-layout="overlay" data-testid="molstar-layout-overlay">Overlay</button>
-              </div>
               <label>Spacing <input id="spacingRange" type="range" min="0.1" max="2.5" value="1" step="0.05" data-testid="molstar-spacing-range"><input id="spacingNumber" type="number" min="0.1" max="2.5" value="1" step="0.05" data-testid="molstar-spacing-number"></label>
-              <label>Columns <input id="columnsNumber" type="number" min="1" value="1" step="1" data-testid="molstar-columns-number"></label>
+              <label>Cols <input id="columnsNumber" type="number" min="1" value="1" step="1" data-testid="molstar-columns-number"></label>
               <div class="slice-visibility">
                 <div class="field-label">Slices</div>
                 <div id="sliceChips" class="chips sidebar-chips" data-testid="molstar-slice-chips"></div>
               </div>
             </div>
           </details>
-          <details class="control-panel" data-panel="appearance" data-testid="molstar-panel-appearance">
-            <summary>Appearance</summary>
-            <div class="panel-grid">
-              <label>Render <select id="renderSelect" data-testid="molstar-render-select">
-                <option value="clean-interactive">Clean</option>
-                <option value="soft">Soft</option>
-              </select></label>
-              <label class="check-row">Outline <input id="outlineCheckbox" type="checkbox" checked data-testid="molstar-outline-checkbox"></label>
-            </div>
-          </details>
-          <details class="control-panel" data-panel="scale" data-testid="molstar-panel-scale">
-            <summary>Scale</summary>
+          <details class="control-panel" data-panel="style" data-testid="molstar-panel-scale">
+            <summary>Style</summary>
             <div class="panel-grid">
               <label>Palette <select id="paletteSelect" data-testid="molstar-palette-select"></select></label>
               <div class="legend" data-testid="molstar-rmsx-legend">
@@ -138,52 +120,38 @@
                 </div>
               </div>
               <label>Thickness <input id="thicknessRange" type="range" min="0.25" max="2.5" value="1" step="0.05" data-testid="molstar-thickness-range"><input id="thicknessNumber" type="number" min="0.25" max="2.5" value="1" step="0.05" data-testid="molstar-thickness-number"></label>
-              <label>Color low <input id="colorMinNumber" type="number" value="0" step="0.1" data-testid="molstar-color-min-number"></label>
-              <label>Color high <input id="colorMaxNumber" type="number" value="1" step="0.1" data-testid="molstar-color-max-number"></label>
-              <label>Radius low <input id="radiusMinNumber" type="number" min="0.05" max="5" value="0.63" step="0.05" data-testid="molstar-radius-min-number"></label>
-              <label>Radius high <input id="radiusMaxNumber" type="number" min="0.1" max="8" value="3.18" step="0.05" data-testid="molstar-radius-max-number"></label>
+              <label>Color min <input id="colorMinNumber" type="number" value="0" step="0.1" data-testid="molstar-color-min-number"></label>
+              <label>Color max <input id="colorMaxNumber" type="number" value="1" step="0.1" data-testid="molstar-color-max-number"></label>
+              <label>Radius min <input id="radiusMinNumber" type="number" min="0.05" max="5" value="0.63" step="0.05" data-testid="molstar-radius-min-number"></label>
+              <label>Radius max <input id="radiusMaxNumber" type="number" min="0.1" max="8" value="3.18" step="0.05" data-testid="molstar-radius-max-number"></label>
+              <label class="check-row">Outline <input id="outlineCheckbox" type="checkbox" checked data-testid="molstar-outline-checkbox"></label>
               <button id="resetScaleButton" type="button" data-testid="molstar-reset-scale">Reset Scale</button>
-            </div>
-          </details>
-          <details class="control-panel" data-panel="residues" data-testid="molstar-panel-residue">
-            <summary>Residues</summary>
-            <div class="panel-grid">
-              <label>Residue <select id="residueSelect" data-testid="molstar-residue-select"></select></label>
-              <label class="check-row">Marker <input id="markerCheckbox" type="checkbox" data-testid="molstar-residue-marker-checkbox"></label>
-              <button id="markerButton" type="button" data-testid="molstar-residue-marker-toggle">Marker</button>
             </div>
           </details>
           <details class="control-panel" data-panel="rotation" data-testid="molstar-panel-rotation">
             <summary>Rotation</summary>
             <div class="panel-grid">
-              <label>Rotation X <input id="rotationXRange" type="range" min="-180" max="180" value="90" step="1" data-testid="molstar-rotation-x-range"><input id="rotationXNumber" type="number" min="-180" max="180" value="90" step="1" data-testid="molstar-rotation-x-number"></label>
-              <label>Rotation Y <input id="rotationYRange" type="range" min="-180" max="180" value="0" step="1" data-testid="molstar-rotation-y-range"><input id="rotationYNumber" type="number" min="-180" max="180" value="0" step="1" data-testid="molstar-rotation-y-number"></label>
-              <label>Rotation Z <input id="rotationZRange" type="range" min="-180" max="180" value="0" step="1" data-testid="molstar-rotation-z-range"><input id="rotationZNumber" type="number" min="-180" max="180" value="0" step="1" data-testid="molstar-rotation-z-number"></label>
-              <label>Sensitivity <input id="rotateSensitivityRange" type="range" min="0.1" max="3" value="0.35" step="0.05" data-testid="molstar-rotate-sensitivity-range"><input id="rotateSensitivityNumber" type="number" min="0.1" max="3" value="0.35" step="0.05" data-testid="molstar-rotate-sensitivity-number"></label>
+              <label>Rot X <input id="rotationXRange" type="range" min="-180" max="180" value="90" step="1" data-testid="molstar-rotation-x-range"><input id="rotationXNumber" type="number" min="-180" max="180" value="90" step="1" data-testid="molstar-rotation-x-number"></label>
+              <label>Rot Y <input id="rotationYRange" type="range" min="-180" max="180" value="0" step="1" data-testid="molstar-rotation-y-range"><input id="rotationYNumber" type="number" min="-180" max="180" value="0" step="1" data-testid="molstar-rotation-y-number"></label>
+              <label>Rot Z <input id="rotationZRange" type="range" min="-180" max="180" value="0" step="1" data-testid="molstar-rotation-z-range"><input id="rotationZNumber" type="number" min="-180" max="180" value="0" step="1" data-testid="molstar-rotation-z-number"></label>
+              <label>Drag speed <input id="rotateSensitivityRange" type="range" min="0.1" max="3" value="0.35" step="0.05" data-testid="molstar-rotate-sensitivity-range"><input id="rotateSensitivityNumber" type="number" min="0.1" max="3" value="0.35" step="0.05" data-testid="molstar-rotate-sensitivity-number"></label>
               <div class="button-group">
                 <button id="rotateXButton" type="button" data-testid="molstar-rotate-x">X +15</button>
                 <button id="rotateYButton" type="button" data-testid="molstar-rotate-y">Y +15</button>
                 <button id="rotateZButton" type="button" data-testid="molstar-rotate-z">Z +15</button>
-                <label class="check-row inline-check">Local Drag <input id="localDragCheckbox" type="checkbox" checked data-testid="molstar-local-rotate-checkbox"></label>
-                <button id="localDragButton" class="active" type="button" data-testid="molstar-local-rotate">Local Drag</button>
-                <button id="resetRotationButton" type="button" data-testid="molstar-reset-rotation">Reset Rotation</button>
+                <button id="resetRotationButton" type="button" data-testid="molstar-reset-rotation">Reset</button>
               </div>
             </div>
           </details>
-          <details class="control-panel" data-panel="diagnostics" data-testid="molstar-panel-diagnostics">
+          <details class="control-panel" data-panel="metrics" data-testid="molstar-panel-diagnostics">
             <summary>Metrics</summary>
             <dl class="metrics">
-              <div><dt>Current slice</dt><dd id="currentSliceMetric">-</dd></div>
+              <div><dt>Slices</dt><dd id="currentSliceMetric">-</dd></div>
+              <div><dt>RMSX range</dt><dd id="peakMetric">-</dd></div>
               <div><dt>Mean RMSX</dt><dd id="meanMetric">-</dd></div>
-              <div><dt>Peak RMSX</dt><dd id="peakMetric">-</dd></div>
               <div><dt>Peak residue</dt><dd id="peakResidueMetric">-</dd></div>
               <div><dt>Residues</dt><dd id="residueCountMetric">-</dd></div>
               <div><dt>Masked</dt><dd id="maskedMetric">-</dd></div>
-              <div><dt>Selected RMSX</dt><dd id="selectedResidueMetric">-</dd></div>
-              <div><dt>Visual radius</dt><dd id="selectedRadiusMetric">-</dd></div>
-              <div><dt>Visual color</dt><dd class="color-metric"><span id="selectedColorSwatch" class="legend-swatch color-swatch" aria-hidden="true"></span><span id="selectedColorMetric">-</span></dd></div>
-              <div><dt>Molstar style</dt><dd id="styleMetric">-</dd></div>
-              <div><dt>Assets</dt><dd id="assetMetric">-</dd></div>
             </dl>
           </details>
         </div>
@@ -197,12 +165,8 @@
 
   const elements = {
     status: document.getElementById("status"),
-    tiledButton: document.getElementById("tiledButton"),
-    overlayButton: document.getElementById("overlayButton"),
     resetViewButton: document.getElementById("resetViewButton"),
-    layoutSelect: document.getElementById("layoutSelect"),
     controlPanels: [...document.querySelectorAll("[data-panel]")],
-    renderSelect: document.getElementById("renderSelect"),
     outlineCheckbox: document.getElementById("outlineCheckbox"),
     paletteSelect: document.getElementById("paletteSelect"),
     thicknessRange: document.getElementById("thicknessRange"),
@@ -221,12 +185,7 @@
     rotateXButton: document.getElementById("rotateXButton"),
     rotateYButton: document.getElementById("rotateYButton"),
     rotateZButton: document.getElementById("rotateZButton"),
-    localDragButton: document.getElementById("localDragButton"),
-    localDragCheckbox: document.getElementById("localDragCheckbox"),
     resetRotationButton: document.getElementById("resetRotationButton"),
-    residueSelect: document.getElementById("residueSelect"),
-    markerButton: document.getElementById("markerButton"),
-    markerCheckbox: document.getElementById("markerCheckbox"),
     colorMinNumber: document.getElementById("colorMinNumber"),
     colorMaxNumber: document.getElementById("colorMaxNumber"),
     radiusMinNumber: document.getElementById("radiusMinNumber"),
@@ -254,15 +213,13 @@
     peakResidueMetric: document.getElementById("peakResidueMetric"),
     residueCountMetric: document.getElementById("residueCountMetric"),
     maskedMetric: document.getElementById("maskedMetric"),
-    selectedResidueMetric: document.getElementById("selectedResidueMetric"),
-    selectedRadiusMetric: document.getElementById("selectedRadiusMetric"),
-    selectedColorSwatch: document.getElementById("selectedColorSwatch"),
-    selectedColorMetric: document.getElementById("selectedColorMetric"),
-    styleMetric: document.getElementById("styleMetric"),
-    assetMetric: document.getElementById("assetMetric")
+    selectedResidueMetric: null,
+    selectedRadiusMetric: null,
+    selectedColorSwatch: null,
+    selectedColorMetric: null,
+    styleMetric: null,
+    assetMetric: null
   };
-  const controlsRoot = document.querySelector(".rmsx-controls");
-
   addStyles();
 
   function addStyles() {
@@ -270,44 +227,44 @@
     style.textContent = `
       * { box-sizing: border-box; }
       body { margin: 0; background: #f7f8fa; color: #1d2630; font: 14px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; letter-spacing: 0; }
-      .rmsx-app { display: grid; grid-template-columns: minmax(286px, 340px) minmax(0, 1fr); grid-template-rows: minmax(0, 1fr); height: 100vh; min-height: 560px; overflow: hidden; }
-      .rmsx-controls { position: relative; z-index: 5; min-height: 0; background: #fff; border-right: 1px solid #d7dce2; padding: 12px; overflow-y: auto; }
-      .controls-heading { display: grid; grid-template-columns: 1fr; align-items: start; gap: 9px; }
+      .rmsx-app { display: grid; grid-template-columns: minmax(236px, 286px) minmax(0, 1fr); grid-template-rows: minmax(0, 1fr); height: 100vh; min-height: 560px; overflow: hidden; }
+      .rmsx-controls { position: relative; z-index: 5; min-height: 0; background: #fff; border-right: 1px solid #d7dce2; padding: 9px; overflow-y: auto; }
+      .controls-heading { display: grid; grid-template-columns: 1fr; align-items: start; gap: 7px; }
       h1 { margin: 0; font-size: 15px; font-weight: 650; }
-      .control-panels { display: grid; grid-template-columns: 1fr; gap: 8px; margin-top: 8px; }
+      .control-panels { display: grid; grid-template-columns: 1fr; gap: 6px; margin-top: 7px; }
       .control-panel { border: 1px solid #d7dce2; border-radius: 6px; background: #fff; min-width: 0; }
       .control-panel.active { border-color: #b8c7dc; box-shadow: inset 3px 0 0 #1f6feb; }
-      .control-panel summary { min-height: 32px; padding: 7px 9px; cursor: pointer; font-weight: 650; color: #344054; user-select: none; }
+      .control-panel summary { min-height: 29px; padding: 5px 8px; cursor: pointer; font-weight: 650; color: #344054; user-select: none; }
       .control-panel[open] summary { border-bottom: 1px solid #e8ebef; }
-      .panel-grid { display: grid; grid-template-columns: 1fr; gap: 7px 10px; padding: 8px; }
-      label { display: grid; grid-template-columns: 82px minmax(74px, 1fr) auto; gap: 7px; align-items: center; min-width: 0; margin: 0; color: #5f6b7a; }
-      label.check-row { grid-template-columns: 1fr auto; min-height: 30px; padding: 0 8px; border: 1px solid #d7dce2; border-radius: 6px; background: #fff; color: #1d2630; }
+      .panel-grid { display: grid; grid-template-columns: 1fr; gap: 6px 8px; padding: 7px; }
+      label { display: grid; grid-template-columns: 68px minmax(58px, 1fr) auto; gap: 6px; align-items: center; min-width: 0; margin: 0; color: #5f6b7a; }
+      label.check-row { grid-template-columns: 1fr auto; min-height: 28px; padding: 0 7px; border: 1px solid #d7dce2; border-radius: 6px; background: #fff; color: #1d2630; }
       label.inline-check { flex: 1 1 110px; min-width: 110px; }
-      select, input, button { min-height: 30px; border: 1px solid #d7dce2; border-radius: 6px; background: #fff; color: #1d2630; font: inherit; }
+      select, input, button { min-height: 28px; border: 1px solid #d7dce2; border-radius: 6px; background: #fff; color: #1d2630; font: inherit; }
       input[type="checkbox"] { min-height: 0; width: 16px; height: 16px; accent-color: #1f6feb; }
       input[type="range"] { width: 100%; }
-      input[type="number"] { width: 72px; padding: 0 7px; }
+      input[type="number"] { width: 58px; padding: 0 5px; }
       select { padding: 0 8px; }
-      button { padding: 0 10px; cursor: pointer; }
+      button { padding: 0 8px; cursor: pointer; }
       button.primary, button.active { border-color: #1f6feb; background: #1f6feb; color: #fff; }
-      .control-row, .button-group { display: flex; flex-wrap: wrap; gap: 7px; }
+      .control-row, .button-group { display: flex; flex-wrap: wrap; gap: 6px; }
       .primary-row { margin-left: 0; width: 100%; }
       .primary-row button { width: 100%; }
       .button-group button { flex: 1 1 auto; min-width: 62px; }
       .metrics { margin: 0; }
-      .metrics div { display: flex; justify-content: space-between; gap: 12px; border-bottom: 1px solid #e8ebef; padding: 5px 0; }
+      .metrics div { display: flex; justify-content: space-between; gap: 8px; border-bottom: 1px solid #e8ebef; padding: 4px 0; }
       .metrics div:last-child { border-bottom: 0; }
       .metrics dt { color: #5f6b7a; }
       .metrics dd { margin: 0; font-weight: 650; }
       .color-metric { display: inline-flex; align-items: center; gap: 6px; }
       .color-swatch { width: 14px; height: 14px; }
       .rmsx-viewer { position: relative; z-index: 1; display: grid; grid-template-rows: minmax(0, 1fr); min-width: 0; min-height: 0; height: 100vh; }
-      .status { margin: 8px 0 0; padding: 7px 9px; border: 1px solid #d7dce2; border-radius: 6px; background: #fbfcfd; color: #13795b; font-size: 12px; line-height: 1.35; }
+      .status { margin: 7px 0 0; padding: 6px 8px; border: 1px solid #d7dce2; border-radius: 6px; background: #fbfcfd; color: #13795b; font-size: 12px; line-height: 1.3; }
       .status.error { color: #b42318; border-color: #f1b4ad; background: #fff4f2; }
       .slice-visibility { display: grid; grid-column: 1 / -1; gap: 6px; }
       .field-label { color: #5f6b7a; }
-      .chips { display: flex; flex-wrap: wrap; gap: 7px; padding: 0; }
-      .chip { border-radius: 999px; padding: 5px 10px; background: #fff; border: 1px solid #d7dce2; }
+      .chips { display: flex; flex-wrap: wrap; gap: 5px; padding: 0; }
+      .chip { min-width: 30px; border-radius: 999px; padding: 3px 8px; background: #fff; border: 1px solid #d7dce2; }
       .chip.active { border-color: #1f6feb; background: #eef4ff; color: #1f6feb; }
       .legend { display: grid; grid-column: 1 / -1; gap: 7px; color: #5f6b7a; font-size: 12px; }
       .bar { height: 10px; border: 1px solid #d7dce2; border-radius: 999px; background: linear-gradient(90deg, #440154, #21918c, #fde725); }
@@ -321,7 +278,7 @@
       .viewport.local-drag-disabled { cursor: default; }
       .viewport.dragging { cursor: grabbing; }
       @media (min-width: 1280px) {
-        .rmsx-app { grid-template-columns: minmax(320px, 370px) minmax(0, 1fr); }
+        .rmsx-app { grid-template-columns: minmax(250px, 300px) minmax(0, 1fr); }
       }
       @media (max-width: 900px) {
         .rmsx-app { grid-template-columns: 1fr; grid-template-rows: auto minmax(420px, 1fr); height: auto; min-height: 100vh; overflow: visible; }
@@ -1815,33 +1772,40 @@
     setStatus(`${visibleCount}/${REPORT.slices.length} slices visible; ${state.paletteName}; ${state.representationMode}${maskText}.`);
   }
 
+  function sequenceRmsxStats() {
+    const stats = { min: Infinity, max: -Infinity, sum: 0, count: 0, peakResidue: "-" };
+    for (const residue of REPORT?.residues || []) {
+      for (const value of Object.values(residue.values || {})) {
+        const numeric = Number(value);
+        if (!Number.isFinite(numeric)) {
+          continue;
+        }
+        stats.min = Math.min(stats.min, numeric);
+        stats.sum += numeric;
+        stats.count += 1;
+        if (numeric > stats.max) {
+          stats.max = numeric;
+          stats.peakResidue = residue.label || residue.key || "-";
+        }
+      }
+    }
+    stats.mean = stats.count ? stats.sum / stats.count : NaN;
+    if (!stats.count) {
+      stats.min = NaN;
+      stats.max = NaN;
+    }
+    return stats;
+  }
+
   function updateMetrics() {
-    const slice = REPORT?.slices?.[state.currentIndex];
-    const summary = slice ? REPORT.summaries?.[slice.rmsxColumn] : null;
-    elements.currentSliceMetric.textContent = slice?.label || "-";
-    elements.meanMetric.textContent = formatNumber(summary?.mean);
-    elements.peakMetric.textContent = formatNumber(summary?.max);
-    elements.peakResidueMetric.textContent = summary?.maxResidue || "-";
+    const stats = sequenceRmsxStats();
+    const visibleCount = visibleSliceIndexes().length;
+    elements.currentSliceMetric.textContent = REPORT ? `${visibleCount}/${REPORT.slices.length}` : "-";
+    elements.meanMetric.textContent = formatNumber(stats.mean);
+    elements.peakMetric.textContent = `${formatNumber(stats.min)} - ${formatNumber(stats.max)}`;
+    elements.peakResidueMetric.textContent = stats.peakResidue;
     elements.residueCountMetric.textContent = String(REPORT?.residues?.length || "-");
     elements.maskedMetric.textContent = `${Number(REPORT.maskSummary?.maskedResidues ?? REPORT.maskSummary?.maskedKeys?.length ?? 0)} / ${Number(REPORT.maskSummary?.totalResidues ?? REPORT.residues?.length ?? 0)}`;
-    const selectedRmsx = selectedResidueRmsx();
-    const selectedColor = selectedResidueColor();
-    elements.selectedResidueMetric.textContent = formatNumber(selectedRmsx);
-    elements.selectedRadiusMetric.textContent = formatNumber(visualRadiusForRmsx(selectedRmsx));
-    elements.selectedColorMetric.textContent = selectedColor;
-    elements.selectedColorSwatch.style.background = selectedColor === "-" ? "#ffffff" : selectedColor;
-    elements.styleMetric.textContent = `${state.representationMode}; ${state.renderMode}${state.outline ? "; outline" : ""}`;
-    elements.assetMetric.textContent = state.liveTransforms ? `${state.molstarAssetSource}; transforms` : state.molstarAssetSource;
-    elements.tiledButton.classList.toggle("active", state.layout === "tiled");
-    elements.overlayButton.classList.toggle("active", state.layout === "overlay");
-    elements.tiledButton.setAttribute("aria-pressed", state.layout === "tiled" ? "true" : "false");
-    elements.overlayButton.setAttribute("aria-pressed", state.layout === "overlay" ? "true" : "false");
-    elements.layoutSelect.value = state.layout;
-    elements.markerButton.classList.toggle("active", state.marker);
-    elements.localDragButton.classList.toggle("active", state.localDrag);
-    elements.markerCheckbox.checked = state.marker;
-    elements.localDragCheckbox.checked = state.localDrag;
-    elements.renderSelect.value = state.renderMode;
     elements.outlineCheckbox.checked = state.outline;
     elements.viewport.classList.toggle("local-drag-disabled", !state.localDrag);
     elements.thicknessRange.value = String(state.thickness);
@@ -2187,24 +2151,24 @@
       },
       controls: {
         sidebarLayout: true,
-        compactControlPanels: false,
+        compactControlPanels: true,
         compactTabs: false,
         accordionControls: true,
         activeControlPanel: state.activePanel,
         playback: false,
-        layoutModes: ["tiled", "overlay"],
+        layoutModes: ["tiled"],
         paletteSwitching: true,
         colorDomain: true,
         radiusRange: true,
         resetScale: true,
-        renderStyle: true,
+        renderStyle: false,
         outlineToggle: true,
         spacing: true,
         thickness: true,
         columns: true,
         rotateSensitivity: true,
         localRotation: true,
-        selectedResidueMarker: true,
+        selectedResidueMarker: false,
         maskedResidueStyling: true,
         urlStatePersistence: true
       },
@@ -2213,7 +2177,7 @@
         rotationStepDegrees: 5,
         spacingStep: 0.05,
         thicknessStep: 0.05,
-        bindings: ["t/o", "u/i", "n/m", "j/k", "[/]", "-/=", ",/."],
+        bindings: ["u/i", "n/m", "j/k", "[/]", "-/=", ",/."],
         shortcutCount: state.keyboardShortcutCount,
         lastAction: state.lastKeyboardAction
       },
@@ -2251,7 +2215,7 @@
     if (!state.visible.has(state.currentIndex)) {
       state.currentIndex = firstVisibleSliceIndex();
     }
-    state.marker = booleanParam("marker", REPORT.selectedResidueMarker?.enabledDefault !== false);
+    state.marker = booleanParam("marker", false);
     state.localDrag = booleanParam("localDrag", true);
     state.selectedResidueKey = initialResidueKey();
 
@@ -2271,10 +2235,7 @@
     elements.radiusMaxNumber.step = String(REPORT.visualMapping?.radiusStep ?? 0.05);
     elements.paletteSelect.replaceChildren(...paletteNames().map((name) => new Option(name.replace(/[-_]+/g, " "), name)));
     elements.paletteSelect.value = state.paletteName;
-    elements.renderSelect.value = state.renderMode;
     elements.outlineCheckbox.checked = state.outline;
-    elements.residueSelect.replaceChildren(...REPORT.residues.map((residue) => new Option(residue.label, residue.key)));
-    elements.residueSelect.value = state.selectedResidueKey;
     setActiveControlPanel(state.activePanel);
     updateMetrics();
     renderChips();
@@ -2282,7 +2243,7 @@
   }
 
   function setActiveControlPanel(panel) {
-    const next = CONTROL_PANEL_KEYS.includes(panel) ? panel : "layout";
+    const next = CONTROL_PANEL_KEYS.includes(panel) ? panel : "view";
     state.activePanel = next;
     elements.controlPanels.forEach((panelElement) => {
       const active = panelElement.dataset.panel === next;
@@ -2302,8 +2263,9 @@
       button.dataset.testid = "molstar-slice-chip";
       button.dataset.sliceIndex = String(index + 1);
       button.setAttribute("aria-pressed", state.visible.has(index) ? "true" : "false");
-      button.title = state.visible.has(index) ? `Hide ${slice.label}` : `Show ${slice.label}`;
-      button.textContent = slice.label;
+      button.setAttribute("aria-label", state.visible.has(index) ? `Hide item ${index + 1}` : `Show item ${index + 1}`);
+      button.title = state.visible.has(index) ? `Hide item ${index + 1}` : `Show item ${index + 1}`;
+      button.textContent = String(slice.index ?? index + 1);
       button.addEventListener("click", () => {
         if (state.visible.has(index) && state.visible.size > 1) {
           state.visible.delete(index);
@@ -2445,7 +2407,9 @@
       return;
     }
     state.renderMode = next;
-    elements.renderSelect.value = next;
+    if (elements.renderSelect) {
+      elements.renderSelect.value = next;
+    }
     applyMolstarRenderStyle();
     updateMetrics();
     syncUrlState();
@@ -2536,20 +2500,8 @@
         }
       });
     });
-    elements.tiledButton.addEventListener("click", () => setLayout("tiled"));
-    elements.overlayButton.addEventListener("click", () => setLayout("overlay"));
-    controlsRoot?.addEventListener("pointerup", (event) => {
-      const layoutButton = event.target?.closest?.("[data-layout]");
-      if (!layoutButton) {
-        return;
-      }
-      event.preventDefault();
-      setLayout(layoutButton.dataset.layout);
-    });
-    elements.layoutSelect.addEventListener("change", (event) => setLayout(event.target.value));
     elements.resetViewButton.addEventListener("click", resetView);
     elements.paletteSelect.addEventListener("change", (event) => updatePalette(event.target.value));
-    elements.renderSelect.addEventListener("change", (event) => updateRenderMode(event.target.value));
     elements.outlineCheckbox.addEventListener("change", (event) => setOutline(event.target.checked));
     elements.thicknessRange.addEventListener("input", (event) => updateThickness(event.target.value));
     elements.thicknessRange.addEventListener("change", (event) => updateThickness(event.target.value));
@@ -2583,21 +2535,12 @@
     elements.rotateSensitivityRange.addEventListener("change", (event) => updateRotateSensitivity(event.target.value));
     elements.rotateSensitivityNumber.addEventListener("input", (event) => updateRotateSensitivity(event.target.value));
     elements.rotateSensitivityNumber.addEventListener("change", (event) => updateRotateSensitivity(event.target.value));
-    elements.localDragButton.addEventListener("click", () => setLocalDrag(!state.localDrag));
-    elements.localDragCheckbox.addEventListener("change", (event) => setLocalDrag(event.target.checked));
     elements.resetRotationButton.addEventListener("click", () => {
       state.rotation = { ...(REPORT.rotationModel?.defaultRotation || { x: 90, y: 0, z: 0 }) };
       syncRotationMatrixFromEuler();
       syncRotationControls();
       syncUrlState();
       queueGeometryUpdate(false);
-    });
-    elements.markerButton.addEventListener("click", () => setMarker(!state.marker));
-    elements.markerCheckbox.addEventListener("change", (event) => setMarker(event.target.checked));
-    elements.residueSelect.addEventListener("change", (event) => {
-      state.selectedResidueKey = event.target.value;
-      syncUrlState();
-      reloadScene(false);
     });
     elements.colorMinNumber.addEventListener("input", (event) => updateColorDomain("min", event.target.value));
     elements.colorMinNumber.addEventListener("change", (event) => updateColorDomain("min", event.target.value));
@@ -2656,8 +2599,6 @@
       }
       const colorStep = Number(REPORT.visualMapping?.colorDomainStep ?? 0.5);
       const actions = {
-        t: ["layout-tiled", () => setLayout("tiled")],
-        o: ["layout-overlay", () => setLayout("overlay")],
         u: ["rotate-x-positive", () => addRotation("x", 5)],
         i: ["rotate-x-negative", () => addRotation("x", -5)],
         n: ["rotate-y-positive", () => addRotation("y", 5)],

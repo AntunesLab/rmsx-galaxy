@@ -1,8 +1,8 @@
 # RMSX / Flipbook Galaxy
 
-Galaxy and notebook integration workspace for [RMSX + Flipbook](https://github.com/AntunesLab/rmsx).
+Galaxy integration workspace for [RMSX + Flipbook](https://github.com/AntunesLab/rmsx).
 
-This repository is a cofest collaboration companion to upstream RMSX. Upstream RMSX remains the scientific Python/R package for time-sliced residue fluctuation analysis and FlipBook workflows. This repo focuses on making RMSX easy to run in Galaxy, with a native Molstar FlipBook visualization path and notebook prototypes for inline Molstar viewing.
+This repository is a cofest collaboration companion to upstream RMSX. Upstream RMSX remains the scientific Python/R package for time-sliced residue fluctuation analysis and Flipbook workflows. This repo focuses on making RMSX easy to run in Galaxy, with a native Molstar Flipbook visualization path.
 
 ## What Is Here
 
@@ -11,7 +11,6 @@ This repository is a cofest collaboration companion to upstream RMSX. Upstream R
 - RMSX Molstar manifest datatype scaffold: `config/datatypes/`
 - Container runtime scaffold: `packaging/rmsx-galaxy/`
 - Planemo, manifest, and viewer smoke tests: `tests/rmsx/`
-- Notebook prototypes: `notebooks/`
 - Cofest docs and task list: `docs/`
 
 The native Galaxy visualization is the supported user-facing viewer path. The old standalone HTML report path is development-only.
@@ -44,7 +43,7 @@ In Galaxy:
 2. Select **RMSX trajectory analysis**.
 3. Choose **Load example data: 1UBQ plus mon_sys**.
 4. Click **Run Tool**.
-5. Open the **Molstar FlipBook viewer manifest** output.
+5. Open the **Molstar Flipbook viewer manifest** output.
 6. Use **Visualize** -> **RMSX Molstar FlipBook**.
 
 That path uses the bundled 1UBQ example data and does not require collaborators to upload a trajectory before testing the tool.
@@ -102,7 +101,7 @@ A successful bundled-example Galaxy run should produce:
 - RMSX heatmap PNG
 - RMSX triple plot PNG
 - execution log
-- Molstar FlipBook viewer manifest
+- Molstar Flipbook viewer manifest
 
 The manifest should open through Galaxy's native **Visualize** path without a trusted-HTML warning. The viewer should open in tiled mode by default and expose palette switching, spacing, thickness, columns, residue controls, and local per-slice rotation.
 
@@ -120,7 +119,7 @@ If Docker tests fail because the image cannot be found, build it locally:
 scripts/build_container.sh
 ```
 
-The wrapper references the registry-style tag `ghcr.io/antuneslab/rmsx-galaxy:0.1.0`. The local build script creates that tag on your machine, so Planemo can run before the image is published to GHCR.
+The wrapper references the registry-style tag `ghcr.io/antuneslab/rmsx-galaxy:0.2.3-galaxy0`. The local build script creates that tag on your machine, so Planemo can run before the image is published to GHCR.
 
 If Galaxy starts but the visualization is blank, run this in a second terminal after Galaxy is fully up:
 
@@ -144,18 +143,23 @@ GALAXY_PORT=9091 scripts/serve_galaxy_demo.sh
 
 See [docs/cofest-task-list.md](docs/cofest-task-list.md) for the working task list.
 
+For a collaborator-friendly implementation overview, see
+[docs/rmsx-galaxy-implementation-explainer.md](docs/rmsx-galaxy-implementation-explainer.md).
+
+For the IUC preparation checklist, see [docs/iuc-readiness-audit.md](docs/iuc-readiness-audit.md).
+
 ## Packaging Status
 
 The current share path is container-first. The wrapper references:
 
 ```text
-ghcr.io/antuneslab/rmsx-galaxy:0.1.0
+ghcr.io/antuneslab/rmsx-galaxy:0.2.3-galaxy0
 ```
 
 For local cofest testing, run `scripts/build_container.sh` to build that tag locally. Before external Galaxy administrators can use the tag directly, the image should be pushed to GHCR by someone with `antuneslab` package permissions.
 
-Longer term, a Bioconda or Conda package for RMSX would make Galaxy dependency resolution cleaner. That is a follow-up, not a blocker for this cofest workspace.
+Longer term, a Bioconda or Conda package for RMSX would make Galaxy dependency resolution cleaner and is expected before a polished IUC submission.
 
 ## Relationship To Upstream RMSX
 
-Use upstream RMSX for the core method, scientific API, and publication-facing documentation. Use this repo for Galaxy wrapper work, native visualization experiments, container packaging, and cofest coordination. Changes that improve the general RMSX Python package or notebook helper can be proposed upstream after they are validated here.
+Use upstream RMSX for the core method, scientific API, and publication-facing documentation. Use this repo for Galaxy wrapper work, native visualization experiments, container packaging, and cofest coordination. Changes that improve the general RMSX Python package can be proposed upstream after they are validated here.
