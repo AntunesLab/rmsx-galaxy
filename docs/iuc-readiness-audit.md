@@ -35,9 +35,13 @@ appropriate visualization and datatype packaging route.
 - The original DCD fixture was too large for a direct IUC PR; the current
   `tools/rmsx/test-data/mon_sys.xtc` fixture preserves all 316 frames as
   precision-2 XTC while staying below 1 MB.
-  The fixture README now records the paper-backed 1UBQ simulation context and
-  regeneration command. The remaining publication item is exact archive URL,
-  checksum, and redistribution terms for the original NAMD case-study files.
+  The fixture README now records the paper-backed 1UBQ simulation context,
+  source archive URL, archive checksum, extracted source-file checksums, and
+  regeneration command.
+- The TCBG copyright statement permits educational reproduction and distribution
+  with credit, but it is not a standard open-data license. Confirm with IUC that
+  this is acceptable for bundled test data, or replace the trajectory fixture
+  with one carrying clearer open-data terms.
 - The vendored Molstar JavaScript bundle is too large for a minimal IUC tool PR
   and belongs to the companion visualization discussion.
 - The wrapper now emits the Molstar manifest as standard JSON for the
@@ -71,8 +75,8 @@ appropriate visualization and datatype packaging route.
 
 ## Before Opening An IUC PR
 
-- Confirm the compressed XTC fixture archive URL, checksum, and redistribution
-  terms.
+- Confirm IUC acceptance of the TCBG educational-use redistribution statement
+  for the compressed XTC fixture, or replace the fixture.
 - Reconcile upstream RMSX release metadata so the tag, Python package version,
   Conda package version, and Galaxy wrapper version are consistent.
 - Keep vendored Molstar assets out of the minimal IUC tool PR.
