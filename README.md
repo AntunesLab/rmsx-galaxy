@@ -1,6 +1,6 @@
-# RMSX Galaxy
+# RMSX / Flipbook Galaxy
 
-Galaxy and notebook integration workspace for [RMSX + FlipBook](https://github.com/AntunesLab/rmsx).
+Galaxy and notebook integration workspace for [RMSX + Flipbook](https://github.com/AntunesLab/rmsx).
 
 This repository is a cofest collaboration companion to upstream RMSX. Upstream RMSX remains the scientific Python/R package for time-sliced residue fluctuation analysis and FlipBook workflows. This repo focuses on making RMSX easy to run in Galaxy, with a native Molstar FlipBook visualization path and notebook prototypes for inline Molstar viewing.
 
