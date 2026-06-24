@@ -6,6 +6,27 @@ This directory contains the PDB/XTC fixture used by the Galaxy wrapper tests.
 - `mon_sys.xtc`: compressed trajectory fixture used with `1UBQ.pdb`; current
   size is 1,002,408 bytes.
 
+## Source And Provenance
+
+The fixture represents the ubiquitin case study described in the RMSX/FlipBook
+Scientific Reports manuscript. The paper identifies the system as an SMD
+trajectory of ubiquitin using PDB `1UBQ`, sourced from the NAMD case-study
+materials for ubiquitin. It reports that the simulation used NAMD 2.14 with PME
+electrostatics and periodic boundary conditions, fixed Lys48, steered Met1 at
+0.05 A/ps with a 208.4 pN/A spring constant, recorded frames every 10 ps, and
+stripped waters for analysis.
+
+The paper citation for the case-study source is:
+
+> Cruz-Chu, E. & Gumbart, J. C. Case study: Ubiquitin.
+> https://www.ks.uiuc.edu/Training/CaseStudies/, 2016.
+
+Before opening an IUC PR, confirm and record the exact downloaded archive name,
+download URL, original `mon_sys.dcd` checksum, and license/redistribution terms
+for the NAMD case-study files. The manuscript gives enough scientific context
+for review discussion, but the fixture README should still include exact file
+lineage for redistribution.
+
 ## IUC Readiness Note
 
 The current XTC fixture is useful for cofest reproducibility and is below the
@@ -33,6 +54,3 @@ The fixture still exercises:
 - Static heatmap and triple-plot generation.
 - PDB slice collection output.
 - Molstar manifest generation.
-
-Before publication, record the original source and license/provenance for both
-fixtures here.

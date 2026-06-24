@@ -13,6 +13,7 @@ from pathlib import Path
 
 
 PNG_SIGNATURE = b"\x89PNG\r\n\x1a\n"
+R_PACKAGES = ("ggplot2", "viridis", "dplyr", "tidyr", "stringr", "readr", "gridExtra", "grid")
 
 
 def parse_args() -> argparse.Namespace:
@@ -83,6 +84,29 @@ def verify_png(path: Path, label: str) -> None:
         raise ValueError(f"{label} output is not a PNG file: {path}")
 
 
+def verify_r_packages(rscript: str) -> None:
+    package_vector = ", ".join(f'"{package}"' for package in R_PACKAGES)
+    command = [
+        rscript,
+        "-e",
+        (
+            f"needed <- c({package_vector}); "
+            "missing <- needed[!vapply(needed, requireNamespace, quietly = TRUE, FUN.VALUE = logical(1))]; "
+            "if (length(missing)) stop(paste('Missing required R packages:', paste(missing, collapse=', ')), call. = FALSE)"
+        ),
+    ]
+    result = subprocess.run(command, capture_output=True, text=True, check=False)
+    if result.returncode != 0:
+        details = "\n".join(part for part in (result.stdout.strip(), result.stderr.strip()) if part)
+        if not details:
+            details = f"Rscript package preflight exited with code {result.returncode}."
+        raise RuntimeError(
+            "Required R plotting packages are not available in the Galaxy runtime. "
+            "Install them through Conda/container dependencies; runtime package installation is disabled.\n"
+            f"{details}"
+        )
+
+
 def run_r_plot(
     *,
     rscript: str,
@@ -135,6 +159,7 @@ def main() -> None:
     heatmap_output = Path(args.heatmap_output)
     triple_output = Path(args.triple_output)
     plot_script = locate_plot_script(args.plot_script)
+    verify_r_packages(args.rscript)
 
     for label, path in (("RMSX CSV", rmsx_csv), ("RMSD CSV", rmsd_csv), ("RMSF CSV", rmsf_csv)):
         if not path.is_file():

@@ -35,8 +35,9 @@ appropriate visualization and datatype packaging route.
 - The original DCD fixture was too large for a direct IUC PR; the current
   `tools/rmsx/test-data/mon_sys.xtc` fixture preserves all 316 frames as
   precision-2 XTC while staying below 1 MB.
-  Final provenance and regeneration details still need to be included in the
-  review packet.
+  The fixture README now records the paper-backed 1UBQ simulation context and
+  regeneration command. The remaining publication item is exact archive URL,
+  checksum, and redistribution terms for the original NAMD case-study files.
 - The vendored Molstar JavaScript bundle is too large for a minimal IUC tool PR
   and belongs to the companion visualization discussion.
 - The wrapper now emits the Molstar manifest as standard JSON for the
@@ -51,6 +52,11 @@ appropriate visualization and datatype packaging route.
 - Upstream RMSX imports a rich-display helper at module import time. The
   container declares that dependency for now, but the cleaner IUC path is to
   make the import optional upstream.
+- The pinned upstream `plot_rmsx.R` contains an `install.packages()` fallback
+  when R packages are missing. The Galaxy-side helper now preflights the required
+  R packages and fails before calling the upstream script if any are absent, so
+  Galaxy jobs use declared Conda/container dependencies instead of runtime
+  package installation.
 
 ## Dependency And License Notes
 
@@ -65,7 +71,8 @@ appropriate visualization and datatype packaging route.
 
 ## Before Opening An IUC PR
 
-- Confirm the compressed XTC fixture provenance and regeneration command.
+- Confirm the compressed XTC fixture archive URL, checksum, and redistribution
+  terms.
 - Reconcile upstream RMSX release metadata so the tag, Python package version,
   Conda package version, and Galaxy wrapper version are consistent.
 - Keep vendored Molstar assets out of the minimal IUC tool PR.
@@ -73,8 +80,10 @@ appropriate visualization and datatype packaging route.
 - Run `planemo lint --fail_level warn`, `planemo shed_lint`, and
   `planemo test --install_galaxy`.
 - Run Python style checks and any R style checks required by the final wrapper.
-- Verify that static R plotting works without runtime package installation and
-  without network access.
+- Verify that the Galaxy-side R package preflight catches missing R packages
+  before the packaged upstream `plot_rmsx.R` can reach its `install.packages()`
+  fallback, and that static R plotting works without network access in the final
+  runtime.
 - Produce a dependency/license inventory from the exact Conda/container runtime.
 - Include screenshots and a short known-limitations note in the cofest review
   packet.

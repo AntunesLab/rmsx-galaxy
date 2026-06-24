@@ -231,7 +231,8 @@ def test_native_visualization_contract():
     assert "setLayout(event.target.value)" not in script
     assert "x: Number(state.rotation.x.toFixed(3))" in script
     assert '<entry_point entry_point_type="script" type="text/javascript" src="script_compact_0624.js"' in xml
-    assert 'url="/static/plugins/visualizations/rmsx_molstar/static"' in xml
+    assert 'url="/static/plugins/visualizations/rmsx_molstar/static"' not in xml
+    assert "patch_asgi_visualization_href" in (ROOT / "scripts" / "sync_visualization_static.py").read_text()
     assert "<param required=\"false\">history_id</param>" in xml
     assert "<test test_attr=\"ext\">rmsxmolstar</test>" in xml
     assert "<test test_attr=\"ext\">json</test>" in xml
@@ -328,6 +329,9 @@ def test_static_plot_helper_preserves_heatmap_and_triple_outputs():
 import csv
 import sys
 from pathlib import Path
+
+if len(sys.argv) > 1 and sys.argv[1] == "-e":
+    sys.exit(0)
 
 png = b"\\x89PNG\\r\\n\\x1a\\n"
 rmsx = Path(sys.argv[2])

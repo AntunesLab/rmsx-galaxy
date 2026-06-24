@@ -30,6 +30,16 @@ fi
 
 echo "No oversized files in tools/rmsx."
 
+echo "== Runtime package-install audit =="
+if grep -RInE 'install\.packages|BiocManager::install|remotes::install_|pak::pkg_install|renv::restore' \
+  tools/rmsx packaging/rmsx-galaxy config 2>/dev/null; then
+  echo
+  echo "Found runtime package-install markers in the IUC candidate tree." >&2
+  echo "Galaxy jobs should use declared Conda/container dependencies, not install packages at runtime." >&2
+  exit 1
+fi
+echo "No runtime package-install markers found in the checked project paths."
+
 echo "== Conservative wrapper checks =="
 grep -q 'profile="26.0"' tools/rmsx/rmsx.xml
 grep -q '<data name="viewer_manifest" format="json"' tools/rmsx/rmsx.xml
