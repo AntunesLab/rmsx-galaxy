@@ -79,7 +79,8 @@ def test_manifest_payload():
     assert "mako" in payload["availablePalettes"]
     assert payload["presentation"]["defaultLayout"] == "tiled"
     assert payload["flipbookReference"]["defaultColumns"] == len(payload["slices"])
-    assert payload["flipbookReference"]["minimumSpacingFactor"] == 0.1
+    assert payload["flipbookReference"]["minimumSpacingFactor"] == 0.0
+    assert payload["citation"]["doi"] == "10.1038/s41598-026-39869-7"
     assert payload["flipbookReference"]["tilePaddingFactor"] == 1.55
     assert payload["visualMapping"]["defaultRadiusMin"] == 0.63
     assert payload["visualMapping"]["defaultColorMin"] == payload["domain"]["min"]
@@ -103,6 +104,8 @@ def test_native_visualization_contract():
     package_json = (ROOT / "package.json").read_text(encoding="utf-8")
     assert "vendor/molstar/5.4.2/molstar.js" in script
     assert "This JSON dataset is not a Flipbook Molstar manifest" in script
+    assert "Please cite: RMSX/Flipbook paper" in script
+    assert "10.1038/s41598-026-39869-7" in script
     assert "inline-harness-manifest" in script
     assert "inline-harness-dataset" in script
     assert "manifestSource: state.manifestSource" in script

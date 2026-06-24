@@ -22,7 +22,7 @@ MOLSTAR_STATE_TRANSFORMS_URL = f"https://cdn.jsdelivr.net/npm/molstar@{MOLSTAR_V
 MOLSTAR_STATE_TRANSFORMS_BUNDLE_URL = f"https://esm.sh/molstar@{MOLSTAR_VERSION}/lib/mol-plugin-state/transforms.js?bundle"
 MANIFEST_SCHEMA_VERSION = "flipbook-molstar-viewer/v1"
 MASK_OPACITY = 0.30
-MIN_TILE_SPACING_FACTOR = 0.1
+MIN_TILE_SPACING_FACTOR = 0.0
 MAX_TILE_SPACING_FACTOR = 2.5
 DEFAULT_TILE_SPACING_FACTOR = 1.0
 
@@ -160,6 +160,11 @@ def build_viewer_payload(title, slices, summaries, domain, mask_summary, residue
     payload = {
         "schemaVersion": MANIFEST_SCHEMA_VERSION,
         "title": title,
+        "citation": {
+            "text": "RMSX/Flipbook paper, Scientific Reports (2026)",
+            "doi": "10.1038/s41598-026-39869-7",
+            "url": "https://doi.org/10.1038/s41598-026-39869-7",
+        },
         "slices": slices,
         "summaries": summaries,
         "domain": domain,

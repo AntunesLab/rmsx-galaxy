@@ -90,11 +90,12 @@
           </div>
         </div>
         <div id="status" class="status sidebar-status">Loading RMSX manifest...</div>
+        <p class="citation-note">Please cite: RMSX/Flipbook paper, Scientific Reports (2026), doi:<a href="https://doi.org/10.1038/s41598-026-39869-7" target="_blank" rel="noopener noreferrer">10.1038/s41598-026-39869-7</a>.</p>
         <div class="control-panels" data-testid="molstar-control-panels">
           <details class="control-panel active" open data-panel="view" data-testid="molstar-panel-layout">
             <summary>View</summary>
             <div class="panel-grid">
-              <label>Spacing <input id="spacingRange" type="range" min="0.1" max="2.5" value="1" step="0.05" data-testid="molstar-spacing-range"><input id="spacingNumber" type="number" min="0.1" max="2.5" value="1" step="0.05" data-testid="molstar-spacing-number"></label>
+              <label>Spacing <input id="spacingRange" type="range" min="0" max="2.5" value="1" step="0.05" data-testid="molstar-spacing-range"><input id="spacingNumber" type="number" min="0" max="2.5" value="1" step="0.05" data-testid="molstar-spacing-number"></label>
               <label>Cols <input id="columnsNumber" type="number" min="1" value="1" step="1" data-testid="molstar-columns-number"></label>
               <div class="slice-visibility">
                 <div class="field-label">Slices</div>
@@ -261,6 +262,9 @@
       .rmsx-viewer { position: relative; z-index: 1; display: grid; grid-template-rows: minmax(0, 1fr); min-width: 0; min-height: 0; height: 100vh; }
       .status { margin: 7px 0 0; padding: 6px 8px; border: 1px solid #d7dce2; border-radius: 6px; background: #fbfcfd; color: #13795b; font-size: 12px; line-height: 1.3; }
       .status.error { color: #b42318; border-color: #f1b4ad; background: #fff4f2; }
+      .citation-note { margin: 6px 0 0; padding: 0 2px; color: #5f6b7a; font-size: 11px; line-height: 1.35; }
+      .citation-note a { color: #1f6feb; text-decoration: none; }
+      .citation-note a:hover { text-decoration: underline; }
       .slice-visibility { display: grid; grid-column: 1 / -1; gap: 6px; }
       .field-label { color: #5f6b7a; }
       .chips { display: flex; flex-wrap: wrap; gap: 5px; padding: 0; }
