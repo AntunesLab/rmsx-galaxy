@@ -278,15 +278,10 @@
 
 **What it does**
 
-RMSX partitions a molecular dynamics trajectory into equal time slices and computes
-per-residue RMSF within each slice. The resulting table shows where and when
-residue-level motion changes over the trajectory.
-
-This Galaxy wrapper is intentionally conservative: it runs the RMSX compute path
-behind the Flipbook tool name and does not launch ChimeraX, VMD, or a trusted
-HTML report. It exposes the RMSX compute outputs and adds a native Galaxy
-Molstar Flipbook viewer manifest for inspecting the generated PDB slices through
-Galaxy's Visualize action.
+RMSX Flipbook runs RMSX on a molecular dynamics trajectory, divides the selected
+frame window into time slices, and reports residue-level fluctuation for each
+slice. It also creates a Galaxy viewer manifest for the ``rmsx-flipbook``
+visualization, which renders the generated PDB slices with bundled Molstar.
 
 _____
 
@@ -294,29 +289,17 @@ _____
 
 **Inputs**
 
-The tool can either use datasets from the current history or load the bundled
-1UBQ/mon_sys example data. The example path uses the same fixtures as the
-wrapper tests and defaults to segment ID ``7`` with nine slices.
+Use either the bundled 1UBQ example or datasets from the current history. The
+current wrapper supports PDB topology/structure input with DCD or XTC trajectory
+input. Select the chain or segment to analyze; comma-separated selectors such as
+``A,B`` are accepted.
 
-For history inputs, topology/structure and trajectory files are passed through
-to RMSX with their Galaxy file extensions preserved. RMSX uses MDAnalysis, so
-the current IUC candidate path accepts PDB topology/structure files with DCD or
-XTC trajectory files. Broader MDAnalysis-readable pairs such as PSF/DCD,
-PRMTOP/NetCDF, and GRO/XTC are planned follow-up work after the first reviewable
-wrapper path is stable. The wrapper runs a preflight check before RMSX starts so
-load failures, impossible frame windows, and missing chain/segment selectors
-produce clearer Galaxy logs.
+Before RMSX runs, a preflight check reports available chain and segment IDs and
+catches common load, selector, frame-window, and slice-count problems.
 
-The chain/segment selector is passed to RMSX with ``--chain`` and may contain a
-comma-separated list such as ``A,B``. The preflight log reports the segment IDs
-and chain IDs it found in the topology to make selector problems easier to
-diagnose.
-
-The RMSX options section exposes start frame, optional end frame, analysis type,
-summary residue count, and interpolation. Interpolation is used for the static
-RMSX heatmap raster. The selected palette is shared by the static R plots and
-the native Molstar Flipbook viewer so the heatmap and 3D view can be compared
-directly.
+The RMSX options control the frame window, analysis type, summary residue count,
+interpolation, and shared color palette. The palette is used by both the static
+plots and the interactive viewer.
 
 _____
 
@@ -324,26 +307,13 @@ _____
 
 **Outputs**
 
-The tool produces:
+The tool produces RMSX, RMSD, RMSF, and mask metadata tables; a PDB slice
+collection with RMSX values written into the B-factor column; static RMSX
+heatmap and triple-panel PNG plots; an execution log; and a viewer manifest.
 
-* RMSX CSV table with one row per residue and one column per time slice.
-* RMSD CSV over the analyzed frame window.
-* RMSF CSV over the analyzed frame window.
-* Mask metadata CSV. The current CLI path does not expose masking, so this will
-  normally mark residues as unmasked.
-* PDB slice collection with RMSX values written into the B-factor column.
-* RMSX heatmap PNG generated with the original RMSX R plotting script.
-* RMSX triple-plot PNG combining RMSD, RMSX heatmap, and RMSF panels.
-* Native Molstar viewer manifest for Galaxy's Visualize path.
-* Execution log.
-
-The native viewer manifest embeds the current PDB slices and RMSX display
-metadata using schema version ``flipbook-molstar-viewer/v1`` and is emitted as
-standard Galaxy JSON for the conservative Tool Shed path. Install the
-accompanying prototype ``flipbook_molstar`` Galaxy visualization plugin to open the
-manifest as the interactive Molstar Flipbook viewer without using trusted HTML
-outputs. The project-local ``flipbookmolstar`` datatype remains a cofest prototype
-until Galaxy/IUC agrees on the right upstream datatype strategy.
+Open the manifest with Galaxy's Visualize action and choose ``RMSX Flipbook``.
+The manifest uses schema version ``flipbook-molstar-viewer/v1`` and is intended
+for the ``rmsx-flipbook`` visualization rather than generic JSON viewers.
     ]]></help>
     <expand macro="citations"/>
 </tool>
