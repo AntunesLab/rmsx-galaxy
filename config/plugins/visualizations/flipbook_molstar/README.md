@@ -14,6 +14,10 @@ Galaxy at the standalone snippet as the entire `datatypes_config_file` unless it
 has been merged with Galaxy's stock datatype registry; using the snippet alone
 hides built-in datatypes such as `pdb`, `json`, and `html`.
 
+The datatype registration also declares `<visualization plugin="flipbook_molstar"/>`.
+That link is important for Galaxy's `Visualize` tab: without it, Galaxy can show
+the dataset as `rmsx.json` but still report that no visualizations are available.
+
 The native plugin loads the bundled Molstar 5.4.2 viewer assets from
 `static/vendor/molstar/5.4.2` first. The manifest/CDN URL is retained as a
 development fallback only.

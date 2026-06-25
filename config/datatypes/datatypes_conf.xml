@@ -5,6 +5,8 @@
          has been merged into Galaxy's stock datatypes_conf.xml; using this tiny
          file by itself hides built-in datatypes such as pdb, json, and html. -->
     <registration>
-        <datatype extension="rmsx.json" type="galaxy.datatypes.text:Json" subclass="True" mimetype="application/json" display_in_upload="true"/>
+        <datatype extension="rmsx.json" type="galaxy.datatypes.text:Json" subclass="True" mimetype="application/json" display_in_upload="true">
+            <visualization plugin="flipbook_molstar"/>
+        </datatype>
     </registration>
 </datatypes>

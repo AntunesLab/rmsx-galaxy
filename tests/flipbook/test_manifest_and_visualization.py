@@ -241,6 +241,7 @@ def test_native_visualization_contract():
     assert "<test test_attr=\"ext\">rmsx.json</test>" in xml
     assert "<test test_attr=\"ext\">json</test>" not in xml
     assert 'extension="rmsx.json"' in datatypes
+    assert '<visualization plugin="flipbook_molstar"' in datatypes
     assert '<data name="viewer_manifest" format="rmsx.json"' in wrapper
     assert "RMSX Flipbook viewer manifest - open with Visualize" in wrapper
     assert '<option value="example" selected="true">Load example data: 1UBQ plus mon_sys</option>' in wrapper
