@@ -84,7 +84,7 @@
     <main class="rmsx-app">
       <aside class="rmsx-controls" data-testid="molstar-controls-sidebar">
         <div class="controls-heading">
-          <h1>Flipbook Molstar</h1>
+          <h1>RMSX Flipbook</h1>
           <div class="control-row primary-row">
             <button id="resetViewButton" type="button" data-testid="molstar-reset">Reset View</button>
           </div>
@@ -363,7 +363,7 @@
     const datasetCandidates = datasetIdCandidates();
     const historyCandidates = historyIdCandidates();
     if (!datasetCandidates.length) {
-      throw new Error("No Galaxy dataset id was provided to the Flipbook Molstar visualization.");
+      throw new Error("No Galaxy dataset id was provided to the RMSX Flipbook visualization.");
     }
     const urls = [];
     for (const historyId of historyCandidates) {
@@ -410,7 +410,7 @@
 
   function validateManifest(manifest) {
     if (!manifest || manifest.schemaVersion !== SCHEMA_VERSION) {
-      throw new Error(`This JSON dataset is not a Flipbook Molstar manifest. Expected schemaVersion ${SCHEMA_VERSION}.`);
+      throw new Error(`This dataset is not an RMSX Flipbook manifest. Expected schemaVersion ${SCHEMA_VERSION}.`);
     }
     const required = ["title", "slices", "residues", "summaries", "domain", "maskSummary", "palette", "availablePalettes", "presentation", "visualMapping", "rotationModel", "molstarRenderStyle"];
     const missing = required.filter((key) => manifest[key] === undefined);
@@ -1444,7 +1444,7 @@
       plugin.canvas3d.requestDraw?.();
       return true;
     } catch (error) {
-      console.warn("Flipbook Molstar render style could not be applied.", error);
+      console.warn("RMSX Flipbook render style could not be applied.", error);
       return false;
     }
   }
@@ -2049,7 +2049,7 @@
       try {
         context.targetWindow.history.replaceState({ flipbookMolstarState: true, scope: context.scope }, "", next);
       } catch (error) {
-        console.debug("Flipbook Molstar URL state could not be written; controls will continue without shareable URL sync.", error);
+        console.debug("RMSX Flipbook URL state could not be written; controls will continue without shareable URL sync.", error);
       }
     }
   }
@@ -2634,7 +2634,7 @@
     try {
       REPORT = await fetchManifest();
       validateManifest(REPORT);
-      document.title = REPORT.title || "Flipbook Molstar";
+      document.title = REPORT.title || "RMSX Flipbook";
       await loadMolstarAssets();
       populateControls();
       wireEvents();

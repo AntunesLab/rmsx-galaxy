@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Build a full Galaxy datatypes config that includes Flipbook Molstar manifests."""
+"""Build a full Galaxy datatypes config that includes RMSX Flipbook manifests."""
 
 from __future__ import annotations
 
@@ -12,7 +12,7 @@ from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_OUTPUT = PROJECT_ROOT / "config" / "datatypes" / "merged_datatypes_conf.xml"
-FLIPBOOK_EXTENSION = "flipbookmolstar"
+FLIPBOOK_EXTENSION = "rmsx.json"
 FLIPBOOK_DATATYPE = {
     "extension": FLIPBOOK_EXTENSION,
     "type": "galaxy.datatypes.text:Json",

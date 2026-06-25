@@ -18,14 +18,22 @@ else
 fi
 
 if [[ -x .venv-planemo/bin/planemo ]]; then
+  echo "== Build merged datatype registry =="
+  python3 scripts/build_flipbook_datatypes_config.py
+  grep -q 'extension="rmsx.json"' config/datatypes/merged_datatypes_conf.xml
+
   echo "== Planemo lint =="
-  .venv-planemo/bin/planemo lint --fail_level error tools/flipbook/flipbook.xml
+  # Planemo's standalone lint command does not load custom datatype registries.
+  # Keep all other lint checks active and verify rmsx.json registration above.
+  .venv-planemo/bin/planemo lint --fail_level error --skip ValidDatatypes tools/flipbook/flipbook.xml
 
   echo "== Planemo shed_lint =="
   if python3 -c 'import socket; socket.getaddrinfo("toolshed.g2.bx.psu.edu", 443)' >/dev/null 2>&1; then
     if [[ "${STRICT_SHED_LINT:-0}" == "1" ]]; then
-      .venv-planemo/bin/planemo shed_lint tools/flipbook
-    elif ! .venv-planemo/bin/planemo shed_lint tools/flipbook; then
+      GALAXY_CONFIG_OVERRIDE_DATATYPES_CONFIG_FILE="$ROOT/config/datatypes/merged_datatypes_conf.xml" \
+        .venv-planemo/bin/planemo shed_lint tools/flipbook
+    elif ! GALAXY_CONFIG_OVERRIDE_DATATYPES_CONFIG_FILE="$ROOT/config/datatypes/merged_datatypes_conf.xml" \
+        .venv-planemo/bin/planemo shed_lint tools/flipbook; then
       echo "planemo shed_lint did not complete. Set STRICT_SHED_LINT=1 in CI or publication checks if this should fail the run."
     fi
   elif [[ "${STRICT_SHED_LINT:-0}" == "1" ]]; then

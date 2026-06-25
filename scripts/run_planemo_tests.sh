@@ -46,6 +46,7 @@ fi
 python3 scripts/build_flipbook_datatypes_config.py
 
 env HOME="$ROOT/.planemo-home" \
+  GALAXY_CONFIG_OVERRIDE_DATATYPES_CONFIG_FILE="$ROOT/config/datatypes/merged_datatypes_conf.xml" \
   .venv-planemo/bin/planemo test \
     --install_galaxy \
     --docker \

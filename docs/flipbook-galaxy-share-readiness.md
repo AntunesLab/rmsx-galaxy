@@ -13,13 +13,13 @@ With the conservative wrapper, users can:
 
 1. Run `Flipbook trajectory analysis`.
 2. Receive CSV outputs, static RMSX heatmap/triple-plot PNGs, PDB slice
-   collection, execution log, and a JSON `Molstar native viewer manifest`.
+   collection, execution log, and a typed `rmsx.json` `RMSX Flipbook viewer manifest`.
 
 When a Galaxy admin installs the full prototype visualization bundle, users can
 also:
 
 3. Open the manifest with Galaxy's `Visualize` action.
-4. Choose `Flipbook Molstar`.
+4. Choose `RMSX Flipbook`.
 5. Use the native Molstar viewer without any trusted-HTML allowlist warning.
 
 The public wrapper intentionally does not emit the old standalone HTML report.
@@ -97,7 +97,7 @@ The conservative Tool Shed candidate has one Galaxy-side piece:
 
 The full prototype viewer install has optional additional Galaxy-side pieces:
 
-1. Register the `flipbookmolstar` datatype if using the dedicated local datatype.
+1. Register the `rmsx.json` datatype if using the dedicated local datatype.
 2. Install/register the `flipbook_molstar` visualization plugin.
 
 For local Planemo demos, the project uses:

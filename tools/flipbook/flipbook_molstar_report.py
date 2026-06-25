@@ -78,7 +78,7 @@ def parse_args():
     parser.add_argument("--output", help="Optional standalone HTML report output path for development/debugging.")
     parser.add_argument("--manifest-output", help="Optional native Galaxy visualization manifest JSON output path.")
     parser.add_argument("--palette", default="viridis", choices=sorted(FLIPBOOK_PALETTES), help="Flipbook color palette.")
-    parser.add_argument("--title", default="Flipbook Molstar viewer", help="Report title.")
+    parser.add_argument("--title", default="RMSX Flipbook viewer", help="Report title.")
     return parser.parse_args()
 
 
@@ -851,7 +851,7 @@ def html_report(payload):
           </div>
         </div>
       </aside>
-      <section class="viewer-shell" aria-label="Flipbook Molstar viewer" data-testid="molstar-report">
+      <section class="viewer-shell" aria-label="RMSX Flipbook viewer" data-testid="molstar-report">
         <div class="viewer-toolbar">
           <div id="sceneLabels" class="scene-labels" aria-label="Loaded slices"></div>
           <div id="status" class="status">Loading Molstar...</div>

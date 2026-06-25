@@ -84,7 +84,7 @@
             --mask-table '$mask_table'
             --palette '$palette'
             --manifest-output '$viewer_manifest'
-            --title 'Flipbook Molstar viewer'
+            --title 'RMSX Flipbook viewer'
     ]]></command>
     <inputs>
         <conditional name="input_source">
@@ -141,7 +141,7 @@
         <data name="rmsx_heatmap_plot" format="png" label="${tool.name} on ${on_string}: RMSX heatmap plot"/>
         <data name="rmsx_triple_plot" format="png" label="${tool.name} on ${on_string}: RMSX triple plot"/>
         <data name="log" format="txt" label="${tool.name} on ${on_string}: execution log"/>
-        <data name="viewer_manifest" format="json" label="${tool.name} on ${on_string}: Molstar native viewer manifest - open with Visualize"/>
+        <data name="viewer_manifest" format="rmsx.json" label="${tool.name} on ${on_string}: RMSX Flipbook viewer manifest - open with Visualize"/>
     </outputs>
     <tests>
         <test expect_num_outputs="9">
@@ -198,10 +198,10 @@
                     <has_size min="1000"/>
                 </assert_contents>
             </output>
-            <output name="viewer_manifest" ftype="json">
+            <output name="viewer_manifest" ftype="rmsx.json">
                 <assert_contents>
                     <has_text text="&quot;schemaVersion&quot;: &quot;flipbook-molstar-viewer/v1&quot;"/>
-                    <has_text text="&quot;title&quot;: &quot;Flipbook Molstar viewer&quot;"/>
+                    <has_text text="&quot;title&quot;: &quot;RMSX Flipbook viewer&quot;"/>
                     <has_text text="&quot;slices&quot;"/>
                     <has_text text="&quot;residues&quot;"/>
                     <has_text text="&quot;summaries&quot;"/>
@@ -256,7 +256,7 @@
                     <has_size min="1000"/>
                 </assert_contents>
             </output>
-            <output name="viewer_manifest" ftype="json">
+            <output name="viewer_manifest" ftype="rmsx.json">
                 <assert_contents>
                     <has_text text="&quot;schemaVersion&quot;: &quot;flipbook-molstar-viewer/v1&quot;"/>
                     <has_text text="&quot;filename&quot;: &quot;slice_1_first_frame.pdb&quot;"/>
@@ -285,7 +285,7 @@ residue-level motion changes over the trajectory.
 This Galaxy wrapper is intentionally conservative: it runs the RMSX compute path
 behind the Flipbook tool name and does not launch ChimeraX, VMD, or a trusted
 HTML report. It exposes the RMSX compute outputs and adds a native Galaxy
-Molstar Flipbook viewer manifest for inspecting the generated PDB slices through
+RMSX Flipbook viewer manifest for inspecting the generated PDB slices through
 Galaxy's Visualize action.
 
 _____
@@ -339,11 +339,9 @@ The tool produces:
 
 The native viewer manifest embeds the current PDB slices and RMSX display
 metadata using schema version ``flipbook-molstar-viewer/v1`` and is emitted as
-standard Galaxy JSON for the conservative Tool Shed path. Install the
-accompanying prototype ``flipbook_molstar`` Galaxy visualization plugin to open the
-manifest as the interactive Molstar Flipbook viewer without using trusted HTML
-outputs. The project-local ``flipbookmolstar`` datatype remains a cofest prototype
-until Galaxy/IUC agrees on the right upstream datatype strategy.
+typed Galaxy ``rmsx.json`` data. Install the accompanying prototype
+``flipbook_molstar`` Galaxy visualization plugin to open the manifest as the
+interactive RMSX Flipbook viewer without using trusted HTML outputs.
     ]]></help>
     <expand macro="citations"/>
 </tool>

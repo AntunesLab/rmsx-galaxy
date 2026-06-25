@@ -1,14 +1,14 @@
-# Flipbook Molstar Galaxy Visualization Plugin
+# RMSX Flipbook Galaxy Visualization Plugin
 
 This is a local prototype Galaxy visualization plugin for Flipbook
 `flipbook-molstar-viewer/v1` manifests generated from RMSX analysis outputs.
 
-The plugin is registered for generic `json` datasets and also for the
-project-local `flipbookmolstar` datatype during prototype development. In both cases it
-validates `schemaVersion` at runtime and shows a clear unsupported-manifest
-message for unrelated JSON files.
+The plugin is registered for the project-local `rmsx.json` datatype. It does not
+register against generic `json` datasets, so Galaxy only offers this viewer on
+the RMSX Flipbook manifest output. The plugin still validates `schemaVersion` at
+runtime before rendering.
 
-`config/datatypes/datatypes_conf.xml` registers the dedicated `flipbookmolstar`
+`config/datatypes/datatypes_conf.xml` registers the dedicated `rmsx.json`
 datatype as a standalone snippet for local Galaxy experiments. Do not point
 Galaxy at the standalone snippet as the entire `datatypes_config_file` unless it
 has been merged with Galaxy's stock datatype registry; using the snippet alone
@@ -19,7 +19,7 @@ The native plugin loads the bundled Molstar 5.4.2 viewer assets from
 development fallback only.
 
 For local Planemo serving, first build a full datatype registry that contains
-Galaxy's stock datatypes plus the Flipbook Molstar manifest datatype:
+Galaxy's stock datatypes plus the RMSX Flipbook manifest datatype:
 
 ```bash
 python3 scripts/build_flipbook_datatypes_config.py
@@ -50,9 +50,9 @@ entry point and bundled Molstar files:
 python3 scripts/sync_visualization_static.py
 ```
 
-After running the Flipbook Galaxy tool, open the `Molstar native viewer manifest
+After running the Flipbook Galaxy tool, open the `RMSX Flipbook viewer manifest
 - open with Visualize` history item and use Galaxy's `Visualize` action to
-launch `Flipbook Molstar`. This path
+launch `RMSX Flipbook`. This path
 renders through Galaxy's native visualization framework, so it does not need the
 trusted-HTML allowlist used by standalone HTML report datasets.
 

@@ -51,7 +51,7 @@ The Galaxy tool form includes an input-source selector. "Use datasets from histo
 
 The Galaxy wrapper creates the native Molstar viewer manifest with `flipbook_molstar_report.py`. Shared report-parsing helpers live in `flipbook_report_common.py`. The script can still write a standalone HTML report for development if called manually with `--output`, but the public Galaxy wrapper does not emit that HTML dataset.
 
-The manifest uses schema version `flipbook-molstar-viewer/v1` and embeds the PDB slice text, RMSX residue values, slice summaries, mask metadata, palette defaults, layout defaults, and Molstar render settings. The conservative wrapper emits this output as standard Galaxy JSON. A project-local `flipbookmolstar` datatype remains available for local Galaxy experiments, but it is not required by the Tool Shed candidate unless Galaxy/IUC agrees on that datatype route. A local prototype Galaxy visualization plugin lives under `config/plugins/visualizations/flipbook_molstar`; run Planemo with the visualization plugin directory override to make the manifest offer the `Flipbook Molstar` Visualize action.
+The manifest uses schema version `flipbook-molstar-viewer/v1` and embeds the PDB slice text, RMSX residue values, slice summaries, mask metadata, palette defaults, layout defaults, and Molstar render settings. The wrapper emits this output as typed Galaxy `rmsx.json` data so Galaxy can offer only the RMSX Flipbook visualization for this manifest, not for unrelated JSON datasets. A local prototype Galaxy visualization plugin lives under `config/plugins/visualizations/flipbook_molstar`; run Planemo with the visualization plugin directory override to make the manifest offer the `RMSX Flipbook` Visualize action.
 
 The native visualization is now the primary and public viewer target. Its Galaxy iframe UI opens with a compact desktop control sidebar on the left, the View panel selected by default, and the Molstar canvas taking the remaining space. The sidebar exposes View, Style, Rotation, and Metrics panels. View focuses on tiled Flipbook layout, spacing, columns, and numbered slice visibility chips; Style carries palette, RMSX color/radius ranges, thickness, outline, and reset controls; Metrics summarizes the whole RMSX sequence. Narrow iframes collapse back to the stacked layout.
 
@@ -118,7 +118,7 @@ The Docker-backed Planemo test uses the locally built RMSX runtime image instead
 scripts/run_planemo_tests.sh
 ```
 
-That Docker-backed run should resolve the registry-qualified RMSX container, launch Docker, produce the static RMSX heatmap and triple-plot PNGs, produce the native Molstar viewer manifest, and pass the wrapper tests. The test suite covers the history-input path, bundled-example path, and an expected preflight failure for a missing chain/segment selector. The Tool Shed candidate manifest output is JSON; the local `flipbookmolstar` datatype is only needed for prototype visualization experiments.
+That Docker-backed run should resolve the registry-qualified RMSX container, launch Docker, produce the static RMSX heatmap and triple-plot PNGs, produce the typed `rmsx.json` RMSX Flipbook viewer manifest, and pass the wrapper tests. The test suite covers the history-input path, bundled-example path, and an expected preflight failure for a missing chain/segment selector.
 
 For manual native visualization testing in local Galaxy, use the serve helper:
 
@@ -126,7 +126,7 @@ For manual native visualization testing in local Galaxy, use the serve helper:
 scripts/serve_galaxy_demo.sh
 ```
 
-It builds the merged datatype registry, starts Planemo/Galaxy with the prototype visualization plugin directory, and mirrors the visualization assets into the temporary Galaxy checkout created by Planemo. After running RMSX, open the `Molstar native viewer manifest - open with Visualize` history item, choose `Visualize`, and launch `Flipbook Molstar`. This route renders the manifest through Galaxy's visualization framework and avoids the trusted-HTML allowlist banner.
+It builds the merged datatype registry, starts Planemo/Galaxy with the prototype visualization plugin directory, and mirrors the visualization assets into the temporary Galaxy checkout created by Planemo. After running RMSX, open the `RMSX Flipbook viewer manifest - open with Visualize` history item, choose `Visualize`, and launch `RMSX Flipbook`. This route renders the manifest through Galaxy's visualization framework and avoids the trusted-HTML allowlist banner.
 
 To exercise the native viewer parity checklist against a running visualization, copy the open visualization URL and run:
 
@@ -166,7 +166,7 @@ node tests/flipbook/native_visualization_parity_check.mjs \
   --url "http://127.0.0.1:8787/tests/flipbook/native_visualization_harness.html"
 ```
 
-The harness embeds a tiny Flipbook Molstar manifest and loads the project visualization script plus local Molstar assets. It is a parity/debug harness, not a replacement for the final Galaxy Visualize acceptance check.
+The harness embeds a tiny RMSX Flipbook manifest and loads the project visualization script plus local Molstar assets. It is a parity/debug harness, not a replacement for the final Galaxy Visualize acceptance check.
 
 Do not use `--no_install_prebuilt_client` for this local prototype unless you are intentionally debugging Galaxy's frontend build. On current Galaxy master that path forced a local client build and failed during `pnpm` lockfile validation, while the prebuilt-client path successfully loaded the `flipbook_molstar` plugin.
 
@@ -186,5 +186,5 @@ The package requirement versions in `macros.xml` are pinned to the versions pres
 - Prepare a Conda/Bioconda recipe so the wrapper can eventually resolve through Galaxy's preferred package path.
 - Add an all-chain CLI mode or wrapper-side adapter after the single-chain path is stable.
 - Decide when to expose mask selections after the CLI supports them directly.
-- Decide whether the native `flipbook_molstar` visualization should stay as a local Galaxy visualization plugin, move into Galaxy Charts packaging, or be proposed upstream with the `flipbookmolstar` manifest datatype.
+- Decide whether the native `flipbook_molstar` visualization should stay as a local Galaxy visualization plugin, move into Galaxy Charts packaging, or be proposed upstream together with the `rmsx.json` manifest datatype.
 - Add Molstar-specific RMSX themes if the generic `uncertainty` theme is not sufficient for publication-quality color scale control.

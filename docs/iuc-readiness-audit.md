@@ -8,10 +8,10 @@ by Galaxy and IUC reviewers.
 The first IUC-facing target should be the conservative Flipbook Galaxy wrapper in
 `tools/flipbook`, not the whole cofest repository. The wrapper should be useful on
 its own through standard Galaxy outputs: CSV tables, PNG plots, PDB slice
-collections, logs, and a JSON Molstar manifest.
+collections, logs, and a typed `rmsx.json` RMSX Flipbook manifest.
 
-The native Molstar visualization, custom `flipbookmolstar` datatype, and standalone
-HTML experiments remain companion/prototype assets until Galaxy/IUC agree on the
+The native Molstar visualization, `rmsx.json` datatype, and standalone HTML
+experiments remain companion/prototype assets until Galaxy/IUC agree on the
 appropriate visualization and datatype packaging route.
 
 ## IUC Rules And Patterns Checked
@@ -44,10 +44,11 @@ appropriate visualization and datatype packaging route.
   with one carrying clearer open-data terms.
 - The vendored Molstar JavaScript bundle is too large for a minimal IUC tool PR
   and belongs to the companion visualization discussion.
-- The wrapper now emits the Molstar manifest as standard JSON for the
-  conservative Tool Shed path.
-- The project-local `flipbookmolstar` datatype remains useful for local demos but
-  should not be assumed in an IUC tool PR without prior guidance.
+- The wrapper now emits the viewer manifest as typed `rmsx.json` so Galaxy has a
+  clean visualization contract.
+- The project-local `rmsx.json` datatype should be discussed with Galaxy/IUC
+  before a formal IUC PR, because durable custom datatypes may belong outside
+  the tool repository.
 - The container scaffold now pins upstream RMSX `v0.2.3` instead of building
   from `main`.
 - Building that tag currently installs Python package metadata as `rmsx==0.1.0`.

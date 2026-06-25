@@ -42,7 +42,7 @@ echo "No runtime package-install markers found in the checked project paths."
 
 echo "== Conservative wrapper checks =="
 grep -q 'profile="26.0"' tools/flipbook/flipbook.xml
-grep -q '<data name="viewer_manifest" format="json"' tools/flipbook/flipbook.xml
+grep -q '<data name="viewer_manifest" format="rmsx.json"' tools/flipbook/flipbook.xml
 grep -q 'RMSX_REF=v0.2.3' packaging/flipbook-galaxy/Dockerfile
 grep -q '@VERSION_SUFFIX@' tools/flipbook/flipbook.xml
 echo "Wrapper readiness markers are present."

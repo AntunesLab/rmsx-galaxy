@@ -51,7 +51,7 @@ python3 scripts/build_flipbook_datatypes_config.py
 
 echo "Starting Galaxy on http://$HOST:$PORT"
 echo "After Galaxy opens: Tools -> Flipbook trajectory analysis -> keep the default example data -> Execute."
-echo "Then open the Molstar viewer manifest with Visualize -> Flipbook Molstar."
+echo "Then open the RMSX Flipbook viewer manifest with Visualize -> RMSX Flipbook."
 
 GALAXY_CONFIG_OVERRIDE_DATATYPES_CONFIG_FILE="$ROOT/config/datatypes/merged_datatypes_conf.xml" \
 GALAXY_CONFIG_OVERRIDE_VISUALIZATION_PLUGINS_DIRECTORY="$ROOT/config/plugins/visualizations" \

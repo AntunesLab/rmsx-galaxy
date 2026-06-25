@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Smoke checks for the Flipbook Molstar manifest and native visualization."""
+"""Smoke checks for the RMSX Flipbook manifest and native visualization."""
 
 import json
 import subprocess
@@ -55,7 +55,7 @@ def build_payload(tmpdir):
     summaries, domain = summarize_slices(rows, slice_columns)
     residues = build_residue_payload(rows, slice_columns)
     return build_viewer_payload(
-        "Flipbook Molstar viewer",
+        "RMSX Flipbook viewer",
         slices,
         summaries,
         domain,
@@ -103,7 +103,7 @@ def test_native_visualization_contract():
     plugin_readme = (ROOT / "config/plugins/visualizations/flipbook_molstar/README.md").read_text(encoding="utf-8")
     package_json = (ROOT / "package.json").read_text(encoding="utf-8")
     assert "vendor/molstar/5.4.2/molstar.js" in script
-    assert "This JSON dataset is not a Flipbook Molstar manifest" in script
+    assert "This dataset is not an RMSX Flipbook manifest" in script
     assert "Please cite: RMSX/Flipbook paper" in script
     assert "10.1038/s41598-026-39869-7" in script
     assert "inline-harness-manifest" in script
@@ -237,13 +237,15 @@ def test_native_visualization_contract():
     assert 'url="/static/plugins/visualizations/flipbook_molstar/static"' not in xml
     assert "patch_asgi_visualization_href" in (ROOT / "scripts" / "sync_visualization_static.py").read_text()
     assert "<param required=\"false\">history_id</param>" in xml
-    assert "<test test_attr=\"ext\">flipbookmolstar</test>" in xml
-    assert "<test test_attr=\"ext\">json</test>" in xml
-    assert 'extension="flipbookmolstar"' in datatypes
-    assert '<data name="viewer_manifest" format="json"' in wrapper
+    assert '<visualization name="RMSX Flipbook">' in xml
+    assert "<test test_attr=\"ext\">rmsx.json</test>" in xml
+    assert "<test test_attr=\"ext\">json</test>" not in xml
+    assert 'extension="rmsx.json"' in datatypes
+    assert '<data name="viewer_manifest" format="rmsx.json"' in wrapper
+    assert "RMSX Flipbook viewer manifest - open with Visualize" in wrapper
     assert '<option value="example" selected="true">Load example data: 1UBQ plus mon_sys</option>' in wrapper
     assert '<param argument="--num_slices" type="integer" value="9" min="1" label="Number of trajectory slices"/>' in wrapper
-    assert '<output name="viewer_manifest" ftype="json">' in wrapper
+    assert '<output name="viewer_manifest" ftype="rmsx.json">' in wrapper
     assert '<data name="rmsx_heatmap_plot" format="png"' in wrapper
     assert '<data name="rmsx_triple_plot" format="png"' in wrapper
     assert '<output name="rmsx_heatmap_plot" ftype="png">' in wrapper

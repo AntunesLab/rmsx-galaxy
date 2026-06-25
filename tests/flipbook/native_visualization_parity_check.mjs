@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /*
- * Browser parity smoke check for the native Flipbook Molstar Galaxy visualization.
+ * Browser parity smoke check for the native RMSX Flipbook Galaxy visualization.
  *
  * Usage:
  *   node tests/flipbook/native_visualization_parity_check.mjs \
@@ -147,7 +147,7 @@ async function main() {
   const url = argValue("--url") || process.env.FLIPBOOK_MOLSTAR_VIS_URL;
   const cookieFile = argValue("--cookie-file") || process.env.RMSX_GALAXY_COOKIE_FILE;
   if (!url) {
-    throw new Error("Provide --url or FLIPBOOK_MOLSTAR_VIS_URL for a running Galaxy Flipbook Molstar visualization.");
+    throw new Error("Provide --url or FLIPBOOK_MOLSTAR_VIS_URL for a running Galaxy RMSX Flipbook visualization.");
   }
 
   const { chromium } = await loadPlaywright();
