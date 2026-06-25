@@ -50,7 +50,7 @@ fi
 python3 scripts/build_flipbook_datatypes_config.py
 
 echo "Starting Galaxy on http://$HOST:$PORT"
-echo "After Galaxy opens: Tools -> Flipbook trajectory analysis -> Load example data -> Execute."
+echo "After Galaxy opens: Tools -> Flipbook trajectory analysis -> keep the default example data -> Execute."
 echo "Then open the Molstar viewer manifest with Visualize -> Flipbook Molstar."
 
 GALAXY_CONFIG_OVERRIDE_DATATYPES_CONFIG_FILE="$ROOT/config/datatypes/merged_datatypes_conf.xml" \

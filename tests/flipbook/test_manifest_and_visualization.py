@@ -241,6 +241,8 @@ def test_native_visualization_contract():
     assert "<test test_attr=\"ext\">json</test>" in xml
     assert 'extension="flipbookmolstar"' in datatypes
     assert '<data name="viewer_manifest" format="json"' in wrapper
+    assert '<option value="example" selected="true">Load example data: 1UBQ plus mon_sys</option>' in wrapper
+    assert '<param argument="--num_slices" type="integer" value="9" min="1" label="Number of trajectory slices"/>' in wrapper
     assert '<output name="viewer_manifest" ftype="json">' in wrapper
     assert '<data name="rmsx_heatmap_plot" format="png"' in wrapper
     assert '<data name="rmsx_triple_plot" format="png"' in wrapper

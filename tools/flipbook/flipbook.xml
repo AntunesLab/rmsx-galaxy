@@ -89,8 +89,8 @@
     <inputs>
         <conditional name="input_source">
             <param name="source" type="select" display="radio" label="Input source">
-                <option value="history" selected="true">Use datasets from history</option>
-                <option value="example">Load example data: 1UBQ plus mon_sys</option>
+                <option value="history">Use datasets from history</option>
+                <option value="example" selected="true">Load example data: 1UBQ plus mon_sys</option>
             </param>
             <when value="history">
                 <param name="topology" type="data" format="pdb" label="Topology or structure file" help="First IUC candidate path supports PDB topology/structure input. Broader MDAnalysis-readable topology formats are tracked as follow-up work."/>

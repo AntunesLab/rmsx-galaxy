@@ -41,7 +41,7 @@ In Galaxy:
 
 1. Open **Tools**.
 2. Select **Flipbook trajectory analysis**.
-3. Choose **Load example data: 1UBQ plus mon_sys**.
+3. Keep the default **Load example data: 1UBQ plus mon_sys** input source.
 4. Click **Run Tool**.
 5. Open the **Molstar Flipbook viewer manifest** output.
 6. Use **Visualize** -> **Flipbook Molstar**.
