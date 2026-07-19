@@ -93,8 +93,8 @@
                 <option value="example" selected="true">Load example data: 1UBQ plus mon_sys</option>
             </param>
             <when value="history">
-                <param name="topology" type="data" format="pdb" label="Topology or structure file" help="First IUC candidate path supports PDB topology/structure input. Broader MDAnalysis-readable topology formats are tracked as follow-up work."/>
-                <param name="trajectory" type="data" format="dcd,xtc" label="Trajectory file" help="First IUC candidate path supports DCD and XTC trajectory input. Broader MDAnalysis-readable trajectory formats are tracked as follow-up work."/>
+                <param name="topology" type="data" format="pdb" label="Topology or structure file" help="The current wrapper supports PDB topology/structure input. Broader MDAnalysis-readable topology formats are tracked as follow-up work."/>
+                <param name="trajectory" type="data" format="dcd,xtc" label="Trajectory file" help="The current wrapper supports DCD and XTC trajectory input. Broader MDAnalysis-readable trajectory formats are tracked as follow-up work."/>
                 <param argument="--chain" type="text" value="A" label="Chain/segment selector" help="Passed to RMSX with --chain. Comma-separated values such as A,B are allowed; the preflight check reports available segment IDs and chain IDs.">
                     <validator type="regex" message="Use comma-separated letters, numbers, underscores, hyphens, or periods.">^[A-Za-z0-9_.-]+(,[A-Za-z0-9_.-]+)*$</validator>
                 </param>

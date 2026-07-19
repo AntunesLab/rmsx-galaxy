@@ -982,7 +982,7 @@ def html_report(payload):
     function paletteLabel(name) {
       return String(name || "")
         .replace(/[-_]+/g, " ")
-        .replace(/\b\w/g, (letter) => letter.toUpperCase());
+        .replace(/\\b\\w/g, (letter) => letter.toUpperCase());
     }
 
     function currentPaletteColors() {
