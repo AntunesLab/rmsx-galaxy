@@ -1,6 +1,11 @@
 Flipbook trajectory analysis
 ============================
 
+.. image:: static/images/flipbook_logo.png
+   :alt: RMSX Flipbook logo
+   :width: 320px
+   :align: center
+
 RMSX partitions a molecular dynamics trajectory into time slices and computes
 per-residue RMSF within each slice. This Galaxy wrapper exposes the RMSX compute
 path and returns workflow-friendly Galaxy datasets: RMSX, RMSD, and RMSF CSV
@@ -26,10 +31,10 @@ Viewer manifest
 
 The Molstar Flipbook manifest is emitted as standard Galaxy JSON using schema
 version ``flipbook-molstar-viewer/v1``. The companion repository also contains a
-native Galaxy visualization plugin and a project-local ``flipbookmolstar``
-datatype, but those are not assumed for the conservative IUC wrapper path. The
-manifest is still useful as structured data and can be rendered by the prototype
-viewer when that plugin is installed.
+native Galaxy visualization plugin and a project-local ``rmsx.json`` datatype.
+The datatype makes the manifest a first-class visualization-ready output instead
+of arbitrary JSON; the exact upstream packaging location for this datatype still
+needs Galaxy/IUC review before a formal IUC PR.
 
 Dependency status
 -----------------

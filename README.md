@@ -8,7 +8,7 @@ This repository is a cofest collaboration companion to upstream RMSX. Upstream R
 
 - Galaxy Flipbook tool wrapper: `tools/flipbook/`
 - Native Galaxy Molstar visualization plugin: `config/plugins/visualizations/flipbook_molstar/`
-- Flipbook Molstar manifest datatype scaffold: `config/datatypes/`
+- RMSX Flipbook manifest datatype scaffold: `config/datatypes/`
 - Container runtime scaffold: `packaging/flipbook-galaxy/`
 - Planemo, manifest, and viewer smoke tests: `tests/flipbook/`
 - Cofest docs and task list: `docs/`
@@ -43,8 +43,8 @@ In Galaxy:
 2. Select **Flipbook trajectory analysis**.
 3. Keep the default **Load example data: 1UBQ plus mon_sys** input source.
 4. Click **Run Tool**.
-5. Open the **Molstar Flipbook viewer manifest** output.
-6. Use **Visualize** -> **Flipbook Molstar**.
+5. Open the **RMSX Flipbook viewer manifest** output.
+6. Use **Visualize** -> **RMSX Flipbook**.
 
 That path uses the bundled 1UBQ example data and does not require collaborators to upload a trajectory before testing the tool.
 
@@ -101,7 +101,7 @@ A successful bundled-example Galaxy run should produce:
 - RMSX heatmap PNG
 - RMSX triple plot PNG
 - execution log
-- Molstar Flipbook viewer manifest
+- RMSX Flipbook viewer manifest
 
 The manifest should open through Galaxy's native **Visualize** path without a trusted-HTML warning. The viewer should open in tiled mode by default and expose palette switching, spacing, thickness, columns, residue controls, and local per-slice rotation.
 

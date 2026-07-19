@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /*
- * Visual smoke check for the native Flipbook Molstar view.
+ * Visual smoke check for the native RMSX Flipbook view.
  *
  * This complements native_visualization_parity_check.mjs by inspecting the
  * rendered canvas/screenshot rather than only control diagnostics.
@@ -84,13 +84,13 @@ async function writeManifestHarness(manifest, sourcePath) {
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Flipbook Molstar manifest visual check</title>
+  <title>RMSX Flipbook manifest visual check</title>
 </head>
 <body>
   <div id="app"></div>
   <script>
     document.getElementById("app").dataset.incoming = ${JSON.stringify(incoming)};
-    document.title = ${JSON.stringify(`Flipbook Molstar visual check: ${basename(sourcePath)}`)};
+    document.title = ${JSON.stringify(`RMSX Flipbook visual check: ${basename(sourcePath)}`)};
   </script>
   <script src="${pathToFileURL(staticScript).href}"></script>
 </body>
@@ -278,7 +278,7 @@ async function main() {
     url = await writeManifestHarness(await loadManifestFile(manifestPath), manifestPath);
   }
   if (!url) {
-    throw new Error("Provide --url, --manifest, FLIPBOOK_MOLSTAR_VIS_URL, or FLIPBOOK_MOLSTAR_MANIFEST for a Flipbook Molstar visualization.");
+    throw new Error("Provide --url, --manifest, FLIPBOOK_MOLSTAR_VIS_URL, or FLIPBOOK_MOLSTAR_MANIFEST for an RMSX Flipbook visualization.");
   }
   const screenshotPath = resolve(argValue("--screenshot") || "/private/tmp/flipbook_molstar_visual_check.png");
   const minClustersArg = Number(argValue("--min-clusters") || 0);

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Build a full Galaxy datatypes config that includes Flipbook Molstar manifests."""
+"""Build a full Galaxy datatypes config that includes RMSX Flipbook manifests."""
 
 from __future__ import annotations
 
@@ -12,7 +12,8 @@ from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_OUTPUT = PROJECT_ROOT / "config" / "datatypes" / "merged_datatypes_conf.xml"
-FLIPBOOK_EXTENSION = "flipbookmolstar"
+FLIPBOOK_EXTENSION = "rmsx.json"
+FLIPBOOK_VISUALIZATION = "flipbook_molstar"
 FLIPBOOK_DATATYPE = {
     "extension": FLIPBOOK_EXTENSION,
     "type": "galaxy.datatypes.text:Json",
@@ -90,9 +91,18 @@ def add_flipbook_datatype(root: ET.Element) -> bool:
         if datatype.get("extension") == FLIPBOOK_EXTENSION:
             for key, value in FLIPBOOK_DATATYPE.items():
                 datatype.set(key, value)
+            ensure_flipbook_visualization(datatype)
             return False
-    ET.SubElement(registration, "datatype", FLIPBOOK_DATATYPE)
+    datatype = ET.SubElement(registration, "datatype", FLIPBOOK_DATATYPE)
+    ensure_flipbook_visualization(datatype)
     return True
+
+
+def ensure_flipbook_visualization(datatype: ET.Element) -> None:
+    for visualization in datatype.findall("visualization"):
+        if visualization.get("plugin") == FLIPBOOK_VISUALIZATION:
+            return
+    ET.SubElement(datatype, "visualization", {"plugin": FLIPBOOK_VISUALIZATION})
 
 
 def indent_xml(element: ET.Element, level: int = 0) -> None:

@@ -71,10 +71,10 @@ A successful run produces 9 Galaxy outputs:
 6. RMSX heatmap plot, PNG
 7. RMSX triple plot, PNG
 8. execution log, TXT
-9. Molstar native viewer manifest, JSON
+9. RMSX Flipbook viewer manifest, `rmsx.json`
 
-The JSON manifest is the bridge between the conventional Galaxy tool output and
-the interactive Molstar viewer.
+The typed `rmsx.json` manifest is the bridge between the conventional Galaxy
+tool output and the interactive Molstar viewer.
 
 ## Why RMSX Runs With `--no-plot`
 
@@ -96,8 +96,8 @@ The manifest schema is:
 flipbook-molstar-viewer/v1
 ```
 
-The manifest is standard JSON for the conservative Galaxy wrapper path. It
-contains all data needed by the viewer:
+The manifest is typed as `rmsx.json` for the Galaxy wrapper path. It contains
+all data needed by the viewer:
 
 - embedded PDB text for each slice,
 - RMSX residue values,
@@ -124,7 +124,7 @@ config/plugins/visualizations/flipbook_molstar/
 ```
 
 It accepts datasets with extension `json` and also accepts the project-local
-`flipbookmolstar` datatype when that datatype is installed in a local Galaxy demo.
+`rmsx.json` datatype when that datatype is installed in a local Galaxy demo.
 The plugin validates the manifest schema before rendering. Generic JSON files
 should get a clear unsupported-manifest message instead of a broken viewer.
 
@@ -186,8 +186,8 @@ Then in Galaxy:
 2. Select **Flipbook trajectory analysis**.
 3. Keep the default **Load example data: 1UBQ plus mon_sys** input source.
 4. Click **Run Tool**.
-5. Open **Molstar native viewer manifest - open with Visualize**.
-6. Use **Visualize** -> **Flipbook Molstar**.
+5. Open **RMSX Flipbook viewer manifest - open with Visualize**.
+6. Use **Visualize** -> **RMSX Flipbook**.
 
 The bundled example exists so collaborators can test the tool without bringing
 their own trajectory.
@@ -218,7 +218,7 @@ The repo is ready for collaborator testing of the Galaxy workflow:
 - the container builds,
 - the example run produces all 9 expected outputs,
 - static plots are restored,
-- the native Molstar manifest is emitted as standard JSON,
+- the native viewer manifest is emitted as typed `rmsx.json`,
 - the visualization plugin renders the manifest in local Galaxy demos.
 
 ## Core Implementation Pain Points
@@ -251,13 +251,11 @@ careful API/security handling.
 
 ### Datatype Strategy
 
-For local demos, a custom `flipbookmolstar` datatype is useful because it makes the
-manifest feel like a first-class viewer input. For a conservative IUC tool PR,
-standard `json` is safer because IUC generally does not want tool repositories
-to introduce datatypes that belong in Galaxy core.
-
-The pain point is discoverability. Standard JSON is easy to review, but it makes
-the viewer less obviously tied to RMSX unless the user knows to use
+For local demos, a custom `rmsx.json` datatype makes the manifest a first-class
+viewer input and prevents the RMSX Flipbook visualization from appearing on
+unrelated JSON datasets. The IUC-facing pain point is packaging: Galaxy/IUC may
+prefer that durable custom datatypes live in Galaxy core or another approved
+location rather than only inside a tool wrapper repository.
 **Visualize**.
 
 ### Molstar Asset Packaging
