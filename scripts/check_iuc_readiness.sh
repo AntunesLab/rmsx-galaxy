@@ -9,7 +9,10 @@ MAX_BYTES="${IUC_MAX_FILE_BYTES:-1048576}"
 echo "== IUC candidate file-size audit =="
 echo "Limit: $MAX_BYTES bytes"
 
-mapfile -t large_files < <(
+large_files=()
+while IFS= read -r path; do
+  large_files+=("$path")
+done < <(
   find tools/flipbook \
     -type f \
     -not -path '*/__pycache__/*' \

@@ -22,6 +22,17 @@ RUN set -eux; \
     /opt/conda/bin/pip install --no-cache-dir /tmp/rmsx-src; \
     rm -rf /tmp/rmsx-src
 
+ARG IMAGE_CREATED=unknown
+ARG IMAGE_REVISION=unknown
+
+LABEL org.opencontainers.image.source="https://github.com/AntunesLab/rmsx-galaxy" \
+      org.opencontainers.image.title="Flipbook Galaxy runtime" \
+      org.opencontainers.image.description="Pinned RMSX runtime for the Galaxy Flipbook wrapper" \
+      org.opencontainers.image.version="0.2.3-galaxy0" \
+      org.opencontainers.image.licenses="MIT" \
+      org.opencontainers.image.created="${IMAGE_CREATED}" \
+      org.opencontainers.image.revision="${IMAGE_REVISION}"
+
 ENV RMSX_NO_CITATION=1
 
 ENTRYPOINT []

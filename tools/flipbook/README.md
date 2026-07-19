@@ -1,5 +1,7 @@
 # Flipbook Galaxy Wrapper Scaffold
 
+<img src="static/images/flipbook_logo.png" alt="RMSX Flipbook logo" width="320">
+
 This directory contains the Flipbook Galaxy wrapper scaffold. It uses RMSX as the compute engine, does not launch ChimeraX or VMD, and emits a native Galaxy Molstar viewer manifest for the generated PDB slice collection.
 
 ## Current Scope

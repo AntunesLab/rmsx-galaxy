@@ -8,7 +8,7 @@ The active wrapper references:
 <container type="docker">ghcr.io/antuneslab/flipbook-galaxy:0.2.3-galaxy0</container>
 ```
 
-For collaborator testing, the image does not need to be public yet. Build the same tag locally from the repository root:
+For collaborator testing, build the same tag locally from the repository root:
 
 ```bash
 scripts/build_container.sh
@@ -51,7 +51,7 @@ docker run --rm \
   -v "$PWD/tools/flipbook/test-data:/data:ro" \
   -v /tmp/rmsx_container_smoke:/out \
   ghcr.io/antuneslab/flipbook-galaxy:0.2.3-galaxy0 \
-  rmsx /data/1UBQ.pdb /data/mon_sys.dcd \
+  rmsx /data/1UBQ.pdb /data/mon_sys.xtc \
     --output_dir /out \
     --num_slices 3 \
     --chain 7 \
@@ -88,13 +88,22 @@ The serve helper builds the merged datatype registry, starts Planemo/Galaxy with
 
 ## Publishing The Image
 
-When the team is ready for Galaxy administrators to use the wrapper without building locally:
+The `Flipbook Runtime Image` GitHub Actions workflow builds the image, runs the
+CLI and bundled-example smoke tests, publishes the pinned tag to GHCR, and then
+verifies that it can be pulled anonymously. Run it manually after merging a
+runtime change, or create the matching release tag:
 
 ```bash
-docker push ghcr.io/antuneslab/flipbook-galaxy:0.2.3-galaxy0
+git tag flipbook-runtime-0.2.3-galaxy0
+git push origin flipbook-runtime-0.2.3-galaxy0
 ```
 
-Only someone with `antuneslab` GHCR package permissions can publish this tag.
+The workflow uses the repository-scoped `GITHUB_TOKEN`; no personal registry
+secret is required. The image carries an OCI source label so the GHCR package is
+linked to this repository and can inherit repository access permissions. GHCR
+may create the package with private visibility on the first publish. If the
+anonymous-pull step fails, open the `flipbook-galaxy` package settings in the
+AntunesLab organization, change visibility to **Public**, and rerun the workflow.
 
 ## Later Conda/Bioconda Route
 

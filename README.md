@@ -146,7 +146,16 @@ See [docs/cofest-task-list.md](docs/cofest-task-list.md) for the working task li
 For a collaborator-friendly implementation overview, see
 [docs/flipbook-galaxy-implementation-explainer.md](docs/flipbook-galaxy-implementation-explainer.md).
 
-For the IUC preparation checklist, see [docs/iuc-readiness-audit.md](docs/iuc-readiness-audit.md).
+For the community repository preparation checklist, see
+[docs/iuc-readiness-audit.md](docs/iuc-readiness-audit.md).
+
+For the concrete UseGalaxy.eu and Galaxy Main release sequence, see
+[docs/usegalaxy-deployment.md](docs/usegalaxy-deployment.md). Check all local and
+public prerequisites with:
+
+```bash
+scripts/check_server_deployment_readiness.sh
+```
 
 ## Packaging Status
 
@@ -156,9 +165,12 @@ The current share path is container-first. The wrapper references:
 ghcr.io/antuneslab/flipbook-galaxy:0.2.3-galaxy0
 ```
 
-For local cofest testing, run `scripts/build_container.sh` to build that tag locally. Before external Galaxy administrators can use the tag directly, the image should be pushed to GHCR by someone with `antuneslab` package permissions.
+For local cofest testing, run `scripts/build_container.sh` to build that tag
+locally. The repository's `Flipbook Runtime Image` workflow publishes and
+smoke-tests the same tag with the repository-scoped GitHub token.
 
-Longer term, a Bioconda or Conda package for the RMSX engine would make Galaxy dependency resolution cleaner and is expected before a polished IUC submission.
+Longer term, a Bioconda or Conda package for the RMSX engine would make Galaxy
+dependency resolution cleaner and remove the explicit-container exception.
 
 ## Relationship To Upstream RMSX
 

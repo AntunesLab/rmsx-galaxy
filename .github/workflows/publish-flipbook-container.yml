@@ -1,0 +1,117 @@
+name: Flipbook Runtime Image
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/publish-flipbook-container.yml"
+      - "config/**"
+      - "packaging/flipbook-galaxy/**"
+      - "requirements-dev.txt"
+      - "scripts/**"
+      - "tools/flipbook/**"
+  push:
+    tags:
+      - "flipbook-runtime-*"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: write
+
+concurrency:
+  group: flipbook-runtime-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  IMAGE: ghcr.io/antuneslab/flipbook-galaxy
+  IMAGE_TAG: 0.2.3-galaxy0
+
+jobs:
+  build-test-publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@8d2750c68a42422c14e847fe6c8ac0403b4cbd6f # v3
+
+      - name: Verify release metadata
+        shell: bash
+        run: |
+          set -euo pipefail
+          grep -Fq "<token name=\"@CONTAINER_IMAGE@\">${IMAGE}:${IMAGE_TAG}</token>" tools/flipbook/macros.xml
+          if [[ "${GITHUB_REF_TYPE}" == "tag" ]]; then
+            release_tag="${GITHUB_REF_NAME#flipbook-runtime-}"
+            if [[ "${release_tag}" != "${IMAGE_TAG}" ]]; then
+              echo "Release tag ${release_tag} does not match ${IMAGE_TAG}." >&2
+              exit 1
+            fi
+          fi
+
+      - name: Build image
+        run: |
+          docker build \
+            --platform linux/amd64 \
+            --build-arg "IMAGE_CREATED=$(date -u '+%Y-%m-%dT%H:%M:%SZ')" \
+            --build-arg "IMAGE_REVISION=${GITHUB_SHA}" \
+            --tag "${IMAGE}:${IMAGE_TAG}" \
+            packaging/flipbook-galaxy
+
+      - name: Smoke-test RMSX and bundled example
+        run: |
+          set -euo pipefail
+          docker run --rm "${IMAGE}:${IMAGE_TAG}" rmsx --version
+          mkdir -p "${RUNNER_TEMP}/flipbook-smoke"
+          docker run --rm \
+            --volume "${GITHUB_WORKSPACE}/tools/flipbook/test-data:/data:ro" \
+            --volume "${RUNNER_TEMP}/flipbook-smoke:/out" \
+            "${IMAGE}:${IMAGE_TAG}" \
+            rmsx /data/1UBQ.pdb /data/mon_sys.xtc \
+              --output_dir /out \
+              --num_slices 3 \
+              --chain 7 \
+              --quiet \
+              --no-plot \
+              --overwrite
+          test -f "${RUNNER_TEMP}/flipbook-smoke/chain_7_rmsx/rmsd.csv"
+
+      - name: Set up Python for Planemo
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install Planemo
+        run: |
+          python -m venv .venv-planemo
+          .venv-planemo/bin/python -m pip install --upgrade pip
+          .venv-planemo/bin/python -m pip install -r requirements-dev.txt
+
+      - name: Run Galaxy wrapper tests
+        run: scripts/run_planemo_tests.sh
+
+      - name: Log in to GHCR
+        if: github.event_name != 'pull_request'
+        uses: docker/login-action@c94ce9fb468520275223c153574b00df6fe4bcc9 # v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Publish image
+        if: github.event_name != 'pull_request'
+        run: docker push "${IMAGE}:${IMAGE_TAG}"
+
+      - name: Verify anonymous pull
+        if: github.event_name != 'pull_request'
+        run: |
+          set -euo pipefail
+          docker logout ghcr.io
+          docker image rm "${IMAGE}:${IMAGE_TAG}"
+          if ! docker pull "${IMAGE}:${IMAGE_TAG}"; then
+            echo "The image was published but is not public." >&2
+            echo "Set the flipbook-galaxy GHCR package visibility to Public, then rerun this workflow." >&2
+            exit 1
+          fi

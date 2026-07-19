@@ -50,20 +50,21 @@ Redistribution note: the case-studies page links to the TCBG copyright
 statement, which says the materials are copyrighted and may be reproduced and
 distributed for educational use with credit. This appears compatible with a
 small educational test fixture, but it is not a standard OSI/open-data license.
-Before a tools-iuc PR, confirm with IUC whether this attribution-based
-educational-use statement is acceptable for bundled test data, or replace the
-trajectory fixture with one carrying a clearer open-data license.
+Before a community Tool Shed submission, confirm with the repository
+maintainers whether this attribution-based educational-use statement is
+acceptable for bundled test data, or replace the trajectory fixture with one
+carrying a clearer open-data license.
 
-## IUC Readiness Note
+## Community Repository Readiness
 
 The current XTC fixture is useful for cofest reproducibility and is below the
-tools-iuc 1 MB file-size check. It was generated from the original full
-`mon_sys.dcd` by preserving all 316 frames and all atoms, then writing XTC with
-precision 2. The command shape is:
+community repository's 1 MB file-size check. It was generated from the original
+full `mon_sys.dcd` by preserving all 316 frames and all atoms, then writing XTC
+with precision 2. The command shape is:
 
 ```bash
-/Applications/Docker.app/Contents/Resources/bin/docker run --rm \
-  -v /Users/finn/Documents/Flipbook\ Integration:/work \
+docker run --rm \
+  -v "$PWD:/work" \
   -w /work \
   ghcr.io/antuneslab/flipbook-galaxy:0.2.3-galaxy0 \
   python scripts/create_reduced_rmsx_fixture.py \

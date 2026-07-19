@@ -36,7 +36,7 @@ if [[ ! -x .venv-planemo/bin/planemo ]]; then
   echo "Creating .venv-planemo and installing Planemo..."
   python3 -m venv .venv-planemo
   .venv-planemo/bin/python -m pip install --upgrade pip
-  .venv-planemo/bin/python -m pip install planemo
+  .venv-planemo/bin/python -m pip install -r requirements-dev.txt
 else
   echo "Planemo environment already exists: .venv-planemo"
 fi
