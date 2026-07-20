@@ -65,6 +65,7 @@ jobs:
           docker run --rm "${IMAGE}:${IMAGE_TAG}" rmsx --version
           mkdir -p "${RUNNER_TEMP}/flipbook-smoke"
           docker run --rm \
+            --user "$(id -u):$(id -g)" \
             --volume "${GITHUB_WORKSPACE}/tools/flipbook/test-data:/data:ro" \
             --volume "${RUNNER_TEMP}/flipbook-smoke:/out" \
             "${IMAGE}:${IMAGE_TAG}" \
