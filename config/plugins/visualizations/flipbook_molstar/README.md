@@ -39,7 +39,7 @@ env HOME="$PWD/.planemo-home" .venv-planemo/bin/planemo serve \
   --host 127.0.0.1 --port 9090 \
   --install_prebuilt_client \
   --docker \
-  --docker_cmd /Applications/Docker.app/Contents/Resources/bin/docker \
+  --docker_cmd "$(command -v docker)" \
   --job_config_file config/planemo_docker_job_conf.yml \
   --no_conda_auto_install \
   --no_conda_auto_init \

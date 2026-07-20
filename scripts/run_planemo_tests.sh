@@ -39,6 +39,11 @@ if ! DOCKER_BIN="$(detect_docker_cmd)"; then
   exit 1
 fi
 
+PLANEMO_PATH="$PATH"
+if ! command -v docker >/dev/null 2>&1; then
+  PLANEMO_PATH="$(dirname "$DOCKER_BIN"):$PATH"
+fi
+
 if [[ "$BUILD_IMAGE" -eq 1 ]]; then
   scripts/build_container.sh
 fi
@@ -46,6 +51,7 @@ fi
 python3 scripts/build_flipbook_datatypes_config.py
 
 env HOME="$ROOT/.planemo-home" \
+  PATH="$PLANEMO_PATH" \
   GALAXY_CONFIG_OVERRIDE_DATATYPES_CONFIG_FILE="$ROOT/config/datatypes/merged_datatypes_conf.xml" \
   .venv-planemo/bin/planemo test \
     --install_galaxy \

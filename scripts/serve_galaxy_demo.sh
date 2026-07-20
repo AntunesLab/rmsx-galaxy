@@ -43,6 +43,11 @@ if ! DOCKER_BIN="$(detect_docker_cmd)"; then
   exit 1
 fi
 
+PLANEMO_PATH="$PATH"
+if ! command -v docker >/dev/null 2>&1; then
+  PLANEMO_PATH="$(dirname "$DOCKER_BIN"):$PATH"
+fi
+
 if [[ "$BUILD_IMAGE" -eq 1 ]]; then
   scripts/build_container.sh
 fi
@@ -56,6 +61,7 @@ echo "Then open the RMSX Flipbook viewer manifest with Visualize -> RMSX Flipboo
 GALAXY_CONFIG_OVERRIDE_DATATYPES_CONFIG_FILE="$ROOT/config/datatypes/merged_datatypes_conf.xml" \
 GALAXY_CONFIG_OVERRIDE_VISUALIZATION_PLUGINS_DIRECTORY="$ROOT/config/plugins/visualizations" \
 env HOME="$ROOT/.planemo-home" \
+  PATH="$PLANEMO_PATH" \
   .venv-planemo/bin/planemo serve \
     --host "$HOST" \
     --port "$PORT" \
